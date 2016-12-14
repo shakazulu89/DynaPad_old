@@ -24,8 +24,8 @@ namespace DynaPad
 			//Console.WriteLine("Invoked");
 		}
 	}
-
 }
+
 public static class ActiveMenu
 {
 	public static Menu activeMenu { get; set; }
@@ -36,10 +36,10 @@ public class MenuItem
 	public string MenuItemAction { get; set; }
 	public string MenuItemValue { get; set; }
 	public string MenuItemCaption { get; set; }
-	public string ApptId { get; set; }
 	public string PatientId { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
+	public string ApptId { get; set; }
 	public List<Menu> Menus { get; set; }
 }
 
@@ -48,10 +48,10 @@ public class Menu
 	public string MenuAction { get; set; }
 	public string MenuValue { get; set; }
 	public string MenuCaption { get; set; }
-	public string ApptId { get; set; }
 	public string PatientId { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
+	public string ApptId { get; set; }
 	public List<MenuItem> MenuItems { get; set; }
 }
 
@@ -82,14 +82,23 @@ public static class SelectedAppointment
 {
 	public static QForm SelectedQForm { get; set; }
 	public static QForm AnsweredQForm { get; set; }
-	public static string ApptId { get; set; }
 	public static string ApptFormId { get; set; }
 	public static string ApptFormName { get; set; }
 	public static string ApptPatientId { get; set; }
 	public static string ApptDoctorId { get; set; }
 	public static string ApptLocationId { get; set; }
+	public static string ApptId { get; set; }
+	public static List<QShortForm> ApptShortForms { get; set; }
 }
 
+public class QShortForm
+{
+	public string ShortFormName { get; set; }
+	public string ShortFormId { get; set; }
+	public string DoctorId { get; set; }
+	public string ShortFormDescription { get; set; }
+	public string FormId { get; set; }
+}
 
 public class ActiveTriggerId
 {
@@ -134,12 +143,12 @@ public class FormSection
 {
 	public string SectionName { get; set; }
 	public string SectionId { get; set; }
-	public int SectionSelectedTemplateID { get; set; }
+	public int SectionSelectedTemplateId { get; set; }
 	public List<SectionQuestion> SectionQuestions { get; set; }
 
 	public FormSection()
 	{
-		SectionSelectedTemplateID = 0;
+		SectionSelectedTemplateId = 0;
 	}
 }
 

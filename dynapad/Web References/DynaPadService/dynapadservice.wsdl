@@ -12,6 +12,20 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="BuildDynaMenu">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BuildDynaMenuResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BuildDynaMenuResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetAnswerPresets">
         <s:complexType>
           <s:sequence>
@@ -101,9 +115,9 @@
       <s:element name="GetMenuJson">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="formID" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="clientID" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="ApptDate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="clientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="apptDate" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
           </s:sequence>
         </s:complexType>
@@ -162,9 +176,9 @@
       <s:element name="GetFormQuestions">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="formID" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="clientID" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="ApptDate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="clientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="apptDate" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
           </s:sequence>
         </s:complexType>
@@ -179,7 +193,7 @@
       <s:element name="GetDoctorInput">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="formID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -194,7 +208,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="qFormID" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="docID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="docId" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="showcase" type="s:boolean" />
           </s:sequence>
         </s:complexType>
@@ -209,7 +223,7 @@
       <s:element name="CreateShortForm">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="formID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -245,6 +259,12 @@
   </wsdl:message>
   <wsdl:message name="HelloWorldSoapOut">
     <wsdl:part name="parameters" element="tns:HelloWorldResponse" />
+  </wsdl:message>
+  <wsdl:message name="BuildDynaMenuSoapIn">
+    <wsdl:part name="parameters" element="tns:BuildDynaMenu" />
+  </wsdl:message>
+  <wsdl:message name="BuildDynaMenuSoapOut">
+    <wsdl:part name="parameters" element="tns:BuildDynaMenuResponse" />
   </wsdl:message>
   <wsdl:message name="GetAnswerPresetsSoapIn">
     <wsdl:part name="parameters" element="tns:GetAnswerPresets" />
@@ -329,6 +349,10 @@
       <wsdl:input message="tns:HelloWorldSoapIn" />
       <wsdl:output message="tns:HelloWorldSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="BuildDynaMenu">
+      <wsdl:input message="tns:BuildDynaMenuSoapIn" />
+      <wsdl:output message="tns:BuildDynaMenuSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetAnswerPresets">
       <wsdl:input message="tns:GetAnswerPresetsSoapIn" />
       <wsdl:output message="tns:GetAnswerPresetsSoapOut" />
@@ -386,6 +410,15 @@
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="HelloWorld">
       <soap:operation soapAction="http://tempuri.org/HelloWorld" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BuildDynaMenu">
+      <soap:operation soapAction="http://tempuri.org/BuildDynaMenu" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -515,6 +548,15 @@
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="HelloWorld">
       <soap12:operation soapAction="http://tempuri.org/HelloWorld" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BuildDynaMenu">
+      <soap12:operation soapAction="http://tempuri.org/BuildDynaMenu" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

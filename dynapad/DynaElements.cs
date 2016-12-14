@@ -352,11 +352,13 @@ namespace DynaPad
 		public string FormID { get; set; }
 		public string FormName { get; set; }
 		public bool IsDoctorForm { get; set; }
+		public string MenuValue { get; set; }
 		public string MenuAction { get; set; }
-		public string ApptID { get; set; }
 		public string PatientID { get; set; }
 		public string DoctorID { get; set; }
 		public string LocationID { get; set; }
+		public string ApptID { get; set; }
+		public List<QShortForm> ApptShortForms { get; set; }
 		public Group thisGroup { get; set; }
 
 		public DynaFormRootElement(string caption) : base(caption)

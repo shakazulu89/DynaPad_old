@@ -46,6 +46,7 @@ namespace DynaPad
 			string menuJson = File.ReadAllText("MenuD.json");
 
 			Menu myMenu = JsonConvert.DeserializeObject<Menu>(menuJson);
+			DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 
 			RootElement rootMainMenu = new RootElement(myMenu.MenuCaption);
 			Section sectionMainMenu = new Section();
@@ -54,6 +55,7 @@ namespace DynaPad
 			BuildMenu(myMenu, sectionMainMenu);
 			rootMainMenu.Add(sectionMainMenu);
 			Root = rootMainMenu;
+
 		}
 
 
@@ -69,10 +71,12 @@ namespace DynaPad
 				rootMenu.FormID = mItem.MenuItemValue;
 				rootMenu.FormName = mItem.MenuItemCaption;
 				rootMenu.MenuAction = mItem.MenuItemAction;
-				rootMenu.ApptID = mItem.ApptId;
+				rootMenu.MenuValue = mItem.MenuItemValue;
 				rootMenu.PatientID = mItem.PatientId;
 				rootMenu.DoctorID = mItem.DoctorId;
 				rootMenu.LocationID = mItem.LocationId;
+				rootMenu.ApptID = mItem.ApptId;
+
 
 				if (mItem.MenuItemAction == "GetDoctorForm") { rootMenu.IsDoctorForm = true; } else { rootMenu.IsDoctorForm = false; }
 
@@ -83,6 +87,7 @@ namespace DynaPad
 						rootMenu.createOnSelected = GetFormService;
 					break;
 					case "GetAppt":
+						
 						rootMenu.createOnSelected = GetApptService;
 						//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 						//string origJson = dds.GetFormQuestions(rootMenu.FormID, "5", "", rootMenu.IsDoctorForm);
@@ -106,10 +111,11 @@ namespace DynaPad
 						//BuildMenu(mItem.Menus[0], sectionAppt);
 						break;
 					case "GetReport":
-						var gReport = new StringElement("Report", delegate { LoadSectionView("Report", "Report", null, rootMenu.IsDoctorForm); });
-						//rootMenu.createOnSelected = GetReportService;
-						sectionMenu.Add(gReport);
-						continue;
+						//var gReport = new StringElement("Report", delegate { LoadSectionView("Report", "Report", null, rootMenu.IsDoctorForm); });
+						//sectionMenu.Add(gReport);
+						rootMenu.createOnSelected = GetReportService;
+						break;
+						//continue;
 				}
 
 				sectionMenu.Add(rootMenu);
@@ -136,20 +142,57 @@ namespace DynaPad
 			BuildMenu(mi.Menus[0], sectionAppt);
 		}
 
+		public UIViewController GetReportService(RootElement rElement)
+		{
+			DynaFormRootElement dfElemet = (DynaFormRootElement)rElement;
+			//bool IsDoctorForm = dfElemet.IsDoctorForm;
+			//var ShortForm = SelectedAppointment.ApptShortForms.Find((QShortForm obj) => obj.FormId == dfElemet.MenuValue);
+			DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
+			string origJson = dds.GetShortForms(dfElemet.FormID, dfElemet.DoctorID, false);
+			//string origJson = dds.GetFormQuestions(((DynaFormRootElement)rElement).FormID, ((DynaFormRootElement)rElement).PatientID, ((DynaFormRootElement)rElement).ApptID, ((DynaFormRootElement)rElement).IsDoctorForm);
+			JsonHandler.OriginalFormJsonString = origJson;
+			RootElement rootShortForms = new RootElement(dfElemet.FormName);
+			Section sectionShortForms = new Section();
+			foreach (QShortForm esf in SelectedAppointment.ApptShortForms)
+			{
+				//SelectedAppointment.ApptShortForms.Add(esf);
+				sectionShortForms.Add(new StringElement(esf.ShortFormName, delegate { LoadSectionView(esf.ShortFormId, "Report", null, false); }));
+			}
+			//SelectedAppointment.ApptShortForms.Add = dfElemet.FormID;
+			//SelectedAppointment.ApptFormName = dfElemet.FormName;
+			//SelectedAppointment.ApptPatientId = dfElemet.PatientID;
+			//SelectedAppointment.ApptDoctorId = dfElemet.DoctorID;
+			//SelectedAppointment.ApptLocationId = dfElemet.LocationID;
+			//SelectedAppointment.ApptId = dfElemet.ApptID;
+			//return new DialogViewController(UITableViewStyle.Plain, rElement, true);
+
+			//foreach (QShortForm fShortForm in SelectedAppointment.ApptShortForms)
+			//{
+			//	sectionShortForms.Add(new StringElement(fShortForm.ShortFormName, delegate { LoadSectionView(fShortForm.ShortFormId, "Report", null, false); }));
+			//}
+			rootShortForms.Add(sectionShortForms);
+			//this.Root.Add(sectionFormSections);
+			//DialogViewController newDVC = new DialogViewController(this.Root);
+			//DialogViewController formDVC = new DialogViewController(UITableViewStyle.Plain, rootFormSections, true);
+			DialogViewController formDVC = new DialogViewController(rootShortForms, true);
+			//formDVC.NavigationItem.SetLeftBarButtonItem(new UIBarButtonItem()
+			return formDVC;
+		}
+
 		public UIViewController GetApptService(RootElement rElement)
 		{
 			//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 			//string origJson = dds.GetFormQuestions(((DynaFormRootElement)rElement).FormID, "5", "", ((DynaFormRootElement)rElement).IsDoctorForm);
 			//JsonHandler.OriginalFormJsonString = origJson;
 			//SelectedQForm.selectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
+			DynaFormRootElement dfElemet = (DynaFormRootElement)rElement;
 
-			SelectedAppointment.ApptId = ((DynaFormRootElement)rElement).ApptID;
-			SelectedAppointment.ApptFormId = ((DynaFormRootElement)rElement).FormID;
-			SelectedAppointment.ApptFormName = ((DynaFormRootElement)rElement).FormName;
-			SelectedAppointment.ApptPatientId = ((DynaFormRootElement)rElement).PatientID;
-			SelectedAppointment.ApptDoctorId = ((DynaFormRootElement)rElement).DoctorID;
-			SelectedAppointment.ApptLocationId = ((DynaFormRootElement)rElement).LocationID;
-
+			SelectedAppointment.ApptFormId = dfElemet.FormID;
+			SelectedAppointment.ApptFormName = dfElemet.FormName;
+			SelectedAppointment.ApptPatientId = dfElemet.PatientID;
+			SelectedAppointment.ApptDoctorId = dfElemet.DoctorID;
+			SelectedAppointment.ApptLocationId = dfElemet.LocationID;
+			SelectedAppointment.ApptId = dfElemet.ApptID;
 			//return new DialogViewController(UITableViewStyle.Plain, rElement, true);
 			return new DialogViewController(rElement, true);
 		}
@@ -157,7 +200,9 @@ namespace DynaPad
 		public UIViewController GetFormService(RootElement rElement)
 		{
 			DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
-			string origJson = dds.GetFormQuestions(((DynaFormRootElement)rElement).FormID, "5", "", ((DynaFormRootElement)rElement).IsDoctorForm);
+			DynaFormRootElement dfElemet = (DynaFormRootElement)rElement;
+			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.PatientID, dfElemet.ApptID, dfElemet.IsDoctorForm);
+			//string origJson = dds.GetFormQuestions(((DynaFormRootElement)rElement).FormID, ((DynaFormRootElement)rElement).PatientID, ((DynaFormRootElement)rElement).ApptID, ((DynaFormRootElement)rElement).IsDoctorForm);
 			JsonHandler.OriginalFormJsonString = origJson;
 			SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 
@@ -170,7 +215,7 @@ namespace DynaPad
 			RootElement rootFormSections = new RootElement(SelectedAppointment.SelectedQForm.FormName);
 			Section sectionFormSections = new Section();
 
-			bool IsDoctorForm = ((DynaFormRootElement)rElement).IsDoctorForm;
+			bool IsDoctorForm = dfElemet.IsDoctorForm;
 
 			if (IsDoctorForm)
 			{
@@ -180,8 +225,9 @@ namespace DynaPad
 				 * TODO: add 'clear' selection option! ??? DONE ???
 				*/
 
+
 				//string[,] FormPresetNames = dds.GetFormPresets("35", "5", origJson);
-				var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
+				var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptPatientId, true, SelectedAppointment.ApptLocationId);
 
 				DynaSection formPresetSection = new DynaSection("Form Preset Answers");
 				formPresetSection.Enabled = true;
@@ -215,6 +261,9 @@ namespace DynaPad
 				btnNewFormPreset.SetTitle("Save New Form Preset", UIControlState.Normal);
 				btnNewFormPreset.TouchUpInside += (sender, e) =>
 				{
+				/*
+				 * TODO: popup to enter preset name
+				*/
 
 				//Create Alert
 				var SavePresetPrompt = UIAlertController.Create("New Form Preset", "Necesito name", UIAlertControllerStyle.Alert);

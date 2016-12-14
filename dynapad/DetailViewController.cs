@@ -38,6 +38,7 @@ namespace DynaPad
 			//this.TableView.CellLayoutMarginsFollowReadableWidth = false;
 			// Perform any additional setup after loading the view, typically from a nib.
 			//ConfigureView();
+			base.TableView.ScrollsToTop = true;
 		}
 
 
@@ -46,9 +47,9 @@ namespace DynaPad
 			bool isValid = password == Constants.Password;
 			if (isValid)
 			{
-				string finalJson = JsonConvert.SerializeObject(SelectedAppointment.selectedQForm);
+				string finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 				DataTable dt = (DataTable)JsonConvert.DeserializeObject(finalJson, (typeof(DataTable)));
-				var table = JsonConvert.DeserializeObject<DataTable>(finalJson);
+				var table =  JsonConvert.DeserializeObject<DataTable>(finalJson);
 
 
 				//DynaService.DynaDoxService dds = new DynaPad.DynaService.DynaDoxService();
@@ -111,8 +112,9 @@ namespace DynaPad
 						summarySection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
 						summarySection.FooterView.Hidden = true;
 
+						//DynaService.DynaDoxService dds = new DynaPad.DynaService.DynaDoxService();
 						DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
-						string finalJson = JsonConvert.SerializeObject(SelectedAppointment.selectedQForm);
+						string finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 						var summarypdf = dds.ExportToPdf(finalJson);
 
 						var webViews = new UIWebView(View.Bounds);
@@ -130,7 +132,7 @@ namespace DynaPad
 						Root.TableView.ScrollEnabled = false;
 						break;
 					case "Finalize":
-						DynaMultiRootElement rootElement = new DynaMultiRootElement(SelectedAppointment.selectedQForm.FormName);
+						DynaMultiRootElement rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName);
 						DynaSection rootSection = new DynaSection("FINALIZE FORM");
 						//headSection.HeaderView = new UIView(new CGRect(0, 0, 300f, 40));
 						//headSection.HeaderView.BackgroundColor = UIColor.FromRGB(169, 188, 208);
@@ -191,6 +193,8 @@ namespace DynaPad
 						Root.TableView.ScrollEnabled = false;
 						break;
 					case "Report":
+						var ShortForm = SelectedAppointment.ApptShortForms.Find((QShortForm obj) => obj.FormId == sectionId);
+
 						DynaMultiRootElement reportElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
 						DynaSection reportSection = new DynaSection("REPORT");
 
@@ -199,7 +203,7 @@ namespace DynaPad
 						reportPaddedView.Type = "Section";
 						reportPaddedView.Frame = new CGRect(0, 0, 0, 40);
 						reportPaddedView.Padding = 5f;
-						reportPaddedView.NestedView.Text = "REPORT";
+						reportPaddedView.NestedView.Text = ShortForm.ShortFormName.ToUpper();
 						reportPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
 						reportPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
 						reportPaddedView.setStyle();
@@ -215,9 +219,9 @@ namespace DynaPad
 
 						//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 						DynaPadService.DynaPadService dps = new DynaPadService.DynaPadService();
-						string report = dps.GenerateReport("123", "321", DateTime.Today.ToShortDateString(), "file", "24");
+						string report = dps.GenerateReport(SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", ShortForm.FormId);
 						//string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
-						var asdf = SelectedAppointment.ApptPatientID;
+						var asdf = SelectedAppointment.ApptPatientId;
 
 						//webView.LoadHtmlString(report, null);
 
@@ -254,7 +258,7 @@ namespace DynaPad
 				//JObject jForm = JObject.Parse(JsonHandler.OriginalFormJsonString);
 
 				//var sectionQuestions = JsonConvert.DeserializeObject<List<SectionQuestion>>(jForm["sections"][0]["elements"].ToString());
-				var sectionQuestions = SelectedAppointment.selectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+				var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
 
 				DynaSection headSection = new DynaSection(sectionQuestions.SectionName);
 				//headSection.HeaderView = new UIView(new CGRect(0, 0, 300f, 40));
@@ -328,7 +332,10 @@ namespace DynaPad
 
 						observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
 
-						Section sec = new Section();
+						var hlab = new UILabel(new CGRect(0, 0, 160, 30));
+						hlab.Text = "Dication";
+
+						Section sec = new Section(hlab, CancelRecording);
 
 						var cellRecord = new UITableViewCell(UITableViewCellStyle.Default,null);
 						cellRecord.Frame = new CGRect(0, 0, 350, 30);
@@ -352,7 +359,7 @@ namespace DynaPad
 
 						var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellSave.Frame = new CGRect(0, 0, 350, 30);
-						cellSave.ImageView.Image = UIImage.FromFile("images/Plus-20.png");
+						cellSave.ImageView.Image = UIImage.FromFile("images/Save-20.png");
 						cellSave.ContentView.Add(SaveRecordedSound);
 						sec.Add(cellSave);
 
@@ -363,13 +370,13 @@ namespace DynaPad
 						//sec.Add(PlayRecordedSoundButton);
 						//sec.Add(SaveRecordedSound);
 						//sec.Add(CancelRecording);
-						sec.FooterView = CancelRecording;
-						var headl = new UILabel(new CGRect(0, 0, 160, 30));
-						headl.Text = "Dictation";
-						sec.HeaderView = headl;
+						//sec.FooterView = CancelRecording;
+						//var headl = new UILabel(new CGRect(0, 0, 160, 30));
+						//headl.Text = "Dictation";
+						//sec.HeaderView = headl;
 
 						DynaPadService.DynaPadService dps = new DynaPadService.DynaPadService();
-						var dictations = dps.GetFormDictations(SelectedAppointment.selectedQForm.FormId, sectionId, "123", true, SelectedAppointment.selectedQForm.DoctorLocationId);
+						var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
 						//var cellDict = new UITableViewCell(UITableViewCellStyle.Value2, null);
 						//cellDict.Frame = new CGRect(0, 0, 300, 0);
 						foreach (string[] dictation in dictations)
@@ -399,6 +406,7 @@ namespace DynaPad
 
 						con.Add(vie);
 
+						//UIPopoverPresentationController pop = new UIPopoverPresentationController(dia, con);
 						UIPopoverController pop = new UIPopoverController(dia);
 
 						CancelRecording.TouchUpInside += delegate
@@ -452,14 +460,14 @@ namespace DynaPad
 					presetSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
 					presetSection.FooterView.Hidden = true;
 
-					int fs = SelectedAppointment.selectedQForm.FormSections.IndexOf(sectionQuestions);
+					int fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
 					DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 					//string[,] FormPresetNames = pdds.GetSectionPresets("35", "5", origS, sectionId);
-					var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.selectedQForm.FormId, sectionId, SelectedAppointment.selectedQForm.DoctorId, true, SelectedAppointment.selectedQForm.DoctorLocationId);
+					var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.SelectedQForm.DoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
 
 
-					RadioGroup presetGroup = new RadioGroup("PresetAnswers", sectionQuestions.SectionSelectedTemplateID);
+					RadioGroup presetGroup = new RadioGroup("PresetAnswers", sectionQuestions.SectionSelectedTemplateId);
 					DynaRootElement presetsRoot = new DynaRootElement("Preset Answers", presetGroup);
 					presetsRoot.IsPreset = true;
 					//presetsRoot.GetActiveCell().BackgroundColor = UIColor.Red;
@@ -472,8 +480,8 @@ namespace DynaPad
 						mre.OnSelected += delegate (object sender, EventArgs e)
 						{
 							string presetJson = arrPreset[2];
-							SelectedAppointment.selectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
-							SelectedAppointment.selectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId).SectionSelectedTemplateID = presetGroup.Selected;
+							SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
+							SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId).SectionSelectedTemplateId = presetGroup.Selected;
 
 							SetDetailItem(new Section(sectionQuestions.SectionName), sectionId, origS, IsDoctorForm);
 						};
@@ -516,7 +524,7 @@ namespace DynaPad
 				}
 
 
-				QuestionsView = new DynaMultiRootElement(SelectedAppointment.selectedQForm.FormName);
+				QuestionsView = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName);
 				QuestionsView.Add(headSection);
 				//QuestionsView.UnevenRows = true;
 
@@ -768,8 +776,9 @@ namespace DynaPad
 				Root = QuestionsView;
 				Root.TableView.ScrollEnabled = true;
 				//Root.TableView.SeparatorInset = new UIEdgeInsets(0, 0, 0, 0);
-
-
+				Root.TableView.ScrollsToTop = true;
+				//var ip = new NSIndexPath(new NSCoder();
+				Root.TableView.ScrollRectToVisible(new CGRect(0, 0, 1, 1), true);
 
 
 			}
@@ -820,7 +829,7 @@ namespace DynaPad
 		{
 			if (activeTriggerIds != newTriggerIds)
 			{
-				var sectionQuestions = SelectedAppointment.selectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+				var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
 
 				//if (!string.IsNullOrEmpty(activeTriggerIds))
 				if (activeTriggerIds != null && activeTriggerIds.Count > 0)
@@ -844,7 +853,7 @@ namespace DynaPad
 
 		private void MultiConditionalCheck(SectionQuestion activeQuestion, string sectionId)
 		{
-			var sectionQuestions = SelectedAppointment.selectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+			var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
 			List<SectionQuestion> untriggeredQuestions = new List<SectionQuestion>();
 			List<SectionQuestion> triggeredQuestions = new List<SectionQuestion>();
 			foreach (QuestionOption qOption in activeQuestion.QuestionOptions)
@@ -1132,7 +1141,7 @@ namespace DynaPad
 				//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 
 
-				string dictationPath = dds.SaveDictation(SelectedAppointment.selectedQForm.FormId, sectionId, "123", true, SelectedAppointment.selectedQForm.DoctorLocationId, "Roy_" + DateTime.Now.ToShortTimeString(), array);
+				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, "123", true, SelectedAppointment.SelectedQForm.LocationId, "Roy_" + DateTime.Now.ToShortTimeString(), array);
 				System.Console.WriteLine("Saving Recording {0}", audioFilePath);
 			}
 			catch (Exception ex)
