@@ -53,6 +53,7 @@ public class Menu
 	public string LocationId { get; set; }
 	public string ApptId { get; set; }
 	public List<MenuItem> MenuItems { get; set; }
+
 }
 
 public class DynaMenu

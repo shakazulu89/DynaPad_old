@@ -115,13 +115,15 @@ namespace DynaPad
 						//DynaService.DynaDoxService dds = new DynaPad.DynaService.DynaDoxService();
 						DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 						string finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-						var summarypdf = dds.ExportToPdf(finalJson);
+						var summaryFileName = dds.ExportToPdf(finalJson);
 
 						var webViews = new UIWebView(View.Bounds);
 						//View.AddSubview(webView);
 						webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-						string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
-						webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl, false)));
+						//string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
+						string localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
+
+						webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
 						webViews.ScalesPageToFit = true;
 
 						summarySection.Add(webViews);

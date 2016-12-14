@@ -210,16 +210,6 @@
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
     <None Include="app.config" />
-    <None Include="DynaDoxService.cs" />
-    <None Include="Service References\test.dynadox.pro\DynaService.wsdl" />
-    <None Include="Service References\test.dynadox.pro\DynaService.xsd" />
-    <None Include="Service References\test.dynadox.pro\DynaService.disco" />
-    <None Include="Service References\test.dynadox.pro\DynaService0.xsd" />
-    <None Include="Service References\test.dynadox.pro\DynaService1.xsd" />
-    <None Include="Service References\test.dynadox.pro\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
     <None Include="Web References\DynaPadService\dynapadservice.wsdl" />
     <None Include="Web References\DynaPadService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
@@ -242,9 +232,6 @@
     <Compile Include="Console.cs" />
     <Compile Include="SqlFunctions.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Service References\test.dynadox.pro\Reference.cs">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="Web References\DynaPadService\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
@@ -263,12 +250,6 @@
     <BundleResource Include="preset_section_Chinese.json" />
     <BundleResource Include="preset_section_Russian.json" />
     <BundleResource Include="MenuD.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\test.dynadox.pro" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />

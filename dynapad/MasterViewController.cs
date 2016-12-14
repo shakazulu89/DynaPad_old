@@ -43,19 +43,18 @@ namespace DynaPad
 			//JsonHandler.OriginalFormJsonString = menuJson;
 
 			//string menuJson = File.ReadAllText("SampleMenu.json");
-			string menuJson = File.ReadAllText("MenuD.json");
+			//string menuJson = File.ReadAllText("MenuD.json");
 
-			Menu myMenu = JsonConvert.DeserializeObject<Menu>(menuJson);
+			//Menu myMenu = JsonConvert.DeserializeObject<Menu>(menuJson);
 			DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
-
-			RootElement rootMainMenu = new RootElement(myMenu.MenuCaption);
+			Menu myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+			RootElement rootMainMenu = new RootElement(myDynaMenu.MenuCaption);
 			Section sectionMainMenu = new Section();
 			sectionMainMenu.HeaderView = null;
 			//sectionMainMenu.Caption = "Menu";
-			BuildMenu(myMenu, sectionMainMenu);
+			BuildMenu(myDynaMenu, sectionMainMenu);
 			rootMainMenu.Add(sectionMainMenu);
 			Root = rootMainMenu;
-
 		}
 
 
@@ -78,11 +77,15 @@ namespace DynaPad
 				rootMenu.ApptID = mItem.ApptId;
 
 
-				if (mItem.MenuItemAction == "GetDoctorForm") { rootMenu.IsDoctorForm = true; } else { rootMenu.IsDoctorForm = false; }
+				rootMenu.IsDoctorForm = false;
+				if (mItem.MenuItemAction == "GetDoctorForm") 
+				{ 
+					rootMenu.IsDoctorForm = true; 
+				} 
 
 				switch (mItem.MenuItemAction)
 				{
-					case "GetForm":
+					case "GetPatientForm":
 					case "GetDoctorForm":
 						rootMenu.createOnSelected = GetFormService;
 					break;
@@ -110,7 +113,7 @@ namespace DynaPad
 						//Section sectionAppt = new Section();
 						//BuildMenu(mItem.Menus[0], sectionAppt);
 						break;
-					case "GetReport":
+					case "GenerateReport":
 						//var gReport = new StringElement("Report", delegate { LoadSectionView("Report", "Report", null, rootMenu.IsDoctorForm); });
 						//sectionMenu.Add(gReport);
 						rootMenu.createOnSelected = GetReportService;
@@ -126,7 +129,6 @@ namespace DynaPad
 					BuildMenu(mRoot, newSection);
 					rootMenu.Add(newSection);
 				}
-
 			}
 			return null;
 		}
