@@ -1,0 +1,240 @@
+﻿{
+      "SectionName": "General Observation",
+      "SectionId": "45",
+      "SectionSelectedTemplateID": 0,
+      "SectionQuestions": [
+        {
+          "SectionId": "45",
+          "QuestionId": "1137",
+          "QuestionParentId": "1134",
+          "QuestionType": "Radio",
+          "QuestionText": "Interpreter was a",
+          "QuestionKeyboardType": null,
+          "ParentConditionTriggerId": "486",
+          "ActiveTriggerId": null,
+          "IsConditional": true,
+          "AnswerId": "",
+          "AnswerText": "",
+          "IsAnswered": false,
+          "IsEnabled": false,
+          "AnswerOptionIndex": null,
+          "QuestionOptions": [
+            {
+              "ParentQuestionId": "1137",
+              "OptionText": "Spanish interpreter",
+              "OptionId": "1378",
+              "ConditionTriggerId": "",
+              "Chosen": true
+            },
+            {
+              "ParentQuestionId": "1137",
+              "OptionText": "Russian interpreter",
+              "OptionId": "1379",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1137",
+              "OptionText": "Chinese interpreter",
+              "OptionId": "1380",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1137",
+              "OptionText": "Korean interpreter",
+              "OptionId": "1381",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1137",
+              "OptionText": "French Creole interpreter",
+              "OptionId": "1382",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1137",
+              "OptionText": "Sign language interpreter",
+              "OptionId": "1383",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            }
+          ]
+        },
+        {
+          "SectionId": "45",
+          "QuestionId": "1138",
+          "QuestionParentId": "1135",
+          "QuestionType": "Numeric",
+          "QuestionText": "How many months pregnant?",
+          "QuestionKeyboardType": null,
+          "ParentConditionTriggerId": "487",
+          "ActiveTriggerId": null,
+          "IsConditional": true,
+          "AnswerId": "",
+          "AnswerText": "",
+          "IsAnswered": false,
+          "IsEnabled": false,
+          "AnswerOptionIndex": null,
+          "QuestionOptions": null
+        },
+        {
+          "SectionId": "45",
+          "QuestionId": "1139",
+          "QuestionParentId": "1136",
+          "QuestionType": "Radio",
+          "QuestionText": "The minor was present with",
+          "QuestionKeyboardType": null,
+          "ParentConditionTriggerId": "488",
+          "ActiveTriggerId": null,
+          "IsConditional": true,
+          "AnswerId": "",
+          "AnswerText": "",
+          "IsAnswered": false,
+          "IsEnabled": false,
+          "AnswerOptionIndex": null,
+          "QuestionOptions": [
+            {
+              "ParentQuestionId": "1139",
+              "OptionText": "Present with Adult",
+              "OptionId": "1384",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1139",
+              "OptionText": "Mother",
+              "OptionId": "1385",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1139",
+              "OptionText": "Father",
+              "OptionId": "1386",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1139",
+              "OptionText": "Legal Guardian",
+              "OptionId": "1387",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1139",
+              "OptionText": "Paralegal",
+              "OptionId": "1388",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1139",
+              "OptionText": "Legal Representative",
+              "OptionId": "1389",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            }
+          ]
+        },
+        {
+          "SectionId": "45",
+          "QuestionId": "1134",
+          "QuestionParentId": "0",
+          "QuestionType": "YesNo",
+          "QuestionText": "Did claimant communicate via interpreter?",
+          "QuestionKeyboardType": null,
+          "ParentConditionTriggerId": "",
+          "ActiveTriggerId": null,
+          "IsConditional": false,
+          "AnswerId": "",
+          "AnswerText": "",
+          "IsAnswered": false,
+          "IsEnabled": false,
+          "AnswerOptionIndex": null,
+          "QuestionOptions": [
+            {
+              "ParentQuestionId": "1134",
+              "OptionText": "Yes",
+              "OptionId": "7",
+              "ConditionTriggerId": "486",
+              "Chosen": true
+            },
+            {
+              "ParentQuestionId": "1134",
+              "OptionText": "No",
+              "OptionId": "8",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            }
+          ]
+        },
+        {
+          "SectionId": "45",
+          "QuestionId": "1135",
+          "QuestionParentId": "0",
+          "QuestionType": "YesNo",
+          "QuestionText": "Was claimant pregnant?",
+          "QuestionKeyboardType": null,
+          "ParentConditionTriggerId": "",
+          "ActiveTriggerId": null,
+          "IsConditional": false,
+          "AnswerId": "",
+          "AnswerText": "",
+          "IsAnswered": false,
+          "IsEnabled": false,
+          "AnswerOptionIndex": null,
+          "QuestionOptions": [
+            {
+              "ParentQuestionId": "1135",
+              "OptionText": "Yes",
+              "OptionId": "7",
+              "ConditionTriggerId": "487",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1135",
+              "OptionText": "No",
+              "OptionId": "8",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            }
+          ]
+        },
+        {
+          "SectionId": "45",
+          "QuestionId": "1136",
+          "QuestionParentId": "0",
+          "QuestionType": "YesNo",
+          "QuestionText": "Is claimant a Minor?",
+          "QuestionKeyboardType": null,
+          "ParentConditionTriggerId": "",
+          "ActiveTriggerId": null,
+          "IsConditional": false,
+          "AnswerId": "",
+          "AnswerText": "",
+          "IsAnswered": false,
+          "IsEnabled": false,
+          "AnswerOptionIndex": null,
+          "QuestionOptions": [
+            {
+              "ParentQuestionId": "1136",
+              "OptionText": "Yes",
+              "OptionId": "7",
+              "ConditionTriggerId": "488",
+              "Chosen": false
+            },
+            {
+              "ParentQuestionId": "1136",
+              "OptionText": "No",
+              "OptionId": "8",
+              "ConditionTriggerId": "",
+              "Chosen": false
+            }
+          ]
+        }
+      ]
+    }

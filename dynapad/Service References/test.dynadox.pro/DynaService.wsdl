@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://tempuri.org/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" name="DynaService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpsBinding_IDynaService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://test.dynadox.pro/dynawcfservice/DynaService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://test.dynadox.pro/dynawcfservice/DynaService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://test.dynadox.pro/dynawcfservice/DynaService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/DynaWCFService" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IDynaService_GetData_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetData" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetAllQuestionnaires_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllQuestionnaires" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetAllQuestionnaires_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllQuestionnairesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_SubmitFormAnswers_InputMessage">
+    <wsdl:part name="parameters" element="tns:SubmitFormAnswers" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_SubmitFormAnswers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SubmitFormAnswersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetFormQuestions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFormQuestions" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetFormQuestions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFormQuestionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetDoctorInput_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDoctorInput" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetDoctorInput_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDoctorInputResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetShortForms_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetShortForms" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetShortForms_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetShortFormsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_CreateShortForm_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateShortForm" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_CreateShortForm_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateShortFormResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GenerateReport_InputMessage">
+    <wsdl:part name="parameters" element="tns:GenerateReport" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GenerateReport_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GenerateReportResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_SaveSignature_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveSignature" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_SaveSignature_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveSignatureResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_SaveMedicalRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveMedicalRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_SaveMedicalRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveMedicalRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetListings_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetListings" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetListings_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetListingsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetMedicalRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMedicalRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetMedicalRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMedicalRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetDataUsingDataContract_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDataUsingDataContract" />
+  </wsdl:message>
+  <wsdl:message name="IDynaService_GetDataUsingDataContract_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDataUsingDataContractResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IDynaService">
+    <wsdl:operation name="GetData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetData" message="tns:IDynaService_GetData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetDataResponse" message="tns:IDynaService_GetData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllQuestionnaires">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetAllQuestionnaires" message="tns:IDynaService_GetAllQuestionnaires_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetAllQuestionnairesResponse" message="tns:IDynaService_GetAllQuestionnaires_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SubmitFormAnswers">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/SubmitFormAnswers" message="tns:IDynaService_SubmitFormAnswers_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/SubmitFormAnswersResponse" message="tns:IDynaService_SubmitFormAnswers_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFormQuestions">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetFormQuestions" message="tns:IDynaService_GetFormQuestions_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetFormQuestionsResponse" message="tns:IDynaService_GetFormQuestions_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDoctorInput">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetDoctorInput" message="tns:IDynaService_GetDoctorInput_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetDoctorInputResponse" message="tns:IDynaService_GetDoctorInput_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetShortForms">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetShortForms" message="tns:IDynaService_GetShortForms_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetShortFormsResponse" message="tns:IDynaService_GetShortForms_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateShortForm">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/CreateShortForm" message="tns:IDynaService_CreateShortForm_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/CreateShortFormResponse" message="tns:IDynaService_CreateShortForm_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateReport">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GenerateReport" message="tns:IDynaService_GenerateReport_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GenerateReportResponse" message="tns:IDynaService_GenerateReport_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveSignature">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/SaveSignature" message="tns:IDynaService_SaveSignature_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/SaveSignatureResponse" message="tns:IDynaService_SaveSignature_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveMedicalRecord">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/SaveMedicalRecord" message="tns:IDynaService_SaveMedicalRecord_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/SaveMedicalRecordResponse" message="tns:IDynaService_SaveMedicalRecord_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetListings">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetListings" message="tns:IDynaService_GetListings_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetListingsResponse" message="tns:IDynaService_GetListings_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMedicalRecords">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetMedicalRecords" message="tns:IDynaService_GetMedicalRecords_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetMedicalRecordsResponse" message="tns:IDynaService_GetMedicalRecords_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDataUsingDataContract">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynaService/GetDataUsingDataContract" message="tns:IDynaService_GetDataUsingDataContract_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynaService/GetDataUsingDataContractResponse" message="tns:IDynaService_GetDataUsingDataContract_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IDynaService" type="tns:IDynaService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetData">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllQuestionnaires">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetAllQuestionnaires" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SubmitFormAnswers">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/SubmitFormAnswers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormQuestions">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetFormQuestions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDoctorInput">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetDoctorInput" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetShortForms">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetShortForms" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateShortForm">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/CreateShortForm" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateReport">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GenerateReport" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveSignature">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/SaveSignature" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveMedicalRecord">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/SaveMedicalRecord" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetListings">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetListings" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMedicalRecords">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetMedicalRecords" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDataUsingDataContract">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetDataUsingDataContract" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpsBinding_IDynaService" type="tns:IDynaService">
+    <wsp:PolicyReference URI="#BasicHttpsBinding_IDynaService_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetData">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllQuestionnaires">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetAllQuestionnaires" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SubmitFormAnswers">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/SubmitFormAnswers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormQuestions">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetFormQuestions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDoctorInput">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetDoctorInput" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetShortForms">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetShortForms" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateShortForm">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/CreateShortForm" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateReport">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GenerateReport" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveSignature">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/SaveSignature" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveMedicalRecord">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/SaveMedicalRecord" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetListings">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetListings" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMedicalRecords">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetMedicalRecords" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDataUsingDataContract">
+      <soap:operation soapAction="http://tempuri.org/IDynaService/GetDataUsingDataContract" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DynaService">
+    <wsdl:port name="BasicHttpBinding_IDynaService" binding="tns:BasicHttpBinding_IDynaService">
+      <soap:address location="http://test.dynadox.pro/dynawcfservice/DynaService.svc" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpsBinding_IDynaService" binding="tns:BasicHttpsBinding_IDynaService">
+      <soap:address location="https://www.dynadox.pro/dynawcfservice/DynaService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

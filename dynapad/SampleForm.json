@@ -1,0 +1,166 @@
+﻿{
+	"FormName": "Sample Questionaire",
+	"FormId": "q1",
+    "DoctorId": "",
+    "DoctorLocationId": "",
+	"FormSections": [ 
+  	  { 
+		"SectionName": "basic info",
+  	  	"SectionId": "s1",
+  	  	"SectionQuestions": 
+  	  	  [{
+  "QuestionId": "24",
+  "QuestionParentId": "0",
+  "QuestionType": "Checkbox",
+  "QuestionText": "What is your main hand?",
+  "ParentConditionTriggerID": "",
+  "IsConditional": "False",
+  "QuestionOptions": [
+			{
+				"OptionText": "Right",
+				"OptionId": "1",
+				"ConditionTriggerId": ""
+			},
+			{
+				"OptionText": "Left",
+				"OptionId": "2",
+				"ConditionTriggerId": ""
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+},{
+  "QuestionId": "27",
+  "QuestionParentId": "0",
+  "QuestionType": "Radio",
+  "QuestionText": "What is your sex?",
+  "ParentConditionTriggerId": "",
+  "IsConditional": "False",
+  "QuestionOptions": [
+			{
+				"OptionText": "Male",
+				"OptionId": "3",
+				"ConditionTriggerId": ""
+			},
+			{
+				"OptionText": "Female",
+				"OptionId": "4",
+				"ConditionTriggerId": "40"
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+},{
+  "QuestionId": "77",
+  "QuestionParentId": "27",
+  "QuestionType": "Bool",
+  "QuestionText": "Are you pregnant?",
+  "ParentConditionTriggerId": "40",
+  "IsConditional": "True",
+  "QuestionOptions": [
+			{
+				"OptionText": "Yes",
+				"OptionId": "7",
+				"ConditionTriggerId": "41"
+			},
+			{
+				"OptionText": "No",
+				"OptionId": "8",
+				"ConditionTriggerId": ""
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+},{
+  "QuestionId": "78",
+  "QuestionParentId": "77",
+  "QuestionType": "TextInput",
+  "QuestionText": "For how many weeks?",
+  "ParentConditionTriggerId": "41",
+  "IsConditional": "True",
+  "QuestionOptions": [
+			{
+				"OptionText": "",
+				"OptionId": "",
+				"ConditionTriggerId": ""
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+},{
+  "QuestionId": "80",
+  "QuestionParentId": "27",
+  "QuestionType": "Bool",
+  "QuestionText": "Were you pregnant at the time of accident?",
+  "ParentConditionTriggerId": "40",
+  "IsConditional": "True",
+  "QuestionOptions": [
+			{
+				"OptionText": "Yes",
+				"OptionId": "",
+				"ConditionTriggerId": "44"
+			},
+			{
+				"OptionText": "No",
+				"OptionId": "",
+				"ConditionTriggerId": ""
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+},{
+  "QuestionId": "81",
+  "QuestionParentId": "80",
+  "QuestionType": "TextInput",
+  "QuestionText": "For how many weeks?",
+  "ParentConditionTriggerId": "44",
+  "IsConditional": "True",
+  "QuestionOptions": [
+			{
+				"OptionText": "",
+				"OptionId": "",
+				"ConditionTriggerId": ""
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+},{
+  "QuestionId": "82",
+  "QuestionParentId": "0",
+  "QuestionType": "Bool",
+  "QuestionText": "Are you over 18 years of age?",
+  "ParentConditionTriggerId": "",
+  "IsConditional": "False",
+  "QuestionOptions": [
+			{
+				"OptionText": "Yes",
+				"OptionId": "",
+				"ConditionTriggerId": ""
+			},
+			{
+				"OptionText": "No",
+				"OptionId": "",
+				"ConditionTriggerId": ""
+			}
+  ],
+  "AnswerId": "",
+  "AnswerText": "",
+  "AnswerOptionIndex": "",
+  "IsAnswered": "False"
+}
+	]
+		}]
+}
+
