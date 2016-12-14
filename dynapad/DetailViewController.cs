@@ -233,7 +233,7 @@ namespace DynaPad
 						var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
 						var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
 						webView.LoadRequest(new NSUrlRequest(new NSUrl(myurl)));
-						webView.ScalesPageToFit = true;
+						webView.ScalesPageToFit = true; 
 
 						reportSection.Add(webView);
 						reportElement.Add(reportSection);
