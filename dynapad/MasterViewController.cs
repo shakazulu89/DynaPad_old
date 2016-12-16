@@ -80,8 +80,9 @@ namespace DynaPad
 					case "GetAppt":
 						rootMenu.createOnSelected = GetApptService;
 						break;
-					case "GenerateReport":
-						rootMenu.createOnSelected = GetReportService;
+					case "GetReport":
+						//rootMenu.createOnSelected = GetReportService;
+						Section sectionReport = new Section();  						sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));  						rootMenu.Add(sectionReport);
 						break;
 				}
 
@@ -103,7 +104,7 @@ namespace DynaPad
 
 		public UIViewController GetApptService(RootElement rElement)
 		{
-			if (DetailViewController.DetailItem != null)
+			if (DetailViewController.QuestionsView != null)
 			{
 				DetailViewController.Title = "";
 				DetailViewController.QuestionsView.Clear();
@@ -123,7 +124,7 @@ namespace DynaPad
 
 		public UIViewController GetReportService(RootElement rElement)
 		{
-			if (DetailViewController.DetailItem != null)
+			if (DetailViewController.QuestionsView != null)
 			{
 				DetailViewController.Title = "";
 				DetailViewController.QuestionsView.Clear();
@@ -152,7 +153,7 @@ namespace DynaPad
 
 		public UIViewController GetFormService(RootElement rElement)
 		{
-			if (DetailViewController.DetailItem != null)
+			if (DetailViewController.QuestionsView != null)
 			{
 				DetailViewController.Title = "";
 				DetailViewController.QuestionsView.Clear();
@@ -283,7 +284,7 @@ namespace DynaPad
 			bool isValid = password == Constants.Password;
 			if (isValid)
 			{
-				if (DetailViewController.DetailItem != null)
+				if (DetailViewController.QuestionsView != null)
 				{
 					DetailViewController.Title = "";
 					DetailViewController.QuestionsView.Clear();
@@ -318,6 +319,7 @@ namespace DynaPad
 			string origSectionJson = JsonConvert.SerializeObject(OrigSection);
 			DetailViewController.SetDetailItem(new Section(sectionName), sectionId, origSectionJson, IsDoctorForm);
 		}
+		void LoadReportView(string sectionId, string sectionName) 		{ 			DetailViewController.SetDetailItem(new Section(sectionName), sectionId, "", false); 		}
 
 
 		public override void DidReceiveMemoryWarning()

@@ -199,7 +199,7 @@ namespace DynaPad
 
 						break;
 					case "Report":
-						var Report = SelectedAppointment.ApptReports.Find((Report obj) => obj.FormId == sectionId);
+						//var Report = SelectedAppointment.ApptReports.Find((Report obj) => obj.FormId == sectionId);
 
 						var reportElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
 
@@ -208,7 +208,7 @@ namespace DynaPad
 						reportPaddedView.Type = "Section";
 						reportPaddedView.Frame = new CGRect(0, 0, 0, 40);
 						reportPaddedView.Padding = 5f;
-						reportPaddedView.NestedView.Text = Report.ReportName.ToUpper();
+						reportPaddedView.NestedView.Text = "the report"; //Report.ReportName.ToUpper();
 						reportPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
 						reportPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
 						reportPaddedView.setStyle();
@@ -223,14 +223,14 @@ namespace DynaPad
 						webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
 
 						var dps = new DynaPadService.DynaPadService();
-						string report = dps.GenerateReport(SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", Report.FormId);
+						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", "24");
 						//string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
 						//var asdf = SelectedAppointment.ApptPatientId;
 
 						//var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
 						var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
 						//var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
-						webView.LoadRequest(new NSUrlRequest(new NSUrl(myurl)));
+						webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
 						webView.ScalesPageToFit = true;
 
 						reportSection.Add(webView);
@@ -565,6 +565,11 @@ namespace DynaPad
 
 									if (opt.ConditionTriggerIds != null && opt.ConditionTriggerIds.Count > 0)
 									{
+										if (question.ActiveTriggerIds == null)
+										{
+											question.ActiveTriggerIds = new List<string>();
+										}
+										question.ActiveTriggerIds.AddRange(opt.ConditionTriggerIds);
 										ConditionalCheck(null, opt.ConditionTriggerIds, sectionId);
 									}
 								}
@@ -760,16 +765,16 @@ namespace DynaPad
 			{
 				var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
 
-				if (activeTriggerIds != null && activeTriggerIds.Count > 0)
+				if (activeTriggerIds != null && activeTriggerIds.Count > 0 && !string.IsNullOrEmpty(activeTriggerIds[0]))
 				{
-					var untriggeredQuestions = sectionQuestions.SectionQuestions.FindAll(((obj) => activeTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId)));
+					var untriggeredQuestions = sectionQuestions.SectionQuestions.FindAll(((obj) => activeTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId) && !string.IsNullOrEmpty(((dynamic)obj).ParentConditionTriggerId)));
 
 					TriggerCheck(untriggeredQuestions, false, sectionId);
 				}
 
-				if (newTriggerIds != null && newTriggerIds.Count > 0)
+				if (newTriggerIds != null && newTriggerIds.Count > 0 && !string.IsNullOrEmpty(newTriggerIds[0]))
 				{
-					var triggeredQuestions = sectionQuestions.SectionQuestions.FindAll(((obj) => newTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId)));
+					var triggeredQuestions = sectionQuestions.SectionQuestions.FindAll(((obj) => newTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId) && !string.IsNullOrEmpty(((dynamic)obj).ParentConditionTriggerId)));
 
 					TriggerCheck(triggeredQuestions, true, sectionId);
 				}
@@ -786,14 +791,14 @@ namespace DynaPad
 			{
 				if (qOption.Chosen)
 				{
-					if (qOption.ConditionTriggerIds != null && qOption.ConditionTriggerIds.Count > 0)
+					if (qOption.ConditionTriggerIds != null && qOption.ConditionTriggerIds.Count > 0 && !string.IsNullOrEmpty(qOption.ConditionTriggerIds[0]))
 					{
 						triggeredQuestions.AddRange(sectionQuestions.SectionQuestions.FindAll(((obj) => qOption.ConditionTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId))));
 					}
 				}
 				else
 				{
-					if (qOption.ConditionTriggerIds != null && qOption.ConditionTriggerIds.Count > 0)
+					if (qOption.ConditionTriggerIds != null && qOption.ConditionTriggerIds.Count > 0 && !string.IsNullOrEmpty(qOption.ConditionTriggerIds[0]))
 					{
 						untriggeredQuestions.AddRange(sectionQuestions.SectionQuestions.FindAll(((obj) => qOption.ConditionTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId))));
 					}
