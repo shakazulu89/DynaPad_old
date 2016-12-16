@@ -250,6 +250,18 @@
     <BundleResource Include="preset_section_Chinese.json" />
     <BundleResource Include="preset_section_Russian.json" />
     <BundleResource Include="MenuD.json" />
+    <BundleResource Include="images\Circled Play-20.png" />
+    <BundleResource Include="images\Create New-20.png" />
+    <BundleResource Include="images\Pause-20.png" />
+    <BundleResource Include="images\Play-20.png" />
+    <BundleResource Include="images\Plus-20.png" />
+    <BundleResource Include="images\Record-20.png" />
+    <BundleResource Include="images\Save-20.png" />
+    <BundleResource Include="images\Stop-20.png" />
+    <BundleResource Include="images\Video File-20.png" />
+    <BundleResource Include="images\Voice Recognition Scan-20.png" />
+    <BundleResource Include="images\Print-20.png" />
+    <BundleResource Include="images\Password-20.png" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />

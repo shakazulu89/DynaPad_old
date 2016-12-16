@@ -5,13 +5,12 @@ using CoreGraphics;
 using Foundation;
 using MonoTouch.Dialog;
 using UIKit;
-using FloatLabeledEntry;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.ComponentModel;
 
 namespace DynaPad
 {
+
+
 	class MyRadioElement : RadioElement
 	{
 		public MyRadioElement(string cCaption, string cGroup) : base(cCaption, cGroup) { Group = cGroup; }
@@ -29,6 +28,7 @@ namespace DynaPad
 
 		public event EventHandler<EventArgs> OnSelected;
 	}
+
 
 
 	public class DebugRadioElement : RadioElement
@@ -50,8 +50,6 @@ namespace DynaPad
 
 		static public event EventHandler<EventArgs> OnSelected;
 	}
-
-
 
 
 
@@ -173,6 +171,7 @@ namespace DynaPad
 	}
 
 
+
 	public class DynaSection : Section
 	{
 		public bool Enabled;
@@ -234,9 +233,7 @@ namespace DynaPad
 			cell.ContentView.AutosizesSubviews = false;
 			cell.UserInteractionEnabled = Enabled;
 			return cell;
-
 		}
-
 	}
 
 
@@ -341,7 +338,6 @@ namespace DynaPad
 
 			base.PrepareDialogViewController(dvc);
 		}
-
 	}
 
 
@@ -358,7 +354,7 @@ namespace DynaPad
 		public string DoctorID { get; set; }
 		public string LocationID { get; set; }
 		public string ApptID { get; set; }
-		public List<QShortForm> ApptShortForms { get; set; }
+		public List<Report> ApptReports { get; set; }
 		public Group thisGroup { get; set; }
 
 		public DynaFormRootElement(string caption) : base(caption)
@@ -425,14 +421,12 @@ namespace DynaPad
 
 			base.PrepareDialogViewController(dvc);
 		}
-
 	}
 
 
 
 	public class DynaEntryElement : EntryElement
 	{
-
 		public DynaEntryElement(string cCaption, string cPlaceHolder, string cValue) : base(cCaption, cPlaceHolder, cValue) { }
 
 		public bool Enabled;
@@ -466,16 +460,13 @@ namespace DynaPad
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.LightTextColor;
 			}
- 			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			Section s = Parent as Section;  			SizeF max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (System.Drawing.SizeF)size; 				} 			} 			s.EntryAlignment = new SizeF(25 + Math.Min(max.Width, 160), max.Height);  			return (System.Drawing.SizeF)s.EntryAlignment; 		}  
-
+ 			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			} 			s.EntryAlignment = new SizeF(25 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
 	}
-
 
 
 
 	public class DynaBooleanElement : BooleanElement
 	{
-
 		public DynaBooleanElement(string cCaption, bool cValue) : base(cCaption, cValue) { }
 
 		public bool Enabled;
@@ -523,7 +514,7 @@ namespace DynaPad
 		{
 			var cell = base.GetCell(tv);
 			cell.ContentView.AutosizesSubviews = false;
-			UISwitch switchy = cell.AccessoryView as UISwitch;
+			var switchy = cell.AccessoryView as UISwitch;
 			switchy.OnTintColor = UIColor.Green;
 			cell.TextLabel.TextColor = UIColor.Black;
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
@@ -547,11 +538,8 @@ namespace DynaPad
 
 
 
-
-
 	public class DynaRadioElement : RadioElement
 	{
-
 		public DynaRadioElement(string cCaption, string cGroup) : base(cCaption, cGroup) { Group = cGroup; }
 
 		public bool Enabled;
@@ -595,8 +583,6 @@ namespace DynaPad
 		public event EventHandler<EventArgs> OnSelected;
 		public event EventHandler<EventArgs> OnDeselected;
 	}
-
-
 
 
 
@@ -651,8 +637,6 @@ namespace DynaPad
 		public event EventHandler<EventArgs> OnSelected;
 		public event EventHandler<EventArgs> OnDeselected;
 	}
-
-
 
 
 
@@ -751,9 +735,7 @@ namespace DynaPad
 
 			return null;
 		}
-
 	}
-
 
 
 
@@ -905,8 +887,7 @@ namespace DynaPad
 			}
 		}
 	}
-   	public class DynaDateElement : DateElement 	{ 		public bool Enabled; 		public string ConditionTriggerId; 		public string ActiveTriggerId = ""; 		public List<QuestionOption> QuestionOptions; 		public List<QuestionOption> QuestionAnswers; 		public string QuestionId { get; set; } 		public string QuestionParentId { get; set; } 		public string QuestionText { get; set; } 		public string QuestionType { get; set; } 		public string QuestionKeyboardType { get; set; } 		public bool Answered { get; set; } 		public bool Disabled { get; set; } 		public string AnswerId { get; set; } 		public string AnswerText { get; set; } 		public string ParentConditionTriggerId { get; set; } 		public bool IsConditional { get; set; }  		public DynaDateElement(string caption, DateTime date) : base(caption, date) 		{ 			fmt.DateStyle = NSDateFormatterStyle.Medium; 		} 		public override UIDatePicker CreatePicker() 		{ 			UIDatePicker futureDatePicker = base.CreatePicker(); 			futureDatePicker.BackgroundColor = UIColor.White; 			futureDatePicker.MinimumDate = (NSDate)DateTime.Today; 			return futureDatePicker; 		}  		public override string FormatDate(DateTime dt) 		{ 			return fmt.ToString((NSDate)GetDateWithKind(dt)); 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);  			cell.UserInteractionEnabled = Enabled;   			cell.TextLabel.TextColor = UIColor.Black; 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17); 			cell.BackgroundColor = UIColor.White;  			if (!Enabled) 			{ 				cell.TextLabel.TextColor = UIColor.LightGray; 				cell.BackgroundColor = UIColor.LightTextColor; 			}  			return cell; 		}  	}
-
+   	public class DynaDateElement : DateElement 	{ 		public bool Enabled; 		public string ConditionTriggerId; 		public string ActiveTriggerId = ""; 		public List<QuestionOption> QuestionOptions; 		public List<QuestionOption> QuestionAnswers; 		public string QuestionId { get; set; } 		public string QuestionParentId { get; set; } 		public string QuestionText { get; set; } 		public string QuestionType { get; set; } 		public string QuestionKeyboardType { get; set; } 		public bool Answered { get; set; } 		public bool Disabled { get; set; } 		public string AnswerId { get; set; } 		public string AnswerText { get; set; } 		public string ParentConditionTriggerId { get; set; } 		public bool IsConditional { get; set; }  		public DynaDateElement(string caption, DateTime date) : base(caption, date) 		{ 			fmt.DateStyle = NSDateFormatterStyle.Medium; 		} 		public override UIDatePicker CreatePicker() 		{ 			UIDatePicker futureDatePicker = base.CreatePicker(); 			futureDatePicker.BackgroundColor = UIColor.White; 			futureDatePicker.MinimumDate = (NSDate)DateTime.Today; 			return futureDatePicker; 		}  		public override string FormatDate(DateTime dt) 		{ 			return fmt.ToString((NSDate)GetDateWithKind(dt)); 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);  			cell.UserInteractionEnabled = Enabled;   			cell.TextLabel.TextColor = UIColor.Black; 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17); 			cell.BackgroundColor = UIColor.White;  			if (!Enabled) 			{ 				cell.TextLabel.TextColor = UIColor.LightGray; 				cell.BackgroundColor = UIColor.LightTextColor; 			}  			return cell; 		} 	}
 
 
 
@@ -1208,10 +1189,7 @@ namespace DynaPad
 				return _cell_size.Height;
 			}
 		}
-
-
-			}
-
+	}
 
 
 
@@ -1236,14 +1214,6 @@ namespace DynaPad
 
 
 
-
-
-
-
-
-	/// <summary>
-	///  Used to display a slider on the screen.
-	/// </summary>
 	public partial class FloatElementD : Element
 	{
 		public bool Enabled;
@@ -1301,7 +1271,7 @@ namespace DynaPad
 			else
 				RemoveTag(cell, 1);
 
-			CGSize captionSize = new CGSize(0, 0);
+			var captionSize = new CGSize(0, 0);
 			if (Caption != null && ShowCaption)
 			{
 				cell.TextLabel.Text = Caption;
@@ -1372,9 +1342,65 @@ namespace DynaPad
 
 
 
+	public class LoadingOverlay : UIView
+	{
+		// control declarations
+		UIActivityIndicatorView activitySpinner;
+		UILabel loadingLabel;
 
+		public LoadingOverlay(CGRect frame) : base(frame)
+		{
+			// configurable bits
+			BackgroundColor = UIColor.Black;
+			Alpha = 0.75f;
+			AutoresizingMask = UIViewAutoresizing.All;
 
+			nfloat labelHeight = 22;
+			nfloat labelWidth = Frame.Width - 20;
 
+			// derive the center x and y
+			nfloat centerX = Frame.Width / 2;
+			nfloat centerY = Frame.Height / 2;
+
+			// create the activity spinner, center it horizontall and put it 5 points above center x
+			activitySpinner = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
+			activitySpinner.Frame = new CGRect(
+				centerX - (activitySpinner.Frame.Width / 2),
+				centerY - activitySpinner.Frame.Height - 20,
+				activitySpinner.Frame.Width,
+				activitySpinner.Frame.Height);
+			activitySpinner.AutoresizingMask = UIViewAutoresizing.All;
+			AddSubview(activitySpinner);
+			activitySpinner.StartAnimating();
+
+			// create and configure the "Loading Data" label
+			loadingLabel = new UILabel(new CGRect(
+				centerX - (labelWidth / 2),
+				centerY + 20,
+				labelWidth,
+				labelHeight
+				));
+			loadingLabel.BackgroundColor = UIColor.Clear;
+			loadingLabel.TextColor = UIColor.White;
+			loadingLabel.Text = "Loading Data...";
+			loadingLabel.TextAlignment = UITextAlignment.Center;
+			loadingLabel.AutoresizingMask = UIViewAutoresizing.All;
+			AddSubview(loadingLabel);
+
+		}
+
+		/// <summary>
+		/// Fades out the control and then removes it from the super view
+		/// </summary>
+		public void Hide()
+		{
+			UIView.Animate(
+				0.5, // duration
+				() => { Alpha = 0; },
+				() => { RemoveFromSuperview(); }
+			);
+		}
+	}
 
 
 }

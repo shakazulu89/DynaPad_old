@@ -1,13 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Json;
 using Foundation;
-using MonoTouch.Dialog;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UIKit;
-//using Xamarin.Themes;
 
 namespace DynaPad
 {
@@ -24,11 +16,10 @@ namespace DynaPad
 			set;
 		}
 
-
 		//UINavigationController navigation;
 		//const string footer =
-			//"These show the two sets of APIs\n" +
-			//"available in MonoTouch.Dialogs";
+		//"These show the two sets of APIs\n" +
+		//"available in MonoTouch.Dialogs";
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
@@ -43,24 +34,6 @@ namespace DynaPad
 			var navigationController = (UINavigationController)splitViewController.ViewControllers[1];
 			navigationController.TopViewController.NavigationItem.LeftBarButtonItem = splitViewController.DisplayModeButtonItem;
 			splitViewController.WeakDelegate = this;
-
-			//string origJson = File.ReadAllText("SampleForm.json");
-			//JsonHandler.OriginalFormJsonString = origJson;
-
-			//SelectedQForm.selectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
-
-			//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
-			//string origJson = dds.GetFormQuestions("35", "5", "", false);
-			//JsonHandler.OriginalFormJsonString = origJson;
-			//SelectedQForm.selectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
-
-			//JsonHandler.OriginalFormJson = JsonElement.FromFile("SampleForm.json", "3");
-			//JsonHandler.FormSections = new System.Collections.Generic.List<Section>();
-
-			//foreach (var section in JsonHandler.OriginalFormJson)
-			//{
-			//	JsonHandler.FormSections.Add(section);
-			//}
 
 			return true;
 		}

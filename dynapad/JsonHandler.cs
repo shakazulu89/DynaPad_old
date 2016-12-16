@@ -25,7 +25,7 @@ namespace DynaPad
 			set;
 		}
 
-		public static List<QShortForm> ShortForms
+		public static List<Report> ShortForms
 		{
 			get;
 			set;
