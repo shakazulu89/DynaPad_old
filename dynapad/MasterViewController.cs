@@ -44,6 +44,8 @@ namespace DynaPad
 			//};
 
 			var dds = new DynaPadService.DynaPadService();
+			var menu = dds.BuildDynaMenu("123");
+			var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
 			Menu myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
 			var rootMainMenu = new RootElement(myDynaMenu.MenuCaption);
 			var sectionMainMenu = new Section();
@@ -81,12 +83,15 @@ namespace DynaPad
 						rootMenu.createOnSelected = GetApptService;
 						break;
 					case "GetReport":
+						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadReportView("Report", mItem.MenuItemValue); }));
 						//rootMenu.createOnSelected = GetReportService;
-						Section sectionReport = new Section();  						sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));  						rootMenu.Add(sectionReport);
+						//Section sectionReport = new Section();  						//sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));  						//rootMenu.Add(sectionReport);
 						break;
 				}
-
-				sectionMenu.Add(rootMenu);
+				if (mItem.MenuItemAction != "GetReport")
+				{
+					sectionMenu.Add(rootMenu);
+				}
 
 				if (mItem.Menus == null) return null;
 
@@ -153,11 +158,11 @@ namespace DynaPad
 
 		public UIViewController GetFormService(RootElement rElement)
 		{
-			if (DetailViewController.QuestionsView != null)
-			{
-				DetailViewController.Title = "";
-				DetailViewController.QuestionsView.Clear();
-			}
+			//if (DetailViewController.QuestionsView != null)
+			//{
+			//	DetailViewController.Title = "";
+			//	DetailViewController.QuestionsView.Clear();
+			//}
 
 			var bounds = UIScreen.MainScreen.Bounds;
 			// show the loading overlay on the UI thread using the correct orientation sizing
@@ -252,8 +257,7 @@ namespace DynaPad
 			if (!IsDoctorForm)
 			{
 				messageLabel = new UILabel();
-
-				formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromFile("Images/Password-20.png"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
+				formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Lock"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
 			  	{
 				  //Create Alert
 				  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue or tap Cancel", UIAlertControllerStyle.Alert);
@@ -284,11 +288,11 @@ namespace DynaPad
 			bool isValid = password == Constants.Password;
 			if (isValid)
 			{
-				if (DetailViewController.QuestionsView != null)
-				{
-					DetailViewController.Title = "";
-					DetailViewController.QuestionsView.Clear();
-				}
+				//if (DetailViewController.QuestionsView != null)
+				//{
+				//	DetailViewController.Title = "";
+				//	DetailViewController.QuestionsView.Clear();
+				//}
 
 				NavigationController.PopViewController(true);
 			}
@@ -310,7 +314,7 @@ namespace DynaPad
 
 			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 			var dds = new DynaPadService.DynaPadService();
-			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.SelectedQForm.DoctorId, true, presetName, presetJson, SelectedAppointment.SelectedQForm.LocationId); 
+			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId); 
 		}
 
 
@@ -325,7 +329,7 @@ namespace DynaPad
 		public override void DidReceiveMemoryWarning()
 		{
 			base.DidReceiveMemoryWarning();
-			// Release any cached data, images, etc that aren't in use.
+			// Release any cached data, Resources, etc that aren't in use.
 		}
 
 

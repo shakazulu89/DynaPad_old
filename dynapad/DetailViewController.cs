@@ -139,7 +139,7 @@ namespace DynaPad
 						summarySection.Add(webViews);
 						summaryElement.Add(summarySection);
 
-						this.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromFile("Images/Print-20.png"), UIBarButtonItemStyle.Plain, (sender, args) =>
+						this.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
 						{ Print(summaryFileName, webViews); }), true);
 
 						Root = summaryElement;
@@ -236,7 +236,7 @@ namespace DynaPad
 						reportSection.Add(webView);
 						reportElement.Add(reportSection);
 
-						this.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromFile("Images/Print-20.png"), UIBarButtonItemStyle.Plain, (sender, args) =>
+						this.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
 						{ Print(SelectedAppointment.ApptFormName, webView); }), true);
 
 						Root = reportElement;
@@ -279,7 +279,7 @@ namespace DynaPad
 				if (IsDoctorForm)
 				{
 					this.NavigationItem.SetRightBarButtonItem(
-					new UIBarButtonItem(UIImage.FromFile("Images/Voice Recognition Scan-20.png"), UIBarButtonItemStyle.Plain, (sender, args) =>
+					new UIBarButtonItem(UIImage.FromBundle("Dictation"), UIBarButtonItemStyle.Plain, (sender, args) =>
 					{
 						audioFilePath = null;
 
@@ -323,13 +323,13 @@ namespace DynaPad
 						observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
 
 						var hlab = new UILabel(new CGRect(0, 0, 160, 30));
-						hlab.Text = "Dication";
+						hlab.Text = "Dictation";
 
 						var sec = new Section(hlab, CancelRecording);
 
 						var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellRecord.Frame = new CGRect(0, 0, 350, 30);
-						cellRecord.ImageView.Image = UIImage.FromFile("images/Record-20.png");
+						cellRecord.ImageView.Image = UIImage.FromBundle("Record");
 						cellRecord.ContentView.Add(StartRecordingButton);
 						cellRecord.ContentView.Add(RecordingStatusLabel);
 
@@ -337,7 +337,7 @@ namespace DynaPad
 
 						var cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellStop.Frame = new CGRect(0, 0, 350, 30);
-						cellStop.ImageView.Image = UIImage.FromFile("images/Stop-20.png");
+						cellStop.ImageView.Image = UIImage.FromBundle("Stop");
 						cellStop.ContentView.Add(StopRecordingButton);
 						cellStop.ContentView.Add(LengthOfRecordingLabel);
 
@@ -345,14 +345,14 @@ namespace DynaPad
 
 						var cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellPlay.Frame = new CGRect(0, 0, 350, 30);
-						cellPlay.ImageView.Image = UIImage.FromFile("images/Play-20.png");
+						cellPlay.ImageView.Image = UIImage.FromBundle("Play");
 						cellPlay.ContentView.Add(PlayRecordedSoundButton);
 
 						sec.Add(cellPlay);
 
 						var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellSave.Frame = new CGRect(0, 0, 350, 30);
-						cellSave.ImageView.Image = UIImage.FromFile("images/Save-20.png");
+						cellSave.ImageView.Image = UIImage.FromBundle("Save");
 						cellSave.ContentView.Add(SaveRecordedSound);
 
 						sec.Add(cellSave);
@@ -373,7 +373,7 @@ namespace DynaPad
 							var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
 							cellDict.Frame = new CGRect(0, 0, 350, 20);
 							cellDict.BackgroundColor = UIColor.LightGray;
-							cellDict.ImageView.Image = UIImage.FromFile("images/Circled Play-20.png");
+							cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 							cellDict.ContentView.Add(PlaySavedDictationButton);
 							sec.Add(cellDict);
 						}
@@ -392,18 +392,18 @@ namespace DynaPad
 						var pop = new UIPopoverController(dia);
 						pop.DidDismiss += delegate
 						{
-							//AVAudioSession.SharedInstance().Dispose();
-							session.Dispose();
-							session = null;
+							////AVAudioSession.SharedInstance().Dispose();
+							//session.Dispose();
+							//session = null;
 
-							observer.Dispose();
-							observer = null;
-							//recorder.Dispose();
-							stopwatch = null;
-							recorder = null;
-							player = null;
-							pop.Dispose();
-							pop = null;
+							//observer.Dispose();
+							//observer = null;
+							////recorder.Dispose();
+							//stopwatch = null;
+							//recorder = null;
+							//player = null;
+							//pop.Dispose();
+							//pop = null;
 							audioFilePath = null;
 						};
 
@@ -436,7 +436,7 @@ namespace DynaPad
 					int fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
 					var dds = new DynaPadService.DynaPadService();
-					var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.SelectedQForm.DoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
+					var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
 
 					var presetGroup = new RadioGroup("PresetAnswers", sectionQuestions.SectionSelectedTemplateId);
 					var presetsRoot = new DynaRootElement("Preset Answers", presetGroup);
@@ -464,16 +464,17 @@ namespace DynaPad
 					btnNewSectionPreset.SetTitle("Save New Section Preset", UIControlState.Normal);
 					btnNewSectionPreset.TouchUpInside += (sender, e) =>
 					{
+						var SavePresetPrompt = UIAlertController.Create("New Section Preset", "Necesito name", UIAlertControllerStyle.Alert);
+						SavePresetPrompt.AddTextField((field) =>
+						{
+							field.Placeholder = "Preset Name";
+						});
+						//Add Actions
+						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(SavePresetPrompt.TextFields[0].Text, sectionId)));
+						SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+						//Present Alert
+						PresentViewController(SavePresetPrompt, true, null);
 
-						/*
-						 * TODO: popup to enter preset name
-						*/
-
-						var okCancelAlertController = UIAlertController.Create("New Section Preset", "Necesito name", UIAlertControllerStyle.Alert);
-						okCancelAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));//alert => Console.WriteLine("Okay was clicked")));
-						okCancelAlertController.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));//alert => Console.WriteLine("Cancel was clicked")));
-																														   //Present Alert
-						PresentViewController(okCancelAlertController, true, null);
 					};
 
 					presetSection.Add(btnNewSectionPreset);
@@ -482,6 +483,10 @@ namespace DynaPad
 					presetsRoot.Enabled = true;
 
 					headSection.Add(presetsRoot);
+				}
+				else
+				{
+					this.NavigationItem.SetRightBarButtonItem(null, false);
 				}
 
 				QuestionsView = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName);
@@ -888,6 +893,7 @@ namespace DynaPad
 			StartRecordingButton.Enabled = true;
 			StopRecordingButton.Enabled = false;
 			PlayRecordedSoundButton.Enabled = true;
+			SaveRecordedSound.Enabled = true;
 		}
 
 
@@ -932,6 +938,7 @@ namespace DynaPad
 			StartRecordingButton.Enabled = false;
 			StopRecordingButton.Enabled = true;
 			PlayRecordedSoundButton.Enabled = false;
+			SaveRecordedSound.Enabled = false;
 		}
 
 
@@ -1057,14 +1064,14 @@ namespace DynaPad
 		void OnSaveRecordedSound(string sectionId)
 		{
 			var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
-			var array = dictationData.ToArray();
+			var dictationArray = dictationData.ToArray();
 			try
 			{
 				var dds = new DynaPadService.DynaPadService();
 				//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 
 
-				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, "123", true, SelectedAppointment.SelectedQForm.LocationId, "Roy_" + DateTime.Now.ToShortTimeString(), array);
+				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, "Roy_" + DateTime.Now.ToShortTimeString(), dictationArray);
 				System.Console.WriteLine("Saving Recording {0}", audioFilePath);
 			}
 			catch (Exception ex)
@@ -1086,6 +1093,16 @@ namespace DynaPad
 				System.Console.WriteLine("There was a problem canceling audio: ");
 				System.Console.WriteLine(ex.Message);
 			}
+		}
+
+		void SaveSectionPreset(string presetName, string sectionId)
+		{
+			// doctorid = 123 / 321
+			// locationid = 321 / 123
+
+			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+			var dds = new DynaPadService.DynaPadService();
+			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId);
 		}
 	}
 }

@@ -42,17 +42,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Distribution: Uri Harel (777L7WZ84W)</CodesignKey>
+    <CodesignKey>iPhone Distribution</CodesignKey>
     <MtouchUseSGen>true</MtouchUseSGen>
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchFloat32>true</MtouchFloat32>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchLink>Full</MtouchLink>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
-    <CodesignProvision>3c3ce0e2-141b-4bca-b07b-3ebd02b63f5e</CodesignProvision>
+    <CodesignProvision></CodesignProvision>
     <BuildIpa>false</BuildIpa>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
@@ -88,26 +88,27 @@
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchFloat32>true</MtouchFloat32>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchLink>Full</MtouchLink>
+    <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
-    <MtouchSdkVersion>10.1</MtouchSdkVersion>
+    <MtouchSdkVersion>10.2</MtouchSdkVersion>
     <CodesignProvision>3c3ce0e2-141b-4bca-b07b-3ebd02b63f5e</CodesignProvision>
     <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AdHoc|AnyCPU' ">
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\AdHoc</OutputPath>
     <DefineConstants></DefineConstants>
     <WarningLevel>4</WarningLevel>
-    <CodesignKey>iPhone Distribution: Uri Harel (777L7WZ84W)</CodesignKey>
+    <CodesignKey>iPhone Distribution</CodesignKey>
     <MtouchUseSGen>true</MtouchUseSGen>
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
-    <CodesignProvision>3c3ce0e2-141b-4bca-b07b-3ebd02b63f5e</CodesignProvision>
-    <MtouchLink>Full</MtouchLink>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
+    <CodesignProvision></CodesignProvision>
+    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchSdkVersion></MtouchSdkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -194,12 +195,47 @@
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-57x57%402x.png" />
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-60x60%402x.png" />
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-60x60%403x.png" />
+    <ImageAsset Include="Media.xcassets\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Lock.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Lock.imageset\Password-20.png" />
+    <ImageAsset Include="Media.xcassets\Dictation.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Dictation.imageset\Voice Recognition Scan-20.png" />
+    <ImageAsset Include="Media.xcassets\Play.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Play.imageset\Play-20.png" />
+    <ImageAsset Include="Media.xcassets\Pause.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Pause.imageset\Pause-20.png" />
+    <ImageAsset Include="Media.xcassets\Stop.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Stop.imageset\Stop-20.png" />
+    <ImageAsset Include="Media.xcassets\Record.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Record.imageset\Record-20.png" />
+    <ImageAsset Include="Media.xcassets\Save.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Save.imageset\Save-20.png" />
+    <ImageAsset Include="Media.xcassets\New.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\New.imageset\Create New-20.png" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Print-20.png" />
+    <ImageAsset Include="Media.xcassets\Plus.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Plus.imageset\Plus-20.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Circled Play-20.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="pdfs\" />
     <Folder Include="ApplicationData\" />
     <Folder Include="ApplicationData\pdfs\" />
+    <Folder Include="Resources\Pause-20.png" />
+    <Folder Include="Media.xcassets\Lock.imageset\" />
+    <Folder Include="Media.xcassets\Dictation.imageset\" />
+    <Folder Include="Media.xcassets\Play.imageset\" />
+    <Folder Include="Media.xcassets\Pause.imageset\" />
+    <Folder Include="Media.xcassets\Stop.imageset\" />
+    <Folder Include="Media.xcassets\Record.imageset\" />
+    <Folder Include="Media.xcassets\Save.imageset\" />
+    <Folder Include="Media.xcassets\New.imageset\" />
+    <Folder Include="Media.xcassets\Print.imageset\" />
+    <Folder Include="Media.xcassets\Plus.imageset\" />
+    <Folder Include="Media.xcassets\CircledPlay.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -250,18 +286,17 @@
     <BundleResource Include="preset_section_Chinese.json" />
     <BundleResource Include="preset_section_Russian.json" />
     <BundleResource Include="MenuD.json" />
-    <BundleResource Include="images\Circled Play-20.png" />
-    <BundleResource Include="images\Create New-20.png" />
-    <BundleResource Include="images\Pause-20.png" />
-    <BundleResource Include="images\Play-20.png" />
-    <BundleResource Include="images\Plus-20.png" />
-    <BundleResource Include="images\Record-20.png" />
-    <BundleResource Include="images\Save-20.png" />
-    <BundleResource Include="images\Stop-20.png" />
-    <BundleResource Include="images\Video File-20.png" />
-    <BundleResource Include="images\Voice Recognition Scan-20.png" />
-    <BundleResource Include="images\Print-20.png" />
-    <BundleResource Include="images\Password-20.png" />
+    <BundleResource Include="Resources\Circled Play-20.png" />
+    <BundleResource Include="Resources\Create New-20.png" />
+    <BundleResource Include="Resources\Plus-20.png" />
+    <BundleResource Include="Resources\Record-20.png" />
+    <BundleResource Include="Resources\Save-20.png" />
+    <BundleResource Include="Resources\Stop-20.png" />
+    <BundleResource Include="Resources\Video File-20.png" />
+    <BundleResource Include="Resources\Print-20.png" />
+    <BundleResource Include="Resources\Password-20.png" />
+    <BundleResource Include="Resources\Voice Recognition Scan-20.png" />
+    <BundleResource Include="Resources\Play-20.png" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />
