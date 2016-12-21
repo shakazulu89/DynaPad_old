@@ -1,0 +1,405 @@
+﻿{
+  "MenuAction": null,
+  "MenuValue": null,
+  "MenuCaption": "Dyna Menu",
+  "MenuItems": [
+    {
+      "MenuItemAction": null,
+      "MenuItemValue": null,
+      "MenuItemCaption": "Doctors",
+      "Menus": [
+        {
+          "MenuAction": null,
+          "MenuValue": null,
+          "MenuCaption": "Docs Menu",
+          "MenuItems": [
+            {
+              "MenuItemAction": null,
+              "MenuItemValue": null,
+              "MenuItemCaption": "Bazos",
+              "Menus": [
+                {
+                  "MenuAction": null,
+                  "MenuValue": null,
+                  "MenuCaption": "Bazos Menu",
+                  "MenuItems": [
+                    {
+                      "MenuItemAction": null,
+                      "MenuItemValue": null,
+                      "MenuItemCaption": "Appointments",
+                      "Menus": [
+                        {
+                          "MenuAction": null,
+                          "MenuValue": null,
+                          "MenuCaption": "Appointments Menu",
+                          "MenuItems": [
+                            {
+                              "MenuItemAction": null,
+                              "MenuItemValue": null,
+                              "MenuItemCaption": "Appt1 - 12:00",
+                              "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt1 Menu",
+                                  "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Ortho Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetDoctorForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetDoctorForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Workers Comp Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": "GetReport",
+                                      "MenuItemValue": "1",
+                                      "MenuItemCaption": "Report",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "MenuItemAction": null,
+                              "MenuItemValue": null,
+                              "MenuItemCaption": "Appt2 - 13:00",
+                              "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt2 Menu",
+                                  "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Chiro Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Ortho Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Workers Comp Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Report",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "MenuItemAction": null,
+              "MenuItemValue": null,
+              "MenuItemCaption": "Wolin",
+              "Menus": [
+                {
+                  "MenuAction": null,
+                  "MenuValue": null,
+                  "MenuCaption": "Wolin Menu",
+                  "MenuItems": [
+                    {
+                      "MenuItemAction": null,
+                      "MenuItemValue": null,
+                      "MenuItemCaption": "Appointments",
+                      "Menus": [
+                        {
+                          "MenuAction": null,
+                          "MenuValue": null,
+                          "MenuCaption": "Appointments Menu",
+                          "MenuItems": [
+                            {
+                              "MenuItemAction": null,
+                              "MenuItemValue": null,
+                              "MenuItemCaption": "Appt2 - 13:00",
+                              "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt2 Menu",
+                                  "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Chiro Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Ortho Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Workers Comp Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Report",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "MenuItemAction": null,
+                              "MenuItemValue": null,
+                              "MenuItemCaption": "Appt1 - 12:00",
+                              "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt1 Menu",
+                                  "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Chiro Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Ortho Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+                                      "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+                                          "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+                                              "Menus": null
+                                            },
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "35",
+                                              "MenuItemCaption": "Workers Comp Form",
+                                              "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Report",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+                                      "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

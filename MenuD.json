@@ -1,0 +1,442 @@
+﻿{
+  "MenuAction": null,
+  "MenuValue": null,
+  "MenuCaption": "Dyna Menu", "DoctorId": null, "LocationId": null,
+  "PatientId": null,
+  "ApptId": null, "MenuItems": [
+    {
+      "MenuItemAction": null,
+      "MenuItemValue": null,
+      "MenuItemCaption": "Doctors",
+	  "DoctorId": null, "LocationId": null, "PatientId": null,
+      "ApptId": null, "Menus": [
+        {
+          "MenuAction": null,
+          "MenuValue": null,
+          "MenuCaption": "Doctor Menu",
+		  "DoctorId": null, "LocationId": null, "PatientId": null,
+          "ApptId": null, "MenuItems": [
+            {
+              "MenuItemAction": null,
+              "MenuItemValue": null,
+              "MenuItemCaption": "Bazos",
+              "DoctorId": "123", "LocationId": "321", "PatientId": null,
+              "ApptId": null, "Menus": [
+                {
+                  "MenuAction": null,
+                  "MenuValue": null,
+                  "MenuCaption": "Bazos Menu",
+                  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+                  "ApptId": null, "MenuItems": [
+                    {
+                      "MenuItemAction": null,
+                      "MenuItemValue": null,
+                      "MenuItemCaption": "Appointments",
+              		  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+                      "ApptId": null, "Menus": [
+                        {
+                          "MenuAction": null,
+                          "MenuValue": null,
+                          "MenuCaption": "Appointments Menu",
+                  		  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+                          "ApptId": null, "MenuItems": [
+                            {
+                              "MenuItemAction": "GetAppt",
+                              "MenuItemValue": "76",
+                              "MenuItemCaption": "Appt1 - 12:00",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                              "ApptId": "1", "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt1 Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                  "ApptId": "1", "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "1", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "1", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "1", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "1", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "1", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetDoctorForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "1", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+									{
+                                      "MenuItemAction": "GetReport",
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Short Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "1", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Short Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "1", "MenuItems": [
+                                            {
+                                              "MenuItemAction": null,
+                                              "MenuItemValue": "24",
+                                              "MenuItemCaption": "Chiro Short Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "1", "Menus": null
+                                            },
+											{
+                                              "MenuItemAction": null,
+                                              "MenuItemValue": "25",
+                                              "MenuItemCaption": "Peer Short Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "1", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "1", "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "MenuItemAction": "GetAppt",
+                              "MenuItemValue": "76",
+                              "MenuItemCaption": "Appt2 - 13:00",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                              "ApptId": "2", "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt2 Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                  "ApptId": "2", "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "2", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "2", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "2", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "2", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "2", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetDoctorForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "2", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Short Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "1", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Short Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "1", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetReport",
+                                              "MenuItemValue": "24",
+                                              "MenuItemCaption": "Chiro Short Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "1", "Menus": null
+                                            },
+											{
+                                              "MenuItemAction": "GetReport",
+                                              "MenuItemValue": "25",
+                                              "MenuItemCaption": "Peer Short Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "1", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "2", "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }]
+                        }]
+                    }]
+                }]
+            },
+            {
+              "MenuItemAction": null,
+              "MenuItemValue": null,
+              "MenuItemCaption": "Wolin",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+              "ApptId": null, "Menus": [
+                {
+                  "MenuAction": null,
+                  "MenuValue": null,
+                  "MenuCaption": "Wolin Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+                  "ApptId": null, "MenuItems": [
+                    {
+                      "MenuItemAction": null,
+                      "MenuItemValue": null,
+                      "MenuItemCaption": "Appointments",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+                      "ApptId": null, "Menus": [
+                        {
+                          "MenuAction": null,
+                          "MenuValue": null,
+                          "MenuCaption": "Appointments Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": null,
+                          "ApptId": null, "MenuItems": [
+                            {
+                              "MenuItemAction": "GetAppt",
+                              "MenuItemValue": "76",
+                              "MenuItemCaption": "Appt1 - 12:00",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                              "ApptId": "3", "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt1 Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                  "ApptId": "3", "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "3", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "3", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "3", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "3", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "3", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetDoctorForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "3", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": "GetReport",
+                                      "MenuItemValue": "1",
+                                      "MenuItemCaption": "Report",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "3", "Menus": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "3", "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "MenuItemAction": "GetAppt",
+                              "MenuItemValue": "76",
+                              "MenuItemCaption": "Appt2 - 13:00",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                              "ApptId": "4", "Menus": [
+                                {
+                                  "MenuAction": null,
+                                  "MenuValue": null,
+                                  "MenuCaption": "Appt2 Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                  "ApptId": "4", "MenuItems": [
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Patient Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "4", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Patient Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "4", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "4", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Doctor Forms",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "4", "Menus": [
+                                        {
+                                          "MenuAction": null,
+                                          "MenuValue": null,
+                                          "MenuCaption": "Doctor Forms Menu",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                          "ApptId": "4", "MenuItems": [
+                                            {
+                                              "MenuItemAction": "GetDoctorForm",
+                                              "MenuItemValue": "76",
+                                              "MenuItemCaption": "Chiro Doctor Form",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                              "ApptId": "4", "Menus": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": "GetReport",
+                                      "MenuItemValue": "1",
+                                      "MenuItemCaption": "Report",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "4", "Menus": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "MenuItemAction": null,
+                                      "MenuItemValue": null,
+                                      "MenuItemCaption": "Medical Records",
+              				  "DoctorId": "123", "LocationId": "321", "PatientId": "5",
+                                      "ApptId": "4", "Menus": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }]
+                        }]
+                    }]
+                }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
