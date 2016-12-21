@@ -154,7 +154,7 @@ namespace DynaPad
 			if (!IsEnabled)
 			{
 				TextColor = UIColor.LightGray;
-				BackgroundColor = UIColor.LightTextColor;
+				BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 		}
 
@@ -320,7 +320,7 @@ namespace DynaPad
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
 			if (IsPreset)
@@ -408,7 +408,7 @@ namespace DynaPad
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
 			return cell;
@@ -458,7 +458,7 @@ namespace DynaPad
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
  			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			} 			s.EntryAlignment = new SizeF(25 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
 	}
@@ -525,7 +525,7 @@ namespace DynaPad
 			{
 				switchy.OnTintColor = UIColor.LightTextColor;
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
 			//cell.ReloadInputViews();
@@ -816,7 +816,7 @@ namespace DynaPad
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 			//cell.ImageView.Frame = new CGRect(0, 0, 0, 1);
 			//cell.ImageView.Hidden = true;
@@ -887,7 +887,7 @@ namespace DynaPad
 			}
 		}
 	}
-   	public class DynaDateElement : DateElement 	{ 		public bool Enabled; 		public string ConditionTriggerId; 		public string ActiveTriggerId = ""; 		public List<QuestionOption> QuestionOptions; 		public List<QuestionOption> QuestionAnswers; 		public string QuestionId { get; set; } 		public string QuestionParentId { get; set; } 		public string QuestionText { get; set; } 		public string QuestionType { get; set; } 		public string QuestionKeyboardType { get; set; } 		public bool Answered { get; set; } 		public bool Disabled { get; set; } 		public string AnswerId { get; set; } 		public string AnswerText { get; set; } 		public string ParentConditionTriggerId { get; set; } 		public bool IsConditional { get; set; }  		public DynaDateElement(string caption, DateTime date) : base(caption, date) 		{ 			fmt.DateStyle = NSDateFormatterStyle.Medium; 		} 		public override UIDatePicker CreatePicker() 		{ 			UIDatePicker futureDatePicker = base.CreatePicker(); 			futureDatePicker.BackgroundColor = UIColor.White; 			futureDatePicker.MinimumDate = (NSDate)DateTime.Today; 			return futureDatePicker; 		}  		public override string FormatDate(DateTime dt) 		{ 			return fmt.ToString((NSDate)GetDateWithKind(dt)); 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);  			cell.UserInteractionEnabled = Enabled;   			cell.TextLabel.TextColor = UIColor.Black; 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17); 			cell.BackgroundColor = UIColor.White;  			if (!Enabled) 			{ 				cell.TextLabel.TextColor = UIColor.LightGray; 				cell.BackgroundColor = UIColor.LightTextColor; 			}  			return cell; 		} 	}
+   	public class DynaDateElement : DateElement 	{ 		public bool Enabled; 		public string ConditionTriggerId; 		public string ActiveTriggerId = ""; 		public List<QuestionOption> QuestionOptions; 		public List<QuestionOption> QuestionAnswers; 		public string QuestionId { get; set; } 		public string QuestionParentId { get; set; } 		public string QuestionText { get; set; } 		public string QuestionType { get; set; } 		public string QuestionKeyboardType { get; set; } 		public bool Answered { get; set; } 		public bool Disabled { get; set; } 		public string AnswerId { get; set; } 		public string AnswerText { get; set; } 		public string ParentConditionTriggerId { get; set; } 		public bool IsConditional { get; set; }  		public DynaDateElement(string caption, DateTime date) : base(caption, date) 		{ 			fmt.DateStyle = NSDateFormatterStyle.Medium; 		} 		public override UIDatePicker CreatePicker() 		{ 			UIDatePicker futureDatePicker = base.CreatePicker(); 			futureDatePicker.BackgroundColor = UIColor.White; 			futureDatePicker.MinimumDate = (NSDate)DateTime.Today; 			return futureDatePicker; 		}  		public override string FormatDate(DateTime dt) 		{ 			return fmt.ToString((NSDate)GetDateWithKind(dt)); 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);  			cell.UserInteractionEnabled = Enabled;   			cell.TextLabel.TextColor = UIColor.Black; 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17); 			cell.BackgroundColor = UIColor.White;  			if (!Enabled) 			{ 				cell.TextLabel.TextColor = UIColor.LightGray; 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor; 			}  			return cell; 		} 	}
 
 
 
@@ -1101,7 +1101,7 @@ namespace DynaPad
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
 				return cell;
@@ -1316,7 +1316,7 @@ namespace DynaPad
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
-				cell.BackgroundColor = UIColor.LightTextColor;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
 			return cell;

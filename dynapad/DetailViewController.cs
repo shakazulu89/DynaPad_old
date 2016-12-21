@@ -122,7 +122,7 @@ namespace DynaPad
 
 						var summarySection = new DynaSection("SUMARRY");
 						summarySection.HeaderView = summaryPaddedView;
-						summarySection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+						summarySection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 						summarySection.FooterView.Hidden = true;
 
 						var dds = new DynaPadService.DynaPadService();
@@ -161,7 +161,7 @@ namespace DynaPad
 
 						var rootSection = new DynaSection("FINALIZE FORM");
 						rootSection.HeaderView = rootPaddedView;
-						rootSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+						rootSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 						rootSection.FooterView.Hidden = true;
 
 						var sigPad = new SignaturePad.SignaturePadView(new CGRect(0, 0, View.Frame.Width, 300));
@@ -215,7 +215,7 @@ namespace DynaPad
 
 						var reportSection = new DynaSection("REPORT");
 						reportSection.HeaderView = reportPaddedView;
-						reportSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+						reportSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 						reportSection.FooterView.Hidden = true;
 
 						var bb = View.Frame;
@@ -273,7 +273,7 @@ namespace DynaPad
 
 				var headSection = new DynaSection(sectionQuestions.SectionName);
 				headSection.HeaderView = headPaddedView;
-				headSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+				headSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 				headSection.FooterView.Hidden = true;
 
 				if (IsDoctorForm)
@@ -430,7 +430,7 @@ namespace DynaPad
 					var presetSection = new DynaSection("Preset Answers");
 					presetSection.Enabled = true;
 					presetSection.HeaderView = presetPaddedView;
-					presetSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+					presetSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 					presetSection.FooterView.Hidden = true;
 
 					int fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
@@ -508,10 +508,11 @@ namespace DynaPad
 							checkPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							checkPaddedView.Padding = 5f;
 							checkPaddedView.NestedView.Text = question.QuestionText.ToUpper();
+							checkPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
 							checkPaddedView.setStyle();
 
 							qSection.HeaderView = checkPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 							qSection.FooterView.Hidden = true;
 
 							foreach (QuestionOption opt in question.QuestionOptions)
@@ -544,10 +545,11 @@ namespace DynaPad
 							radioPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							radioPaddedView.Padding = 5f;
 							radioPaddedView.NestedView.Text = question.QuestionText.ToUpper();
+							radioPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
 							radioPaddedView.setStyle();
 
 							qSection.HeaderView = radioPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 							qSection.FooterView.Hidden = true;
 
 							foreach (QuestionOption opt in question.QuestionOptions)
@@ -603,10 +605,11 @@ namespace DynaPad
 							textPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							textPaddedView.Padding = 5f;
 							textPaddedView.NestedView.Text = question.QuestionText.ToUpper();
+							textPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
 							textPaddedView.setStyle();
 
 							qSection.HeaderView = textPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 							qSection.FooterView.Hidden = true;
 
 							qSection.Add(entryElement);
@@ -630,10 +633,11 @@ namespace DynaPad
 							datePaddedView.Frame = new CGRect(0, 0, 0, 30);
 							datePaddedView.Padding = 5f;
 							datePaddedView.NestedView.Text = question.QuestionText.ToUpper();
+							datePaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
 							datePaddedView.setStyle();
 
 							qSection.HeaderView = datePaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 							qSection.FooterView.Hidden = true;
 
 							qSection.Add(dateElement);
@@ -698,10 +702,11 @@ namespace DynaPad
 							amountPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							amountPaddedView.Padding = 5f;
 							amountPaddedView.NestedView.Text = question.QuestionText.ToUpper();
+							amountPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
 							amountPaddedView.setStyle();
 
 							qSection.HeaderView = amountPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 1));
+							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 							qSection.FooterView.Hidden = true;
 
 							qSection.Add(sliderElement);
