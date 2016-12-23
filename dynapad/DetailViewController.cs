@@ -61,7 +61,7 @@ namespace DynaPad
 				var dds = new DynaPadService.DynaPadService();
 				dds.SubmitFormAnswers(finalJson, true, false);
 
-				SetDetailItem(new Section("Summary"), "Summary", null, false);
+				SetDetailItem(new Section("Summary"), "Summary", "", null, false);
 			}
 			else
 			{
@@ -94,7 +94,7 @@ namespace DynaPad
 		}
 
 
-		public void SetDetailItem(Section newDetailItem, string sectionId, string origSectionJson, bool IsDoctorForm)
+		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm)
 		{
 			var bounds = UIScreen.MainScreen.Bounds;
 			loadingOverlay = new LoadingOverlay(bounds);
@@ -105,7 +105,7 @@ namespace DynaPad
 			{
 				ReloadData();
 				DetailItem = newDetailItem;
-				switch (sectionId)
+				switch (context)
 				{
 					case "Summary":
 						var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
@@ -223,7 +223,7 @@ namespace DynaPad
 						webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
 
 						var dps = new DynaPadService.DynaPadService();
-						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", "24");
+						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", valueId);
 						//string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
 						//var asdf = SelectedAppointment.ApptPatientId;
 
@@ -245,7 +245,7 @@ namespace DynaPad
 						break;
 					default:
 						// Update the view
-						ConfigureView(sectionId, origSectionJson, IsDoctorForm);
+						ConfigureView(valueId, origSectionJson, IsDoctorForm);
 						break;
 				}
 			}
@@ -451,7 +451,7 @@ namespace DynaPad
 							SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
 							SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId).SectionSelectedTemplateId = presetGroup.Selected;
 
-							SetDetailItem(new Section(sectionQuestions.SectionName), sectionId, origS, IsDoctorForm);
+							SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm);
 						};
 
 						presetSection.Add(mre);

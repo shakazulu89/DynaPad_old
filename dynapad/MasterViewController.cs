@@ -83,7 +83,7 @@ namespace DynaPad
 						rootMenu.createOnSelected = GetApptService;
 						break;
 					case "GetReport":
-						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadReportView("Report", mItem.MenuItemValue); }));
+						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadReportView(mItem.MenuItemValue, "Report"); }));
 						//rootMenu.createOnSelected = GetReportService;
 						//Section sectionReport = new Section();  						//sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));  						//rootMenu.Add(sectionReport);
 						break;
@@ -242,7 +242,7 @@ namespace DynaPad
 				sectionFormSections.Add(new StringElement(fSection.SectionName, delegate { LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm); }));
 			}
 
-			sectionFormSections.Add(new StringElement("Finalize", delegate { LoadSectionView("Finalize", "Finalize", null, IsDoctorForm); }));
+			sectionFormSections.Add(new StringElement("Finalize", delegate { LoadSectionView("", "Finalize", null, IsDoctorForm); }));
 
 			rootFormSections.Add(sectionFormSections);
 
@@ -321,9 +321,9 @@ namespace DynaPad
 		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm)
 		{
 			string origSectionJson = JsonConvert.SerializeObject(OrigSection);
-			DetailViewController.SetDetailItem(new Section(sectionName), sectionId, origSectionJson, IsDoctorForm);
+			DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm);
 		}
-		void LoadReportView(string sectionId, string sectionName) 		{ 			DetailViewController.SetDetailItem(new Section(sectionName), sectionId, "", false); 		}
+		void LoadReportView(string valueId, string sectionName) 		{ 			DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false); 		}
 
 
 		public override void DidReceiveMemoryWarning()
