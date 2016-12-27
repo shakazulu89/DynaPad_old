@@ -283,6 +283,15 @@ namespace DynaPad
 					{
 						audioFilePath = null;
 
+						CancelRecording.Frame = new CGRect(0, 0, 350, 30);
+						CancelRecording.SetTitle("Close", UIControlState.Normal);
+						CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
+						//CancelRecording.TouchUpInside += OnCancelRecording;
+
+						var hlab = new UILabel(new CGRect(0, 0, 160, 30));
+						hlab.Text = "Dictation";
+						var sec = new Section(hlab, CancelRecording);
+
 						RecordingStatusLabel.Text = string.Empty;
 						RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 30);
 
@@ -312,20 +321,12 @@ namespace DynaPad
 						SaveRecordedSound.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						SaveRecordedSound.TouchUpInside += delegate
 						{
-							OnSaveRecordedSound(sectionId);
+							OnSaveRecordedSound(sectionId, sec);
 						};
-
-						CancelRecording.Frame = new CGRect(0, 0, 350, 30);
-						CancelRecording.SetTitle("Close", UIControlState.Normal);
-						CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
-						//CancelRecording.TouchUpInside += OnCancelRecording;
 
 						observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
 
-						var hlab = new UILabel(new CGRect(0, 0, 160, 30));
-						hlab.Text = "Dictation";
 
-						var sec = new Section(hlab, CancelRecording);
 
 						var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellRecord.Frame = new CGRect(0, 0, 350, 30);
@@ -392,18 +393,18 @@ namespace DynaPad
 						var pop = new UIPopoverController(dia);
 						pop.DidDismiss += delegate
 						{
-							////AVAudioSession.SharedInstance().Dispose();
-							//session.Dispose();
-							//session = null;
+							//AVAudioSession.SharedInstance().Dispose();
+							session.Dispose();
+							session = null;
 
-							//observer.Dispose();
-							//observer = null;
-							////recorder.Dispose();
-							//stopwatch = null;
-							//recorder = null;
-							//player = null;
-							//pop.Dispose();
-							//pop = null;
+							observer.Dispose();
+							observer = null;
+							//recorder.Dispose();
+							stopwatch = null;
+							recorder = null;
+							player = null;
+							pop.Dispose();
+							pop = null;
 							audioFilePath = null;
 						};
 
@@ -442,6 +443,22 @@ namespace DynaPad
 					var presetsRoot = new DynaRootElement("Preset Answers", presetGroup);
 					presetsRoot.IsPreset = true;
 
+					var noPresetRadio = new MyRadioElement("No Preset", "PresetAnswers");
+					noPresetRadio.OnSelected += delegate (object sender, EventArgs e)
+					{
+						string presetJson = origS;
+						SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
+						var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+						if (selectedSection != null)
+						{
+							selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
+						}
+
+						SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm);
+					};
+
+					presetSection.Add(noPresetRadio);
+
 					foreach (string[] arrPreset in FormPresetNames)
 					{
 						var mre = new MyRadioElement(arrPreset[1], "PresetAnswers");
@@ -449,7 +466,11 @@ namespace DynaPad
 						{
 							string presetJson = arrPreset[2];
 							SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
-							SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId).SectionSelectedTemplateId = presetGroup.Selected;
+							var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+							if (selectedSection != null)
+							{
+								selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
+							}
 
 							SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm);
 						};
@@ -626,7 +647,9 @@ namespace DynaPad
 							dateElement.Alignment = UITextAlignment.Left;
 							dateElement.QuestionId = question.QuestionId;
 							dateElement.ConditionTriggerId = question.ParentConditionTriggerId;
-							//dateElement.DateSelected += (obj) => { question.AnswerText = dateElement.DateValue.ToString(); };
+							dateElement.DateSelected += delegate {
+								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();	
+							};
 
 							var datePaddedView = new PaddedUIView<UILabel>();
 							datePaddedView.Enabled = enabled;
@@ -651,6 +674,7 @@ namespace DynaPad
 						case "Weight":
 						case "Amount":
 						case "Numeric":
+						case "Slider":
 
 							/*
 							 *  TODO: options: UIStepper, Slider, Segmented Controls
@@ -688,7 +712,7 @@ namespace DynaPad
 								qanswer = Convert.ToInt32(question.AnswerText);
 							}
 
-							var sliderElement = new FloatElementD(qanswer);
+							var sliderElement = new DynaSlider(qanswer, question);
 							sliderElement.MinValue = questionmin;
 							sliderElement.MaxValue = questionmax;
 							sliderElement.ShowCaption = true;
@@ -950,8 +974,8 @@ namespace DynaPad
 		NSUrl CreateOutputUrl()
 		{
 			string fileName = string.Format("Myfile{0}.aac", DateTime.Now.ToString("yyyyMMddHHmmss"));
-			string tempRecording = Path.Combine(Path.GetTempPath(), fileName);
-
+			//string tempRecording = Path.Combine(Path.GetTempPath(), fileName);
+			string tempRecording = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), fileName);
 			return NSUrl.FromFilename(tempRecording);
 		}
 
@@ -1025,7 +1049,7 @@ namespace DynaPad
 				SampleRate = 44100,
 				Format = AudioToolbox.AudioFormatType.MPEG4AAC,
 				NumberChannels = 1,
-				AudioQuality = AVAudioQuality.High
+				AudioQuality = AVAudioQuality.High,
 			};
 
 			//Set recorder parameters
@@ -1038,11 +1062,18 @@ namespace DynaPad
 			}
 
 			//Set Recorder to Prepare To Record
-			if (!recorder.PrepareToRecord())
+			try
 			{
-				recorder.Dispose();
-				recorder = null;
-				return false;
+				if (!recorder.PrepareToRecord())
+				{
+					recorder.Dispose();
+					recorder = null;
+					return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine("record error: " + ex.Message);
 			}
 
 			recorder.FinishedRecording += OnFinishedRecording;
@@ -1066,7 +1097,7 @@ namespace DynaPad
 		}
 
 
-		void OnSaveRecordedSound(string sectionId)
+		void OnSaveRecordedSound(string sectionId, Section dicSec)
 		{
 			var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
 			var dictationArray = dictationData.ToArray();
@@ -1078,6 +1109,29 @@ namespace DynaPad
 
 				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, "Roy_" + DateTime.Now.ToShortTimeString(), dictationArray);
 				System.Console.WriteLine("Saving Recording {0}", audioFilePath);
+
+				var dps = new DynaPadService.DynaPadService();
+				var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
+				dicSec.RemoveRange(4, dicSec.Elements.Count - 4);
+
+				foreach (string[] dictation in dictations)
+				{
+					var PlaySavedDictationButton = new UIButton();
+					PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 20);
+					PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
+					PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+					PlaySavedDictationButton.TouchUpInside += delegate
+					{
+						OnPlaySavedDictation(dictation[1], dictation[2]);
+					};
+					var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+					cellDict.Frame = new CGRect(0, 0, 350, 20);
+					cellDict.BackgroundColor = UIColor.LightGray;
+					cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
+					cellDict.ContentView.Add(PlaySavedDictationButton);
+					dicSec.Add(cellDict);
+				}
+
 			}
 			catch (Exception ex)
 			{
@@ -1105,7 +1159,10 @@ namespace DynaPad
 			// doctorid = 123 / 321
 			// locationid = 321 / 123
 
-			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+			var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+			int fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
+
+			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
 			var dds = new DynaPadService.DynaPadService();
 			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId);
 		}

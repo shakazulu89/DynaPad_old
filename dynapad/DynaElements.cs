@@ -1214,7 +1214,7 @@ namespace DynaPad
 
 
 
-	public partial class FloatElementD : Element
+	public partial class DynaSlider : Element
 	{
 		public bool Enabled;
 		public string ConditionTriggerId;
@@ -1233,6 +1233,7 @@ namespace DynaPad
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
 
+		public SectionQuestion SQuestion;
 		public bool ShowCaption;
 		public float Value;
 		public float MinValue, MaxValue;
@@ -1240,17 +1241,21 @@ namespace DynaPad
 		//UIImage Left, Right;
 		UISlider slider;
 
-		public FloatElementD(float value) : this(null, null, value)
+		public DynaSlider(float value, SectionQuestion sQuestion) : this(null, null, value, sQuestion)
 		{
+			Value = value;
+			SQuestion = sQuestion;
 		}
 
-		public FloatElementD(UIImage left, UIImage right, float value) : base(null)
+		public DynaSlider(UIImage left, UIImage right, float value, SectionQuestion sQuestion) : base(null)
 		{
 			//Left = left;
 			//Right = right;
 			MinValue = 0;
 			MaxValue = 1;
 			Value = value;
+			SQuestion = sQuestion;
+				
 		}
 
 		protected override NSString CellKey
@@ -1294,6 +1299,7 @@ namespace DynaPad
 				slider.ValueChanged += delegate
 				{
 					Value = (int)slider.Value;
+					SQuestion.AnswerText = Value.ToString();
 					this.AnswerText = Value.ToString();
 					Caption = Value.ToString();
 					captionSize = Caption.StringSize(UIFont.FromName(cell.TextLabel.Font.Name, UIFont.LabelFontSize));

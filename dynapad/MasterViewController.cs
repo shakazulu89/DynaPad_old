@@ -112,7 +112,7 @@ namespace DynaPad
 			if (DetailViewController.QuestionsView != null)
 			{
 				DetailViewController.Title = "";
-				DetailViewController.QuestionsView.Clear();
+				DetailViewController.QuestionsView = null; //.Clear();
 			}
 
 			var dfElemet = (DynaFormRootElement)rElement;
@@ -132,7 +132,7 @@ namespace DynaPad
 			if (DetailViewController.QuestionsView != null)
 			{
 				DetailViewController.Title = "";
-				DetailViewController.QuestionsView.Clear();
+				DetailViewController.QuestionsView = null; //.Clear();
 			}
 
 			var dfElemet = (DynaFormRootElement)rElement;
@@ -158,11 +158,11 @@ namespace DynaPad
 
 		public UIViewController GetFormService(RootElement rElement)
 		{
-			//if (DetailViewController.QuestionsView != null)
-			//{
-			//	DetailViewController.Title = "";
-			//	DetailViewController.QuestionsView.Clear();
-			//}
+			if (DetailViewController.QuestionsView != null)
+			{
+				DetailViewController.Title = "";
+				DetailViewController.QuestionsView = null; //.Clear();
+			}
 
 			var bounds = UIScreen.MainScreen.Bounds;
 			// show the loading overlay on the UI thread using the correct orientation sizing
@@ -185,12 +185,24 @@ namespace DynaPad
 				 * TODO: make presets password protected (maybe not, since for doctors only?)! (maybe component: Passcode)
 				*/
 
-				var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptPatientId, true, SelectedAppointment.ApptLocationId);
+				var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
 				var formPresetSection = new DynaSection("Form Preset Answers");
 				formPresetSection.Enabled = true;
 				var formPresetGroup = new RadioGroup("FormPresetAnswers", SelectedAppointment.SelectedQForm.FormSelectedTemplateId);
 				var formPresetsRoot = new DynaRootElement("Preset Answers", formPresetGroup);
 				formPresetsRoot.IsPreset = true;
+
+
+				var noPresetRadio = new MyRadioElement("No Preset", "FormPresetAnswers");
+				noPresetRadio.OnSelected += delegate (object sender, EventArgs e)
+				{
+					JsonHandler.OriginalFormJsonString = origJson;
+					SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
+
+					LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+				};
+				formPresetSection.Add(noPresetRadio);
+
 
 				foreach(string[] arrPreset in FormPresetNames)
 				{
@@ -224,7 +236,7 @@ namespace DynaPad
 						field.Placeholder = "Preset Name";
 					});
 					//Add Actions
-					SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SavePreset(SavePresetPrompt.TextFields[0].Text)));
+					SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveFormPreset(SavePresetPrompt.TextFields[0].Text)));
 					SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 					//Present Alert
 					PresentViewController(SavePresetPrompt, true, null);
@@ -288,11 +300,11 @@ namespace DynaPad
 			bool isValid = password == Constants.Password;
 			if (isValid)
 			{
-				//if (DetailViewController.QuestionsView != null)
-				//{
-				//	DetailViewController.Title = "";
-				//	DetailViewController.QuestionsView.Clear();
-				//}
+				if (DetailViewController.QuestionsView != null)
+				{
+					DetailViewController.Title = "";
+					DetailViewController.QuestionsView = null; //.Clear();
+				}
 
 				NavigationController.PopViewController(true);
 			}
@@ -307,7 +319,7 @@ namespace DynaPad
 		}
 
 
-		void SavePreset(string presetName)
+		void SaveFormPreset(string presetName)
 		{
 			// doctorid = 123 / 321
 			// locationid = 321 / 123
