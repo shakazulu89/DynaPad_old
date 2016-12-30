@@ -974,8 +974,8 @@ namespace DynaPad
 		NSUrl CreateOutputUrl()
 		{
 			string fileName = string.Format("Myfile{0}.aac", DateTime.Now.ToString("yyyyMMddHHmmss"));
-			//string tempRecording = Path.Combine(Path.GetTempPath(), fileName);
-			string tempRecording = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), fileName);
+			string tempRecording = Path.Combine(Path.GetTempPath(), fileName);
+			//string tempRecording = Path.Combine(Environment.GetFolderPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), fileName);
 			return NSUrl.FromFilename(tempRecording);
 		}
 

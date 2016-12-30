@@ -35,5 +35,7 @@
 	<string>Assets.xcassets/AppIcons.appiconset</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.dynadox.dynapad</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>DynaPad needs to access the microphone in order for dictation to work.</string>
 </dict>
 </plist>
