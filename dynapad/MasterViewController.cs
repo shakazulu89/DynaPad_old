@@ -230,7 +230,7 @@ namespace DynaPad
 					*/
 
 					//Create Alert
-					var SavePresetPrompt = UIAlertController.Create("New Form Preset", "Necesito name", UIAlertControllerStyle.Alert);
+					var SavePresetPrompt = UIAlertController.Create("New Form Preset", "Enter preset name: ", UIAlertControllerStyle.Alert);
 					SavePresetPrompt.AddTextField((field) =>
 					{
 						field.Placeholder = "Preset Name";

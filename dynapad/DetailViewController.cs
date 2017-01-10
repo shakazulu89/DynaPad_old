@@ -50,7 +50,7 @@ namespace DynaPad
 		}
 
 
-		void SubmitForm(string password)
+		void SubmitForm(string password, bool isDoctorForm)
 		{
 			bool isValid = password == Constants.Password;
 			if (isValid)
@@ -59,7 +59,7 @@ namespace DynaPad
 				//var dt = (DataTable)JsonConvert.DeserializeObject(finalJson, (typeof(DataTable)));
 				//var table =  JsonConvert.DeserializeObject<DataTable>(finalJson);
 				var dds = new DynaPadService.DynaPadService();
-				dds.SubmitFormAnswers(finalJson, true, false);
+				dds.SubmitFormAnswers(finalJson, true, isDoctorForm);
 
 				SetDetailItem(new Section("Summary"), "Summary", "", null, false);
 			}
@@ -184,7 +184,7 @@ namespace DynaPad
 								field.Placeholder = "Password";
 							});
 							SubmitPrompt.Add(messageLabel);
-							SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text)));
+							SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm)));
 							SubmitPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 							//Present Alert
 							PresentViewController(SubmitPrompt, true, null);
@@ -485,7 +485,7 @@ namespace DynaPad
 					btnNewSectionPreset.SetTitle("Save New Section Preset", UIControlState.Normal);
 					btnNewSectionPreset.TouchUpInside += (sender, e) =>
 					{
-						var SavePresetPrompt = UIAlertController.Create("New Section Preset", "Necesito name", UIAlertControllerStyle.Alert);
+						var SavePresetPrompt = UIAlertController.Create("New Section Preset", "Enter preset name: ", UIAlertControllerStyle.Alert);
 						SavePresetPrompt.AddTextField((field) =>
 						{
 							field.Placeholder = "Preset Name";
