@@ -172,7 +172,7 @@ namespace DynaPad
 
 			var dds = new DynaPadService.DynaPadService();
 			var dfElemet = (DynaFormRootElement)rElement;
-			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.PatientID, dfElemet.ApptID, dfElemet.IsDoctorForm);
+			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.PatientID, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
 			JsonHandler.OriginalFormJsonString = origJson;
 			SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 			var rootFormSections = new RootElement(SelectedAppointment.SelectedQForm.FormName);

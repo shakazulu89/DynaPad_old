@@ -452,29 +452,29 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormQuestions", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetFormQuestions(string formId, string clientId, string apptDate, bool isDocInput) {
+        public string GetFormQuestions(string formId, string clientId, string apptId, bool isDocInput) {
             object[] results = this.Invoke("GetFormQuestions", new object[] {
                         formId,
                         clientId,
-                        apptDate,
+                        apptId,
                         isDocInput});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void GetFormQuestionsAsync(string formId, string clientId, string apptDate, bool isDocInput) {
-            this.GetFormQuestionsAsync(formId, clientId, apptDate, isDocInput, null);
+        public void GetFormQuestionsAsync(string formId, string clientId, string apptId, bool isDocInput) {
+            this.GetFormQuestionsAsync(formId, clientId, apptId, isDocInput, null);
         }
         
         /// CodeRemarks
-        public void GetFormQuestionsAsync(string formId, string clientId, string apptDate, bool isDocInput, object userState) {
+        public void GetFormQuestionsAsync(string formId, string clientId, string apptId, bool isDocInput, object userState) {
             if ((this.GetFormQuestionsOperationCompleted == null)) {
                 this.GetFormQuestionsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetFormQuestionsOperationCompleted);
             }
             this.InvokeAsync("GetFormQuestions", new object[] {
                         formId,
                         clientId,
-                        apptDate,
+                        apptId,
                         isDocInput}, this.GetFormQuestionsOperationCompleted, userState);
         }
         
