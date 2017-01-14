@@ -5,9 +5,9 @@
 	<key>CFBundleName</key>
 	<string>DynaPad</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.3</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.0.3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
@@ -35,5 +35,7 @@
 	<string>Assets.xcassets/AppIcons.appiconset</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.dynadox.dynapad</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>DynaPad needs to access the microphone in order for dictation to work.</string>
 </dict>
 </plist>

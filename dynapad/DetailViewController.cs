@@ -223,7 +223,7 @@ namespace DynaPad
 						webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
 
 						var dps = new DynaPadService.DynaPadService();
-						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", valueId);
+						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", valueId);
 						//string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
 						//var asdf = SelectedAppointment.ApptPatientId;
 
@@ -293,30 +293,30 @@ namespace DynaPad
 						var sec = new Section(hlab, CancelRecording);
 
 						RecordingStatusLabel.Text = string.Empty;
-						RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 30);
+						RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 50);
 
 						LengthOfRecordingLabel.Text = string.Empty;
-						LengthOfRecordingLabel.Frame = new CGRect(210, 0, 120, 30);
+						LengthOfRecordingLabel.Frame = new CGRect(210, 0, 120, 50);
 
-						StartRecordingButton.Frame = new CGRect(20, 0, 160, 30);
+						StartRecordingButton.Frame = new CGRect(20, 0, 160, 50);
 						StartRecordingButton.TouchUpInside += OnStartRecording;
 						StartRecordingButton.SetTitle("Start Recording", UIControlState.Normal);
 						StartRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 
-						StopRecordingButton.Frame = new CGRect(20, 0, 160, 30);
+						StopRecordingButton.Frame = new CGRect(20, 0, 160, 50);
 						StopRecordingButton.SetTitle("Stop Recording", UIControlState.Normal);
 						StopRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						StopRecordingButton.TouchUpInside += OnStopRecording;
 						StopRecordingButton.Enabled = false;
 
-						PlayRecordedSoundButton.Frame = new CGRect(20, 0, 160, 30);
+						PlayRecordedSoundButton.Frame = new CGRect(20, 0, 160, 50);
 						PlayRecordedSoundButton.SetTitle("Play Recording", UIControlState.Normal);
 						PlayRecordedSoundButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
 						PlayRecordedSoundButton.Enabled = false;
 
 						SaveRecordedSound.Enabled = false;
-						SaveRecordedSound.Frame = new CGRect(20, 0, 160, 30);
+						SaveRecordedSound.Frame = new CGRect(20, 0, 160, 50);
 						SaveRecordedSound.SetTitle("Save Recording", UIControlState.Normal);
 						SaveRecordedSound.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						SaveRecordedSound.TouchUpInside += delegate
@@ -329,7 +329,7 @@ namespace DynaPad
 
 
 						var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellRecord.Frame = new CGRect(0, 0, 350, 30);
+						cellRecord.Frame = new CGRect(0, 0, 350, 50);
 						cellRecord.ImageView.Image = UIImage.FromBundle("Record");
 						cellRecord.ContentView.Add(StartRecordingButton);
 						cellRecord.ContentView.Add(RecordingStatusLabel);
@@ -337,7 +337,7 @@ namespace DynaPad
 						sec.Add(cellRecord);
 
 						var cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellStop.Frame = new CGRect(0, 0, 350, 30);
+						cellStop.Frame = new CGRect(0, 0, 350, 50);
 						cellStop.ImageView.Image = UIImage.FromBundle("Stop");
 						cellStop.ContentView.Add(StopRecordingButton);
 						cellStop.ContentView.Add(LengthOfRecordingLabel);
@@ -345,14 +345,14 @@ namespace DynaPad
 						sec.Add(cellStop);
 
 						var cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellPlay.Frame = new CGRect(0, 0, 350, 30);
+						cellPlay.Frame = new CGRect(0, 0, 350, 50);
 						cellPlay.ImageView.Image = UIImage.FromBundle("Play");
 						cellPlay.ContentView.Add(PlayRecordedSoundButton);
 
 						sec.Add(cellPlay);
 
 						var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellSave.Frame = new CGRect(0, 0, 350, 30);
+						cellSave.Frame = new CGRect(0, 0, 350, 50);
 						cellSave.ImageView.Image = UIImage.FromBundle("Save");
 						cellSave.ContentView.Add(SaveRecordedSound);
 
@@ -364,7 +364,7 @@ namespace DynaPad
 						foreach (string[] dictation in dictations)
 						{
 							var PlaySavedDictationButton = new UIButton();
-							PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 20);
+							PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 40);
 							PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
 							PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
 							PlaySavedDictationButton.TouchUpInside += delegate
@@ -372,7 +372,7 @@ namespace DynaPad
 								OnPlaySavedDictation(dictation[1], dictation[2]);
 							};
 							var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-							cellDict.Frame = new CGRect(0, 0, 350, 20);
+							cellDict.Frame = new CGRect(0, 0, 350, 40);
 							cellDict.BackgroundColor = UIColor.LightGray;
 							cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 							cellDict.ContentView.Add(PlaySavedDictationButton);
@@ -529,7 +529,8 @@ namespace DynaPad
 							checkPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							checkPaddedView.Padding = 5f;
 							checkPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							checkPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							//checkPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							checkPaddedView.Type = "Question";
 							checkPaddedView.setStyle();
 
 							qSection.HeaderView = checkPaddedView;
@@ -562,11 +563,12 @@ namespace DynaPad
 						case "Bool":
 						case "YesNo":
 							var radioPaddedView = new PaddedUIView<UILabel>();
-							radioPaddedView.Enabled = enabled;
 							radioPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							radioPaddedView.Padding = 5f;
 							radioPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							radioPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							//radioPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							radioPaddedView.Type = "Question";
+							radioPaddedView.Enabled = enabled;
 							radioPaddedView.setStyle();
 
 							qSection.HeaderView = radioPaddedView;
@@ -626,7 +628,8 @@ namespace DynaPad
 							textPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							textPaddedView.Padding = 5f;
 							textPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							textPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							//textPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							textPaddedView.Type = "Question";
 							textPaddedView.setStyle();
 
 							qSection.HeaderView = textPaddedView;
@@ -656,7 +659,8 @@ namespace DynaPad
 							datePaddedView.Frame = new CGRect(0, 0, 0, 30);
 							datePaddedView.Padding = 5f;
 							datePaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							datePaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							//datePaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							datePaddedView.Type = "Question";
 							datePaddedView.setStyle();
 
 							qSection.HeaderView = datePaddedView;
@@ -726,7 +730,8 @@ namespace DynaPad
 							amountPaddedView.Frame = new CGRect(0, 0, 0, 30);
 							amountPaddedView.Padding = 5f;
 							amountPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							amountPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							//amountPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+							amountPaddedView.Type = "Question";
 							amountPaddedView.setStyle();
 
 							qSection.HeaderView = amountPaddedView;
@@ -758,6 +763,8 @@ namespace DynaPad
 			cOption.Chosen = selected;
 
 			MultiConditionalCheck(cQuestion, sectionId);
+
+			QuestionsView.TableView.ReloadData();
 		}
 
 
@@ -771,6 +778,8 @@ namespace DynaPad
 			ConditionalCheck(rQuestion.ActiveTriggerIds, newTriggerIds, rQuestion.SectionId);
 
 			rQuestion.ActiveTriggerIds = newTriggerIds;
+
+			QuestionsView.TableView.ReloadData();
 		}
 
 
@@ -876,10 +885,18 @@ namespace DynaPad
 
 				tQuestion.IsEnabled = triggered;
 
+
 				foreach (DynaSection sec in QuestionsView)
 				{
 					if (sec.QuestionId == tQuestion.QuestionId)
 					{
+						PaddedUIView<UILabel> headerLabel = (DynaPad.PaddedUIView<UIKit.UILabel>)sec.HeaderView;
+						if (headerLabel != null)
+						{
+							headerLabel.Enabled = triggered;
+							headerLabel.setStyle();
+						}
+
 						foreach (dynamic element in sec.Elements)
 						{
 							if (element != null)

@@ -578,30 +578,30 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GenerateReport(string visitid, string patientid, string datecompleted, string fileName, string sFormId) {
+        public string GenerateReport(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
             object[] results = this.Invoke("GenerateReport", new object[] {
-                        visitid,
-                        patientid,
-                        datecompleted,
+                        apptId,
+                        qFormId,
+                        dateCompleted,
                         fileName,
                         sFormId});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void GenerateReportAsync(string visitid, string patientid, string datecompleted, string fileName, string sFormId) {
-            this.GenerateReportAsync(visitid, patientid, datecompleted, fileName, sFormId, null);
+        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
+            this.GenerateReportAsync(apptId, qFormId, dateCompleted, fileName, sFormId, null);
         }
         
         /// CodeRemarks
-        public void GenerateReportAsync(string visitid, string patientid, string datecompleted, string fileName, string sFormId, object userState) {
+        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId, object userState) {
             if ((this.GenerateReportOperationCompleted == null)) {
                 this.GenerateReportOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGenerateReportOperationCompleted);
             }
             this.InvokeAsync("GenerateReport", new object[] {
-                        visitid,
-                        patientid,
-                        datecompleted,
+                        apptId,
+                        qFormId,
+                        dateCompleted,
                         fileName,
                         sFormId}, this.GenerateReportOperationCompleted, userState);
         }

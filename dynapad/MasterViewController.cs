@@ -47,7 +47,8 @@ namespace DynaPad
 			var menu = dds.BuildDynaMenu("123");
 			var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
 			Menu myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
-			var rootMainMenu = new RootElement(myDynaMenu.MenuCaption);
+			var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
+			rootMainMenu.UnevenRows = true;
 			var sectionMainMenu = new Section();
 			sectionMainMenu.HeaderView = null;
 			BuildMenu(myDynaMenu, sectionMainMenu);
@@ -62,6 +63,9 @@ namespace DynaPad
 			foreach (MenuItem mItem in myMenu.MenuItems)
 			{
 				var rootMenu = new DynaFormRootElement(mItem.MenuItemCaption);
+
+				rootMenu.UnevenRows = true;
+
 				rootMenu.Enabled = true;
 				rootMenu.FormID = mItem.MenuItemValue;
 				rootMenu.FormName = mItem.MenuItemCaption;
@@ -175,7 +179,10 @@ namespace DynaPad
 			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.PatientID, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
 			JsonHandler.OriginalFormJsonString = origJson;
 			SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
-			var rootFormSections = new RootElement(SelectedAppointment.SelectedQForm.FormName);
+
+			var sectionsGroup = new RadioGroup("sections", -1);
+			var rootFormSections = new RootElement(SelectedAppointment.SelectedQForm.FormName, sectionsGroup);
+
 			var sectionFormSections = new Section();
 
 			bool IsDoctorForm = dfElemet.IsDoctorForm;
@@ -251,15 +258,46 @@ namespace DynaPad
 
 			foreach (FormSection fSection in SelectedAppointment.SelectedQForm.FormSections)
 			{
-				sectionFormSections.Add(new StringElement(fSection.SectionName, delegate { LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm); }));
+				var section = new SectionStringElement(fSection.SectionName, delegate { 
+					LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm);
+					foreach (Element d in sectionFormSections.Elements)
+					{
+						var t = d.GetType();
+						if (t == typeof(SectionStringElement))
+						{
+							var di = (SectionStringElement)d;
+							di.selected = false;
+						}
+					}
+					sectionFormSections.GetContainerTableView().ReloadData();
+				});
+
+				sectionFormSections.Add(section);
+				//sectionFormSections.Add(new StringElement(fSection.SectionName, delegate { LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm); }));
 			}
 
-			sectionFormSections.Add(new StringElement("Finalize", delegate { LoadSectionView("", "Finalize", null, IsDoctorForm); }));
+			var finalizeSection = new SectionStringElement("Finalize", delegate {
+				LoadSectionView("", "Finalize", null, IsDoctorForm);
+				foreach (Element d in sectionFormSections.Elements)
+				{
+					var t = d.GetType();
+					if (t == typeof(SectionStringElement))
+					{
+						var di = (SectionStringElement)d;
+						di.selected = false;
+					}
+				}
+				sectionFormSections.GetContainerTableView().ReloadData();
+			});
+
+			sectionFormSections.Add(finalizeSection);
+
+			//sectionFormSections.Add(new StringElement("Finalize", delegate { LoadSectionView("", "Finalize", null, IsDoctorForm); }));
 
 			rootFormSections.Add(sectionFormSections);
 
 			var formDVC = new DialogViewController(rootFormSections, true);
-
+				
 			// TODO pull to refresh: (problamatic scrolling with it)
 			//formDVC.RefreshRequested += delegate 
 			//{ 
@@ -335,6 +373,8 @@ namespace DynaPad
 			string origSectionJson = JsonConvert.SerializeObject(OrigSection);
 			DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm);
 		}
+
+
 		void LoadReportView(string valueId, string sectionName) 		{ 			DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false); 		}
 
 

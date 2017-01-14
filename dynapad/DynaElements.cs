@@ -6,9 +6,111 @@ using Foundation;
 using MonoTouch.Dialog;
 using UIKit;
 using System.Diagnostics;
+#if __UNIFIED__
+using UIKit;
+using CoreGraphics;
+using Foundation;
+using CoreAnimation;
+
+using NSAction = global::System.Action;
+#else
+using MonoTouch.UIKit;
+using MonoTouch.CoreGraphics;
+using MonoTouch.Foundation;
+using MonoTouch.CoreAnimation;
+#endif
+
+using MonoTouch.Dialog.Utilities;
+
+#if !__UNIFIED__
+using nint = global::System.Int32;
+using nuint = global::System.UInt32;
+using nfloat = global::System.Single;
+
+using CGSize = global::System.Drawing.SizeF;
+using CGPoint = global::System.Drawing.PointF;
+using CGRect = global::System.Drawing.RectangleF;
+#endif
 
 namespace DynaPad
 {
+
+	public partial class SectionStringElement : Element
+	{
+		static NSString skey = new NSString("StringElement");
+		static NSString skeyvalue = new NSString("StringElementValue");
+		public UITextAlignment Alignment = UITextAlignment.Left;
+		public string Value;
+		public bool selected = false;
+
+		public SectionStringElement(string caption) : base(caption) { }
+
+		public SectionStringElement(string caption, string value) : base(caption)
+		{
+			this.Value = value;
+		}
+
+		public SectionStringElement(string caption, NSAction tapped) : base(caption)
+		{
+			Tapped += tapped;
+		}
+
+		public event NSAction Tapped;
+
+		public override UITableViewCell GetCell(UITableView tv)
+		{
+			var cell = tv.DequeueReusableCell(Value == null ? skey : skeyvalue);
+			if (cell == null)
+			{
+				cell = new UITableViewCell(Value == null ? UITableViewCellStyle.Default : UITableViewCellStyle.Value1, Value == null ? skey : skeyvalue);
+				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
+			}
+			cell.Accessory = UITableViewCellAccessory.None;
+			cell.TextLabel.Text = Caption;
+			cell.TextLabel.TextAlignment = Alignment;
+			cell.BackgroundColor = UIColor.White;
+			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			cell.TextLabel.Lines = 0;
+
+			if (selected)
+			{
+				cell.BackgroundColor = UIColor.FromRGB(220, 237, 185);
+			}
+
+			// The check is needed because the cell might have been recycled.
+			if (cell.DetailTextLabel != null)
+				cell.DetailTextLabel.Text = Value == null ? "" : Value;
+
+			return cell;
+		}
+
+		public override string Summary()
+		{
+			return Caption;
+		}
+
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		{
+			var cell = base.GetCell(tableView);
+			cell.BackgroundColor = UIColor.Red;
+
+			base.Selected(dvc, tableView, indexPath);
+
+			if (Tapped != null)
+				Tapped();
+			selected = !selected;
+			tableView.SelectRow(indexPath, true, UITableViewScrollPosition.None);
+		}
+
+		public override bool Matches(string text)
+		{
+			return (Value != null ? Value.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1 : false) || base.Matches(text);
+		}
+	}
+
+
 
 
 	class MyRadioElement : RadioElement
@@ -91,7 +193,14 @@ namespace DynaPad
 
 					(_nestedView as UILabel).TextColor = UIColor.DarkGray;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
-					BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+					if (Enabled)
+					{
+						BackgroundColor = UIColor.FromRGB(230, 230, 250);
+					}
+					else
+					{
+						BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+					}
 					break;
 				case "Preset":
 					(_nestedView as UILabel).TextColor = UIColor.DarkGray;
@@ -402,8 +511,15 @@ namespace DynaPad
 			cell.UserInteractionEnabled = Enabled;
 
 			cell.TextLabel.TextColor = UIColor.Black;
+
+			//cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			//cell.TextLabel.Lines = 0;
+
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
 			cell.BackgroundColor = UIColor.White;
+
+			//cell.SelectionStyle = UITableViewCellSelectionStyle.Gray;
+			//cell.Selected = true;
 
 			if (!Enabled)
 			{
@@ -411,9 +527,20 @@ namespace DynaPad
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
+			//UIView bgColorView = new UIView();
+			//bgColorView.BackgroundColor = UIColor.LightGray;
+			//cell.SelectedBackgroundView = bgColorView;
+
 			return cell;
 
 		}
+
+		//public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		//{
+		//	// dostuff
+		//	tableView.SelectRow(indexPath, true, UITableViewScrollPosition.Top);
+		//}
+
 
 		protected override void PrepareDialogViewController(UIViewController dvc)
 		{
@@ -540,7 +667,7 @@ namespace DynaPad
 
 	public class DynaRadioElement : RadioElement
 	{
-		public DynaRadioElement(string cCaption, string cGroup) : base(cCaption, cGroup) { Group = cGroup; }
+		public DynaRadioElement(string cCaption, string cGroup = null) : base(cCaption, cGroup) { Group = cGroup; }
 
 		public bool Enabled;
 		public string ParentQuestionId { get; set; }
@@ -601,15 +728,15 @@ namespace DynaPad
 
 		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
-			//var cell = base.GetCell (tableView);
-			//cell.BackgroundColor = UIColor.Blue;
-
 			base.Selected(dvc, tableView, path);
 			var selected = OnSelected;
 			if (selected != null)
 				//base.GetActiveCell().Highlighted = true;
 				//Value = true;
 				selected(this, EventArgs.Empty);
+			
+			tableView.SelectRow(path, true, UITableViewScrollPosition.None);
+
 		}
 
 		public override void Deselected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
@@ -631,6 +758,23 @@ namespace DynaPad
 			cell.ContentView.AutosizesSubviews = false;
 
 			cell.UserInteractionEnabled = Enabled;
+
+			cell.BackgroundColor = UIColor.White;
+			cell.TextLabel.TextColor = UIColor.Black;
+
+			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+
+			if (Value)
+			{
+				cell.BackgroundColor = UIColor.FromRGB(239, 246, 223);
+			}
+
+			if (!Enabled)
+			{
+				cell.TextLabel.TextColor = UIColor.LightGray;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+			}
+
 			return cell;
 		}
 
@@ -807,24 +951,26 @@ namespace DynaPad
 
 			cell.Accessory = selected ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
 
+			cell.Selected = selected;
+
 			cell.UserInteractionEnabled = Enabled;
 
 			cell.TextLabel.TextColor = UIColor.Black;
-			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
+
 			cell.BackgroundColor = UIColor.White;
+
+			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+
+			if (selected)
+			{
+				cell.BackgroundColor = UIColor.FromRGB(239, 246, 223);
+			}
 
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
-			//cell.ImageView.Frame = new CGRect(0, 0, 0, 1);
-			//cell.ImageView.Hidden = true;
-			//cell.TextLabel.Frame = new CGRect(0, 99, 310, 44);
-			//cell.TextLabel.TextAlignment = UITextAlignment.Right;
-			//cell.LayoutMargins = new UIEdgeInsets(0, 5, 0, 0);
-			//cell.TextLabel.LayoutMargins = new UIEdgeInsets(0, 66, 0, 0);
-			//cell.PreservesSuperviewLayoutMargins = false;
 
 			return cell;
 		}
@@ -862,7 +1008,6 @@ namespace DynaPad
 				}
 
 				radioGroup.Selected = Index.Value;
-
 
 				var handler = ElementSelected;
 				if (handler != null)
@@ -1407,6 +1552,7 @@ namespace DynaPad
 			);
 		}
 	}
+
 
 
 }

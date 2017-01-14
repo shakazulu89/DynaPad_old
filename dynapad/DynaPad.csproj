@@ -80,7 +80,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Distribution: Uri Harel (777L7WZ84W)</CodesignKey>
+    <CodesignKey>iPhone Distribution</CodesignKey>
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchDebug>true</MtouchDebug>
     <MtouchFastDev>true</MtouchFastDev>
@@ -94,7 +94,7 @@
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
     <MtouchSdkVersion>10.2</MtouchSdkVersion>
-    <CodesignProvision>3c3ce0e2-141b-4bca-b07b-3ebd02b63f5e</CodesignProvision>
+    <CodesignProvision></CodesignProvision>
     <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AdHoc|AnyCPU' ">
