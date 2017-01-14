@@ -53,6 +53,7 @@ namespace DynaPad
 			sectionMainMenu.HeaderView = null;
 			BuildMenu(myDynaMenu, sectionMainMenu);
 			rootMainMenu.Add(sectionMainMenu);
+
 			Root = rootMainMenu;
 		}
 

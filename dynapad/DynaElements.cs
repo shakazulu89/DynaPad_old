@@ -573,7 +573,8 @@ namespace DynaPad
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
 		//static NSString MyCellId = new NSString("MyCellId");
-		private UITextField EntryTextField { get; set; } 		protected override UITextField CreateTextField(CGRect frame) 		{ 			var tf = base.CreateTextField(frame); 			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left; 			//tf.TextAlignment = UITextAlignment.Left; 			EntryTextField = tf; 			return tf; 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);
+		private UITextField EntryTextField { get; set; }
+ 		protected override UITextField CreateTextField(CGRect frame) 		{ 			var tf = base.CreateTextField(frame); 			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left; 			//tf.TextAlignment = UITextAlignment.Left; 			EntryTextField = tf; 			return tf; 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);
 
 			//cell.ContentView.AutosizesSubviews = false;
 			//cell.ContentView.Frame = new CGRect(48, 0, 310, 44);
@@ -582,10 +583,15 @@ namespace DynaPad
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
 			cell.BackgroundColor = UIColor.White;
 
+			EntryTextField.TextColor = UIColor.Black;
+			//EntryTextField.Placeholder = "Enter your answer here";
+
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				EntryTextField.TextColor = UIColor.LightGray;
+				//EntryTextField.Placeholder = "";
 			}
  			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			} 			s.EntryAlignment = new SizeF(25 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
 	}
@@ -773,6 +779,11 @@ namespace DynaPad
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+
+				//if (cell.Selected)
+				//{
+					cell.Accessory = UITableViewCellAccessory.None;
+				//}
 			}
 
 			return cell;
@@ -970,6 +981,10 @@ namespace DynaPad
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				if (selected)
+				{
+					cell.Accessory = UITableViewCellAccessory.None;
+				}
 			}
 
 			return cell;

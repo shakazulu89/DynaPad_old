@@ -47,6 +47,14 @@ namespace DynaPad
 			base.TableView.CellLayoutMarginsFollowReadableWidth = false;
 			// Perform any additional setup after loading the view, typically from a nib.
 			base.TableView.ScrollsToTop = true;
+
+			var tap = new UITapGestureRecognizer();
+			tap.AddTarget(() =>
+			{
+				base.View.EndEditing(true);
+			});
+			base.View.AddGestureRecognizer(tap);
+			tap.CancelsTouchesInView = false;
 		}
 
 
@@ -618,6 +626,15 @@ namespace DynaPad
 							 * entryElement.KeyboardType = UIKeyboardType.
 							 * also add in question maker if number min/max numbers
 							 */
+
+
+							//entryElement.ReturnKeyType = UIReturnKeyType.Done;
+							//entryElement.EntryStarted += (sender, e) => { entryElement.BecomeFirstResponder(true); };
+							//entryElement.ShouldReturn += () =>
+							//{
+							//	entryElement.ResignFirstResponder(true);
+							//	return true;
+							//};
 
 							entryElement.Enabled = enabled;
 							entryElement.QuestionId = question.QuestionId;
