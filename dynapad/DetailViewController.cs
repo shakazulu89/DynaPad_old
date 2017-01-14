@@ -223,7 +223,7 @@ namespace DynaPad
 						webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
 
 						var dps = new DynaPadService.DynaPadService();
-						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptId, SelectedAppointment.ApptLocationId, DateTime.Today.ToShortDateString(), "file", valueId);
+						string reportUrl = dps.GenerateReport(SelectedAppointment.ApptId, SelectedAppointment.ApptFormId, DateTime.Today.ToShortDateString(), "file", valueId);
 						//string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
 						//var asdf = SelectedAppointment.ApptPatientId;
 
@@ -283,12 +283,13 @@ namespace DynaPad
 					{
 						audioFilePath = null;
 
-						CancelRecording.Frame = new CGRect(0, 0, 350, 30);
+						CancelRecording.Frame = new CGRect(0, 0, 350, 50);
 						CancelRecording.SetTitle("Close", UIControlState.Normal);
 						CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
 						//CancelRecording.TouchUpInside += OnCancelRecording;
 
-						var hlab = new UILabel(new CGRect(0, 0, 160, 30));
+						var hlab = new UILabel(new CGRect(0, 0, 160, 50));
+						hlab.TextAlignment = UITextAlignment.Center;
 						hlab.Text = "Dictation";
 						var sec = new Section(hlab, CancelRecording);
 
@@ -364,7 +365,7 @@ namespace DynaPad
 						foreach (string[] dictation in dictations)
 						{
 							var PlaySavedDictationButton = new UIButton();
-							PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 40);
+							PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 50);
 							PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
 							PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
 							PlaySavedDictationButton.TouchUpInside += delegate
@@ -372,7 +373,7 @@ namespace DynaPad
 								OnPlaySavedDictation(dictation[1], dictation[2]);
 							};
 							var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-							cellDict.Frame = new CGRect(0, 0, 350, 40);
+							cellDict.Frame = new CGRect(0, 0, 350, 50);
 							cellDict.BackgroundColor = UIColor.LightGray;
 							cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 							cellDict.ContentView.Add(PlaySavedDictationButton);
@@ -491,7 +492,7 @@ namespace DynaPad
 							field.Placeholder = "Preset Name";
 						});
 						//Add Actions
-						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(SavePresetPrompt.TextFields[0].Text, sectionId)));
+						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(SavePresetPrompt.TextFields[0].Text, sectionId, presetSection, presetGroup, origS)));
 						SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 						//Present Alert
 						PresentViewController(SavePresetPrompt, true, null);
@@ -1134,7 +1135,7 @@ namespace DynaPad
 				foreach (string[] dictation in dictations)
 				{
 					var PlaySavedDictationButton = new UIButton();
-					PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 20);
+					PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 50);
 					PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
 					PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
 					PlaySavedDictationButton.TouchUpInside += delegate
@@ -1142,7 +1143,7 @@ namespace DynaPad
 						OnPlaySavedDictation(dictation[1], dictation[2]);
 					};
 					var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-					cellDict.Frame = new CGRect(0, 0, 350, 20);
+					cellDict.Frame = new CGRect(0, 0, 350, 50);
 					cellDict.BackgroundColor = UIColor.LightGray;
 					cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 					cellDict.ContentView.Add(PlaySavedDictationButton);
@@ -1171,7 +1172,7 @@ namespace DynaPad
 			}
 		}
 
-		void SaveSectionPreset(string presetName, string sectionId)
+		void SaveSectionPreset(string presetName, string sectionId, Section presetSection, RadioGroup presetGroup, string origS, bool isDoctorInput = true)
 		{
 			// doctorid = 123 / 321
 			// locationid = 321 / 123
@@ -1182,6 +1183,25 @@ namespace DynaPad
 			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
 			var dds = new DynaPadService.DynaPadService();
 			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId);
+
+
+
+			var mre = new MyRadioElement(presetName, "PresetAnswers");
+			mre.OnSelected += delegate (object sender, EventArgs e)
+			{
+				SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
+				var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+				if (selectedSection != null)
+				{
+					selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
+				}
+
+				SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput);
+			};
+
+			presetSection.Insert(presetSection.Count-1, UITableViewRowAnimation.Automatic, mre);
+			presetSection.GetImmediateRootElement().RadioSelected = presetSection.Count - 2;
+
 		}
 	}
 }
