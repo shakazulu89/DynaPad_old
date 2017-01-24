@@ -576,24 +576,40 @@ namespace DynaPad
 		private UITextField EntryTextField { get; set; }
  		protected override UITextField CreateTextField(CGRect frame) 		{ 			var tf = base.CreateTextField(frame); 			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left; 			//tf.TextAlignment = UITextAlignment.Left; 			EntryTextField = tf; 			return tf; 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);
 
-			//cell.ContentView.AutosizesSubviews = false;
+			cell.ContentView.AutosizesSubviews = false;
 			//cell.ContentView.Frame = new CGRect(48, 0, 310, 44);
 			cell.UserInteractionEnabled = Enabled;
 			cell.TextLabel.TextColor = UIColor.Black;
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
 			cell.BackgroundColor = UIColor.White;
-
 			EntryTextField.TextColor = UIColor.Black;
 			//EntryTextField.Placeholder = "Enter your answer here";
+
+			var offset = (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone) ? 20 : 90;
+			cell.Frame = new RectangleF((float)cell.Frame.X, (float)cell.Frame.Y, (float)(tv.Frame.Width - offset), (float)cell.Frame.Height);
+			//  SizeF size = s.EntryAlignment;
+			SizeF size = GetEntryPosition(UIFont.BoldSystemFontOfSize(17));
+			float yOffset = (float)((cell.ContentView.Bounds.Height - size.Height) / 2 - 1);
+			float width = (float)(cell.ContentView.Bounds.Width - size.Width);
+			if (TextAlignment == UITextAlignment.Right)
+			{
+				// Add padding if right aligned
+				width -= 10;
+			}
+
+			var entryFrame = new RectangleF(size.Width, yOffset, width, size.Height);
+
+			EntryTextField.Frame = entryFrame;
 
 			if (!Enabled)
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 				EntryTextField.TextColor = UIColor.LightGray;
-				//EntryTextField.Placeholder = "";
+				EntryTextField.Placeholder = "Not applicable";
 			}
- 			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			} 			s.EntryAlignment = new SizeF(25 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
+ 			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			}
+ 			s.EntryAlignment = new SizeF(20 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
 	}
 
 

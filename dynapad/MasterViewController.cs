@@ -169,7 +169,8 @@ namespace DynaPad
 				DetailViewController.QuestionsView = null; //.Clear();
 			}
 
-			var bounds = UIScreen.MainScreen.Bounds;
+			//var bounds = UIScreen.MainScreen.Bounds;
+			var bounds = base.TableView.Frame;
 			// show the loading overlay on the UI thread using the correct orientation sizing
 			loadingOverlay = new LoadingOverlay(bounds);
 			mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;

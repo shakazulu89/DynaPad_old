@@ -104,7 +104,8 @@ namespace DynaPad
 
 		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm)
 		{
-			var bounds = UIScreen.MainScreen.Bounds;
+			//var bounds = UIScreen.MainScreen.Bounds;
+			var bounds = base.TableView.Frame;
 			loadingOverlay = new LoadingOverlay(bounds);
 			mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			mvc.Add(loadingOverlay);
@@ -620,21 +621,24 @@ namespace DynaPad
 						case "TextInput":
 							var entryElement = new DynaEntryElement("", "Enter your answer here", question.AnswerText);
 
-							/* 
-							 * TODO: add keyboard type...
-							 * This includes Number Pad, Phone Pad, Email, URL along with other options.
-							 * entryElement.KeyboardType = UIKeyboardType.
-							 * also add in question maker if number min/max numbers
-							 */
-
-
-							//entryElement.ReturnKeyType = UIReturnKeyType.Done;
-							//entryElement.EntryStarted += (sender, e) => { entryElement.BecomeFirstResponder(true); };
-							//entryElement.ShouldReturn += () =>
-							//{
-							//	entryElement.ResignFirstResponder(true);
-							//	return true;
-							//};
+							switch (question.QuestionKeyboardType)
+							{
+								case "numeric":
+									entryElement.KeyboardType = UIKeyboardType.NumberPad;
+									break;
+								case "email":
+									entryElement.KeyboardType = UIKeyboardType.EmailAddress;
+									break;
+								case "decimal":
+									entryElement.KeyboardType = UIKeyboardType.DecimalPad;
+									break;
+								case "phone":
+									entryElement.KeyboardType = UIKeyboardType.PhonePad;
+									break;
+								default:
+									entryElement.KeyboardType = UIKeyboardType.Default;
+									break;
+							}
 
 							entryElement.Enabled = enabled;
 							entryElement.QuestionId = question.QuestionId;
@@ -706,7 +710,7 @@ namespace DynaPad
 							*/
 
 							float questionmin = 0;
-							float questionmax = 100;
+							float questionmax = 20;
 							float qanswer = 0;
 
 							switch (question.QuestionType)
