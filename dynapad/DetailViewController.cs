@@ -32,7 +32,7 @@ namespace DynaPad
 		UIButton PlayRecordedSoundButton = new UIButton();
 		UIButton SaveRecordedSound = new UIButton();
 		UIButton CancelRecording = new UIButton();
-
+		public Menu DynaMenu { get; set; }
 
 		protected DetailViewController(IntPtr handle) : base(handle)
 		{
@@ -102,7 +102,7 @@ namespace DynaPad
 		}
 
 
-		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm)
+		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm, GlassButton nextbtn = null)
 		{
 			//var bounds = UIScreen.MainScreen.Bounds;
 			var bounds = base.TableView.Frame;
@@ -148,7 +148,7 @@ namespace DynaPad
 						summarySection.Add(webViews);
 						summaryElement.Add(summarySection);
 
-						this.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
+						NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
 						{ Print(summaryFileName, webViews); }), true);
 
 						Root = summaryElement;
@@ -180,7 +180,8 @@ namespace DynaPad
 						messageLabel = new UILabel();
 
 						var btnSubmit = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
-						btnSubmit.Font = UIFont.BoldSystemFontOfSize(17);
+						//btnSubmit.Font = UIFont.BoldSystemFontOfSize(17);
+						btnSubmit.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
 						btnSubmit.NormalColor = UIColor.Green;
 						btnSubmit.DisabledColor = UIColor.Gray;
 						btnSubmit.SetTitle("Submit Form", UIControlState.Normal);
@@ -237,7 +238,7 @@ namespace DynaPad
 						//var asdf = SelectedAppointment.ApptPatientId;
 
 						//var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
-						var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
+						//var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
 						//var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
 						webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
 						webView.ScalesPageToFit = true;
@@ -245,7 +246,7 @@ namespace DynaPad
 						reportSection.Add(webView);
 						reportElement.Add(reportSection);
 
-						this.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
+						NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
 						{ Print(SelectedAppointment.ApptFormName, webView); }), true);
 
 						Root = reportElement;
@@ -254,7 +255,7 @@ namespace DynaPad
 						break;
 					default:
 						// Update the view
-						ConfigureView(valueId, origSectionJson, IsDoctorForm);
+						ConfigureView(valueId, origSectionJson, IsDoctorForm, nextbtn);
 						break;
 				}
 			}
@@ -263,7 +264,7 @@ namespace DynaPad
 		}
 
 
-		void ConfigureView(string sectionId, string origS, bool IsDoctorForm)
+		void ConfigureView(string sectionId, string origS, bool IsDoctorForm, GlassButton nextbtn)
 		{
 			// Update the user interface for the detail item
 			if (DetailItem != null)
@@ -287,7 +288,7 @@ namespace DynaPad
 
 				if (IsDoctorForm)
 				{
-					this.NavigationItem.SetRightBarButtonItem(
+					NavigationItem.SetRightBarButtonItem(
 					new UIBarButtonItem(UIImage.FromBundle("Dictation"), UIBarButtonItemStyle.Plain, (sender, args) =>
 					{
 						audioFilePath = null;
@@ -423,7 +424,7 @@ namespace DynaPad
 							pop.Dismiss(true);
 						};
 
-						pop.PresentFromBarButtonItem(this.NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Any, true);
+						pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Any, true);
 					}), true);
 
 					/*
@@ -464,7 +465,7 @@ namespace DynaPad
 							selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
 						}
 
-						SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm);
+						SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm, nextbtn);
 					};
 
 					presetSection.Add(noPresetRadio);
@@ -482,14 +483,15 @@ namespace DynaPad
 								selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
 							}
 
-							SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm);
+							SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm, nextbtn);
 						};
 
 						presetSection.Add(mre);
 					}
 
 					var btnNewSectionPreset = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
-					btnNewSectionPreset.Font = UIFont.BoldSystemFontOfSize(17);
+					//btnNewSectionPreset.Font = UIFont.BoldSystemFontOfSize(17);
+					btnNewSectionPreset.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
 					btnNewSectionPreset.SetTitleColor(UIColor.Black, UIControlState.Normal);
 					btnNewSectionPreset.NormalColor = UIColor.FromRGB(224, 238, 240);
 					btnNewSectionPreset.SetTitle("Save New Section Preset", UIControlState.Normal);
@@ -501,7 +503,7 @@ namespace DynaPad
 							field.Placeholder = "Preset Name";
 						});
 						//Add Actions
-						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(SavePresetPrompt.TextFields[0].Text, sectionId, presetSection, presetGroup, origS)));
+						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(SavePresetPrompt.TextFields[0].Text, sectionId, presetSection, presetGroup, origS, nextbtn)));
 						SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 						//Present Alert
 						PresentViewController(SavePresetPrompt, true, null);
@@ -517,7 +519,7 @@ namespace DynaPad
 				}
 				else
 				{
-					this.NavigationItem.SetRightBarButtonItem(null, false);
+					NavigationItem.SetRightBarButtonItem(null, false);
 				}
 
 				QuestionsView = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName);
@@ -594,7 +596,7 @@ namespace DynaPad
 								radio.ElementSelected += delegate
 								{
 									Radio_Tapped(question, opt);
-									this.NavigationController.PopViewController(true);
+									NavigationController.PopViewController(true);
 								};
 
 								qSection.Add(radio);
@@ -672,8 +674,9 @@ namespace DynaPad
 							dateElement.Alignment = UITextAlignment.Left;
 							dateElement.QuestionId = question.QuestionId;
 							dateElement.ConditionTriggerId = question.ParentConditionTriggerId;
-							dateElement.DateSelected += delegate {
-								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();	
+							dateElement.DateSelected += delegate
+							{
+								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();
 							};
 
 							var datePaddedView = new PaddedUIView<UILabel>();
@@ -769,6 +772,13 @@ namespace DynaPad
 							break;
 					}
 				}
+
+				var qNext = new DynaSection("Next");
+				qNext.HeaderView = new UIView(new CGRect(0, 0, 0, 10));
+				qNext.FooterView = new UIView(new CGRect(0, 0, 0, 10));
+				qNext.Add(nextbtn);
+
+				QuestionsView.Add(qNext);
 
 				Root = QuestionsView;
 				Root.TableView.ScrollEnabled = true;
@@ -912,7 +922,7 @@ namespace DynaPad
 				{
 					if (sec.QuestionId == tQuestion.QuestionId)
 					{
-						PaddedUIView<UILabel> headerLabel = (DynaPad.PaddedUIView<UIKit.UILabel>)sec.HeaderView;
+						var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView;
 						if (headerLabel != null)
 						{
 							headerLabel.Enabled = triggered;
@@ -1088,7 +1098,7 @@ namespace DynaPad
 				SampleRate = 44100,
 				Format = AudioToolbox.AudioFormatType.MPEG4AAC,
 				NumberChannels = 1,
-				AudioQuality = AVAudioQuality.High,
+				AudioQuality = AVAudioQuality.High
 			};
 
 			//Set recorder parameters
@@ -1193,7 +1203,7 @@ namespace DynaPad
 			}
 		}
 
-		void SaveSectionPreset(string presetName, string sectionId, Section presetSection, RadioGroup presetGroup, string origS, bool isDoctorInput = true)
+		void SaveSectionPreset(string presetName, string sectionId, Section presetSection, RadioGroup presetGroup, string origS, GlassButton nextbtn, bool isDoctorInput = true)
 		{
 			// doctorid = 123 / 321
 			// locationid = 321 / 123
@@ -1217,10 +1227,10 @@ namespace DynaPad
 					selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
 				}
 
-				SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput);
+				SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput, nextbtn);
 			};
 
-			presetSection.Insert(presetSection.Count-1, UITableViewRowAnimation.Automatic, mre);
+			presetSection.Insert(presetSection.Count - 1, UITableViewRowAnimation.Automatic, mre);
 			presetSection.GetImmediateRootElement().RadioSelected = presetSection.Count - 2;
 
 		}

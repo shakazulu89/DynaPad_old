@@ -8,17 +8,19 @@ using System.Drawing;
 
 namespace DynaPad
 {
-	public partial class MasterViewController : DialogViewController
+	public partial class MasterViewController : DynaDialogViewController
 	{
 		public DetailViewController DetailViewController { get; set; }
 		public DialogViewController mvc { get; set; }
 		UILabel messageLabel;
 		LoadingOverlay loadingOverlay;
+		Menu myDynaMenu;
 
 
 		protected MasterViewController(IntPtr handle) : base(handle)
 		{
 			// Note: this .ctor should not contain any initialization logic.
+			Title = "Welcome to DynaPad";
 		}
 
 
@@ -28,11 +30,7 @@ namespace DynaPad
 
 			Title = NSBundle.MainBundle.LocalizedString("Menu", "Form Sections");
 
-			if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-			{
-				//PreferredContentSize = new CGSize(320f, 600f);
-				ClearsSelectionOnViewWillAppear = false;
-			}
+			ClearsSelectionOnViewWillAppear &= UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad;
 
 			DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			DetailViewController.Style = UITableViewStyle.Plain;
@@ -44,11 +42,17 @@ namespace DynaPad
 			//};
 
 			var dds = new DynaPadService.DynaPadService();
-			var menu = dds.BuildDynaMenu("123");
-			var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
-			Menu myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+
+			//var menu = dds.BuildDynaMenu("123");
+			//var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+
+			myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+			DetailViewController.DynaMenu = myDynaMenu;
+
 			var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
 			rootMainMenu.UnevenRows = true;
+			rootMainMenu.Enabled = true;
+
 			var sectionMainMenu = new Section();
 			sectionMainMenu.HeaderView = null;
 			BuildMenu(myDynaMenu, sectionMainMenu);
@@ -89,8 +93,12 @@ namespace DynaPad
 						break;
 					case "GetReport":
 						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadReportView(mItem.MenuItemValue, "Report"); }));
-						//rootMenu.createOnSelected = GetReportService;
-						//Section sectionReport = new Section();  						//sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));  						//rootMenu.Add(sectionReport);
+					//rootMenu.createOnSelected = GetReportService;
+					//Section sectionReport = new Section();
+
+					//sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));
+
+					//rootMenu.Add(sectionReport);
 						break;
 				}
 				if (mItem.MenuItemAction != "GetReport")
@@ -128,7 +136,7 @@ namespace DynaPad
 			SelectedAppointment.ApptLocationId = dfElemet.LocationID;
 			SelectedAppointment.ApptId = dfElemet.ApptID;
 
-			return new DialogViewController(rElement, true);
+			return new DynaDialogViewController(rElement, true);
 		}
 
 
@@ -155,7 +163,7 @@ namespace DynaPad
 
 			rootReports.Add(sectionReports);
 
-			var formDVC = new DialogViewController(rootReports, true);
+			var formDVC = new DynaDialogViewController(rootReports, true);
 
 			return formDVC;
 		}
@@ -173,9 +181,8 @@ namespace DynaPad
 			var bounds = base.TableView.Frame;
 			// show the loading overlay on the UI thread using the correct orientation sizing
 			loadingOverlay = new LoadingOverlay(bounds);
-			mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
-			mvc.Add(loadingOverlay);
-
+			//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
+			SplitViewController.Add(loadingOverlay);
 			var dds = new DynaPadService.DynaPadService();
 			var dfElemet = (DynaFormRootElement)rElement;
 			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.PatientID, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
@@ -228,7 +235,8 @@ namespace DynaPad
 				}
 
 				var btnNewFormPreset = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
-				btnNewFormPreset.Font = UIFont.BoldSystemFontOfSize(17);
+				//btnNewFormPreset.Font = UIFont.BoldSystemFontOfSize(17);
+				btnNewFormPreset.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
 				btnNewFormPreset.SetTitleColor(UIColor.Black, UIControlState.Normal);
 				btnNewFormPreset.NormalColor = UIColor.FromRGB(224, 238, 240);
 				btnNewFormPreset.SetTitle("Save New Form Preset", UIControlState.Normal);
@@ -261,7 +269,7 @@ namespace DynaPad
 			foreach (FormSection fSection in SelectedAppointment.SelectedQForm.FormSections)
 			{
 				var section = new SectionStringElement(fSection.SectionName, delegate { 
-					LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm);
+					LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm, sectionFormSections);
 					foreach (Element d in sectionFormSections.Elements)
 					{
 						var t = d.GetType();
@@ -271,6 +279,7 @@ namespace DynaPad
 							di.selected = false;
 						}
 					}
+					var shhh = sectionFormSections.GetContainerTableView();
 					sectionFormSections.GetContainerTableView().ReloadData();
 				});
 
@@ -280,6 +289,7 @@ namespace DynaPad
 
 			var finalizeSection = new SectionStringElement("Finalize", delegate {
 				LoadSectionView("", "Finalize", null, IsDoctorForm);
+
 				foreach (Element d in sectionFormSections.Elements)
 				{
 					var t = d.GetType();
@@ -298,7 +308,7 @@ namespace DynaPad
 
 			rootFormSections.Add(sectionFormSections);
 
-			var formDVC = new DialogViewController(rootFormSections, true);
+			var formDVC = new DynaDialogViewController(rootFormSections, true);
 				
 			// TODO pull to refresh: (problamatic scrolling with it)
 			//formDVC.RefreshRequested += delegate 
@@ -312,7 +322,7 @@ namespace DynaPad
 				formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Lock"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
 			  	{
 				  //Create Alert
-				  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue or tap Cancel", UIAlertControllerStyle.Alert);
+				  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue", UIAlertControllerStyle.Alert);
 				  BackPrompt.AddTextField((field) =>
 				  {
 					  field.SecureTextEntry = true;
@@ -370,14 +380,69 @@ namespace DynaPad
 		}
 
 
-		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm)
+		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null)
 		{
+			GlassButton btnNextSection = null;
+			if (sectionName != "Report" || sectionName != "Finalize")
+			{
+				btnNextSection = new GlassButton(new RectangleF(0, 0, (float)DetailViewController.View.Frame.Width, 50));
+				//btnNextSection.Font = UIFont.BoldSystemFontOfSize(17);
+				btnNextSection.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+				btnNextSection.SetTitleColor(UIColor.Black, UIControlState.Normal);
+				btnNextSection.NormalColor = UIColor.FromRGB(224, 238, 240);
+				btnNextSection.SetTitle("Next Section", UIControlState.Normal);
+				btnNextSection.TouchUpInside += (sender, e) =>
+				{
+					var nextSectionIndex = new int();
+
+					foreach (Element d in sections.Elements)
+					{
+						var t = d.GetType();
+						if (t == typeof(SectionStringElement))
+						{
+							var di = (SectionStringElement)d;
+							if (di.selected == true)
+							{
+								nextSectionIndex = sections.Elements.IndexOf(di) + 1;
+							}
+							di.selected = false;
+						}
+					}
+
+					var q = (SectionStringElement)sections.Elements[nextSectionIndex];
+					q.selected = true;
+
+					sections.GetContainerTableView().SelectRow(sections.Elements[nextSectionIndex].IndexPath, true, UITableViewScrollPosition.Top);
+					//var shhh = sections.GetContainerTableView();
+					sections.GetContainerTableView().ReloadData();
+
+					if (IsDoctorForm)
+					{
+						nextSectionIndex = nextSectionIndex - 1;
+					}
+
+					if (q.Caption == "Finalize")
+					{
+						btnNextSection.SetTitle("Finalize", UIControlState.Normal);
+						LoadSectionView("", "Finalize", null, IsDoctorForm);
+					}
+					else
+					{
+						var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[nextSectionIndex];
+						string nextSectionJson = JsonConvert.SerializeObject(nextSectionQuestions);
+
+						//DetailViewController.SetDetailItem(new Section(nextSectionQuestions.SectionName), nextSectionQuestions.SectionName, nextSectionQuestions.SectionId, nextSectionJson, IsDoctorForm, btnNextSection);
+						LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
+					}
+				};
+			}
+
 			string origSectionJson = JsonConvert.SerializeObject(OrigSection);
-			DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm);
+			DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm, btnNextSection);
 		}
 
 
-		void LoadReportView(string valueId, string sectionName) 		{ 			DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false); 		}
+		void LoadReportView(string valueId, string sectionName) 		{ 			DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false, null); 		}
 
 
 		public override void DidReceiveMemoryWarning()

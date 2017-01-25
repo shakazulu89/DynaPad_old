@@ -7,12 +7,8 @@ using MonoTouch.Dialog;
 using UIKit;
 using System.Diagnostics;
 #if __UNIFIED__
-using UIKit;
-using CoreGraphics;
-using Foundation;
-using CoreAnimation;
 
-using NSAction = global::System.Action;
+using NSAction = System.Action;
 #else
 using MonoTouch.UIKit;
 using MonoTouch.CoreGraphics;
@@ -20,7 +16,6 @@ using MonoTouch.Foundation;
 using MonoTouch.CoreAnimation;
 #endif
 
-using MonoTouch.Dialog.Utilities;
 
 #if !__UNIFIED__
 using nint = global::System.Int32;
@@ -35,19 +30,67 @@ using CGRect = global::System.Drawing.RectangleF;
 namespace DynaPad
 {
 
-	public partial class SectionStringElement : Element
+
+	public class DynaDialogViewController : DialogViewController
+	{
+
+		public DynaDialogViewController(IntPtr handle) : base(handle)
+		{
+			Style = UITableViewStyle.Plain;
+		}
+
+		public DynaDialogViewController(RootElement root) : base(root)
+		{
+			Style = UITableViewStyle.Plain;
+			Title = root.Caption;
+		}
+
+		public DynaDialogViewController(RootElement root, bool pushing) : base(root, pushing)
+		{
+			Style = UITableViewStyle.Plain;
+			Title = root.Caption;
+		}
+
+		public override void LoadView()
+		{
+			base.LoadView();
+
+			var myTitleLabel = new UILabel(new CGRect(0, 0, 1, 1)) { Text = Title };
+			myTitleLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			myTitleLabel.Lines = 0;
+			myTitleLabel.TextAlignment = UITextAlignment.Center;
+			NavigationItem.TitleView = myTitleLabel;
+			NavigationItem.TitleView.SizeToFit();
+
+			NavigationItem.BackBarButtonItem = new UIBarButtonItem(@"", UIBarButtonItemStyle.Plain, null, null);
+
+			if (NavigationItem.LeftBarButtonItem == null && this != NavigationController.ViewControllers[0])
+			{
+				var btnBack = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, (sender, args) =>
+				{
+					NavigationController.PopViewController(true);
+				});
+				NavigationItem.SetLeftBarButtonItem(btnBack, true);
+			}
+		}
+	}
+
+
+
+	public class SectionStringElement : Element
 	{
 		static NSString skey = new NSString("StringElement");
 		static NSString skeyvalue = new NSString("StringElementValue");
 		public UITextAlignment Alignment = UITextAlignment.Left;
 		public string Value;
-		public bool selected = false;
+		//public bool selected = false;
+		public bool selected;
 
 		public SectionStringElement(string caption) : base(caption) { }
 
 		public SectionStringElement(string caption, string value) : base(caption)
 		{
-			this.Value = value;
+			Value = value;
 		}
 
 		public SectionStringElement(string caption, NSAction tapped) : base(caption)
@@ -81,7 +124,7 @@ namespace DynaPad
 
 			// The check is needed because the cell might have been recycled.
 			if (cell.DetailTextLabel != null)
-				cell.DetailTextLabel.Text = Value == null ? "" : Value;
+				cell.DetailTextLabel.Text = Value ?? "";
 
 			return cell;
 		}
@@ -91,22 +134,22 @@ namespace DynaPad
 			return Caption;
 		}
 
-		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
 			var cell = base.GetCell(tableView);
 			cell.BackgroundColor = UIColor.Red;
 
-			base.Selected(dvc, tableView, indexPath);
+			base.Selected(dvc, tableView, path);
 
 			if (Tapped != null)
 				Tapped();
 			selected = !selected;
-			tableView.SelectRow(indexPath, true, UITableViewScrollPosition.None);
+			tableView.SelectRow(path, true, UITableViewScrollPosition.None);
 		}
 
 		public override bool Matches(string text)
 		{
-			return (Value != null ? Value.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1 : false) || base.Matches(text);
+			return (Value != null && Value.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1) || base.Matches(text);
 		}
 	}
 
@@ -118,9 +161,9 @@ namespace DynaPad
 		public MyRadioElement(string cCaption, string cGroup) : base(cCaption, cGroup) { Group = cGroup; }
 		//public MyRadioElement(string s) : base(s) { }
 
-		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
-			base.Selected(dvc, tableView, path);
+			base.Selected(dvc, tableView, indexPath);
 			var selected = OnSelected;
 			if (selected != null)
 				selected(this, EventArgs.Empty);
@@ -142,9 +185,9 @@ namespace DynaPad
 			this.onCLick = onCLick;
 		}
 
-		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
-			base.Selected(dvc, tableView, path);
+			base.Selected(dvc, tableView, indexPath);
 			var selected = onCLick;
 			if (selected != null)
 				selected(this, EventArgs.Empty);
@@ -157,7 +200,7 @@ namespace DynaPad
 
 	public class PaddedUIView<T> : UIView where T : UIView, new()
 	{
-		private nfloat _padding;
+		nfloat _padding;
 		private T _nestedView;
 		public bool Enabled;
 		public string Type;
@@ -178,7 +221,7 @@ namespace DynaPad
 			if (_nestedView == null)
 			{
 				_nestedView = new T();
-				this.AddSubview(_nestedView);
+				AddSubview(_nestedView);
 			}
 
 			_nestedView.Frame = new CGRect(_padding + 5, _padding, Frame.Width - 2 * _padding, Frame.Height - 2 * _padding);
@@ -248,8 +291,7 @@ namespace DynaPad
 		public bool IsEnabled;
 		public string Type;
 
-		public DynaSectionLabel() : base()
-		{
+		public DynaSectionLabel() 		{
 			Font = UIFont.BoldSystemFontOfSize(17);
 
 			Frame = new CGRect(10, 0, 100f, 40);
@@ -338,6 +380,7 @@ namespace DynaPad
 				//	cell.DetailTextLabel.Text = "";
 				//}
 			}
+
 			//cell.PrepareForReuse();
 			cell.ContentView.AutosizesSubviews = false;
 			cell.UserInteractionEnabled = Enabled;
@@ -468,19 +511,36 @@ namespace DynaPad
 
 		public DynaFormRootElement(string caption) : base(caption)
 		{
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public DynaFormRootElement(string caption, Func<RootElement, UIViewController> createOnSelected) : base(caption, createOnSelected)
 		{
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public DynaFormRootElement(string caption, int section, int element) : base(caption, section, element)
 		{
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public DynaFormRootElement(string caption, Group group) : base(caption, group)
 		{
 			thisGroup = group;
+
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public override string Summary()
@@ -496,6 +556,7 @@ namespace DynaPad
 				return (NSString)"Identifier";
 			}
 		}
+
 		public override UITableViewCell GetCell(UITableView tv)
 		{
 			//var cell = base.GetCell(tv);
@@ -512,8 +573,8 @@ namespace DynaPad
 
 			cell.TextLabel.TextColor = UIColor.Black;
 
-			//cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
-			//cell.TextLabel.Lines = 0;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			cell.TextLabel.Lines = 0;
 
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
 			cell.BackgroundColor = UIColor.White;
@@ -545,7 +606,6 @@ namespace DynaPad
 		protected override void PrepareDialogViewController(UIViewController dvc)
 		{
 			//dvc.View.BackgroundColor = Settings.RootBackgroundColour;
-
 			base.PrepareDialogViewController(dvc);
 		}
 	}
@@ -589,8 +649,8 @@ namespace DynaPad
 			cell.Frame = new RectangleF((float)cell.Frame.X, (float)cell.Frame.Y, (float)(tv.Frame.Width - offset), (float)cell.Frame.Height);
 			//  SizeF size = s.EntryAlignment;
 			SizeF size = GetEntryPosition(UIFont.BoldSystemFontOfSize(17));
-			float yOffset = (float)((cell.ContentView.Bounds.Height - size.Height) / 2 - 1);
-			float width = (float)(cell.ContentView.Bounds.Width - size.Width);
+			var yOffset = (float)((cell.ContentView.Bounds.Height - size.Height) / 2 - 1);
+			var width = (float)(cell.ContentView.Bounds.Width - size.Width);
 			if (TextAlignment == UITextAlignment.Right)
 			{
 				// Add padding if right aligned
@@ -698,13 +758,13 @@ namespace DynaPad
 		public string ConditionTriggerId { get; set; }
 		public bool Chosen { get; set; }
 
-		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
 			//var cell = base.GetCell (tableView);
 			//cell.BackgroundColor = UIColor.Blue;
 
 
-			base.Selected(dvc, tableView, path);
+			base.Selected(dvc, tableView, indexPath);
 			var selected = OnSelected;
 			if (selected != null)
 				//base.GetActiveCell().Highlighted = true;
@@ -848,7 +908,7 @@ namespace DynaPad
 		{
 			if (string.IsNullOrEmpty(group))
 			{
-				throw new ArgumentNullException("group");
+				throw new ArgumentNullException(nameof(group));
 			}
 
 			group = group.ToLower();
@@ -864,7 +924,7 @@ namespace DynaPad
 		{
 			if (string.IsNullOrEmpty(group))
 			{
-				throw new ArgumentNullException("group");
+				throw new ArgumentNullException(nameof(group));
 			}
 
 			var radioGroup = GetGroup(group);
@@ -875,7 +935,7 @@ namespace DynaPad
 		{
 			if (string.IsNullOrEmpty(group))
 			{
-				throw new ArgumentNullException("group");
+				throw new ArgumentNullException(nameof(group));
 			}
 
 			group = group.ToLower();
@@ -1088,11 +1148,13 @@ namespace DynaPad
 
 		static NSString skey = new NSString("NullableDateTimeElementInline");
 		public DateTime? DateValue;
-		public event Action DateSelected;
-		public event Action PickerClosed;
-		public event Action PickerOpened;
-		private InlineDateElement _inline_date_element = null;
-		private bool _picker_present = false;
+		public event NSAction DateSelected;
+		public event NSAction PickerClosed;
+		public event NSAction PickerOpened;
+		//InlineDateElement _inline_date_element = null;
+		InlineDateElement _inline_date_element;
+		//private bool _picker_present = false;
+		bool _picker_present;
 
 		public NullableDateElementInline(string caption, DateTime? date)
 			: base(caption)
@@ -1110,7 +1172,7 @@ namespace DynaPad
 			return _picker_present;
 		}
 
-		protected internal NSDateFormatter fmt = new NSDateFormatter()
+		protected internal NSDateFormatter fmt = new NSDateFormatter
 		{
 			DateStyle = NSDateFormatterStyle.Medium
 		};
@@ -1134,7 +1196,7 @@ namespace DynaPad
 				return " ";
 
 			dt = GetDateWithKind(dt);
-			return fmt.ToString((Foundation.NSDate)dt);
+			return fmt.ToString((NSDate)dt);
 		}
 
 		protected DateTime? GetDateWithKind(DateTime? dt)
@@ -1152,8 +1214,8 @@ namespace DynaPad
 		{
 			if (_picker_present)
 			{
-				var index_path = this.IndexPath;
-				var table_view = this.GetContainerTableView();
+				var index_path = IndexPath;
+				var table_view = GetContainerTableView();
 
 				Selected(dvc, table_view, index_path);
 			}
@@ -1161,19 +1223,19 @@ namespace DynaPad
 
 		public void SetDate(DateTime? date)
 		{
-			this.DateValue = date;
-			this.AnswerText = date.ToString();
+			DateValue = date;
+			AnswerText = date.ToString();
 			Value = FormatDate(date);
-			var r = this.GetImmediateRootElement();
+			var r = GetImmediateRootElement();
 			r.Reload(this, UITableViewRowAnimation.None);
 		}
 
-		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
-			TogglePicker(dvc, tableView, path);
+			TogglePicker(dvc, tableView, indexPath);
 
 			// Deselect the row so the row highlint tint fades away.
-			tableView.DeselectRow(path, true);
+			tableView.DeselectRow(indexPath, true);
 		}
 
 		/// <summary>
@@ -1210,7 +1272,7 @@ namespace DynaPad
 
 					_inline_date_element.DateSelected += (DateTime? date) =>
 					{
-						this.DateValue = date;
+						DateValue = date;
 						cell.DetailTextLabel.Text = FormatDate(date);
 						Value = cell.DetailTextLabel.Text;
 						if (DateSelected != null)       // Fire our changed event.
@@ -1298,7 +1360,7 @@ namespace DynaPad
 
 			private DateTime? _current_date;
 			private SizeF _picker_size;
-			private SizeF _cell_size;
+			private readonly SizeF _cell_size;
 
 			public InlineDateElement(DateTime? current_date)
 				: base("")
@@ -1306,7 +1368,7 @@ namespace DynaPad
 				_current_date = current_date;
 				_date_picker = new UIDatePicker();
 				_date_picker.Mode = UIDatePickerMode.Date;
-				_picker_size = (System.Drawing.SizeF)_date_picker.SizeThatFits(SizeF.Empty);
+				_picker_size = (SizeF)_date_picker.SizeThatFits(SizeF.Empty);
 				_cell_size = _picker_size;
 				_cell_size.Height += 30f; // Add a little bit for the clear button
 			}
@@ -1325,12 +1387,12 @@ namespace DynaPad
 				if (!_current_date.HasValue && DateSelected != null)
 					DateSelected(DateTime.Now);
 				else if (_current_date.HasValue)
-					_date_picker.Date = NSDateExtensions.ToNSDate((System.DateTime)_current_date);
+					_date_picker.Date = NSDateExtensions.ToNSDate((DateTime)_current_date);
 
 				_date_picker.ValueChanged += (object sender, EventArgs e) =>
 				{
 					if (DateSelected != null)
-						DateSelected((System.DateTime?)_date_picker.Date);
+						DateSelected((DateTime?)_date_picker.Date);
 				};
 
 				if (_clear_cancel_button == null)
@@ -1371,7 +1433,7 @@ namespace DynaPad
 
 	public static class NSDateExtensions
 	{
-		static DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+		static readonly DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
 		public static DateTime ToDateTime(this NSDate date)
 		{
@@ -1390,7 +1452,7 @@ namespace DynaPad
 
 
 
-	public partial class DynaSlider : Element
+	public class DynaSlider : Element
 	{
 		public bool Enabled;
 		public string ConditionTriggerId;
@@ -1465,10 +1527,10 @@ namespace DynaPad
 				{
 					 
 					BackgroundColor = UIColor.Clear,
-					MinValue = this.MinValue,
-					MaxValue = this.MaxValue,
+					MinValue = MinValue,
+					MaxValue = MaxValue,
 					Continuous = true,
-					Value = this.Value,
+					Value = Value,
 					Tag = 1,
 					AutoresizingMask = UIViewAutoresizing.FlexibleWidth
 				};
@@ -1476,7 +1538,7 @@ namespace DynaPad
 				{
 					Value = (int)slider.Value;
 					SQuestion.AnswerText = Value.ToString();
-					this.AnswerText = Value.ToString();
+					AnswerText = Value.ToString();
 					Caption = Value.ToString();
 					captionSize = Caption.StringSize(UIFont.FromName(cell.TextLabel.Font.Name, UIFont.LabelFontSize));
 					captionSize.Width += 10; // Spacing
@@ -1576,7 +1638,7 @@ namespace DynaPad
 		/// </summary>
 		public void Hide()
 		{
-			UIView.Animate(
+			Animate(
 				0.5, // duration
 				() => { Alpha = 0; },
 				() => { RemoveFromSuperview(); }

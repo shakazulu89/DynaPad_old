@@ -218,6 +218,8 @@
     <ImageAsset Include="Media.xcassets\Plus.imageset\Plus-20.png" />
     <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Contents.json" />
     <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Circled Play-20.png" />
+    <ImageAsset Include="Media.xcassets\Back.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Back.imageset\Back-20.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -236,6 +238,7 @@
     <Folder Include="Media.xcassets\Print.imageset\" />
     <Folder Include="Media.xcassets\Plus.imageset\" />
     <Folder Include="Media.xcassets\CircledPlay.imageset\" />
+    <Folder Include="Media.xcassets\Back.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
