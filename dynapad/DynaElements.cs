@@ -31,6 +31,8 @@ namespace DynaPad
 {
 
 
+
+
 	public class DynaDialogViewController : DialogViewController
 	{
 
@@ -167,7 +169,7 @@ namespace DynaPad
 			var selected = OnSelected;
 			if (selected != null)
 				selected(this, EventArgs.Empty);
-
+			
 			dvc.DeactivateController(true);
 		}
 
@@ -345,7 +347,6 @@ namespace DynaPad
 
 		public DynaSection(string caption) : base(caption)
 		{
-			
 		}
 
 		public override string Summary()
@@ -413,20 +414,36 @@ namespace DynaPad
 
 		public DynaRootElement(string caption) : base(caption)
 		{
-
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public DynaRootElement(string caption, Func<RootElement, UIViewController> createOnSelected) : base(caption, createOnSelected)
 		{
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public DynaRootElement(string caption, int section, int element) : base(caption, section, element)
 		{
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public DynaRootElement(string caption, Group group) : base(caption, group)
 		{
 			thisGroup = group;
+
+			createOnSelected = (RootElement arg) =>
+			{
+				return new DynaDialogViewController(arg);
+			};
 		}
 
 		public override string Summary()
@@ -487,7 +504,6 @@ namespace DynaPad
 		protected override void PrepareDialogViewController(UIViewController dvc)
 		{
 			//dvc.View.BackgroundColor = Settings.RootBackgroundColour;
-
 			base.PrepareDialogViewController(dvc);
 		}
 	}
@@ -548,7 +564,7 @@ namespace DynaPad
 			//UITableView viewty = base.GetContainerTableView();
 			return base.Summary();
 		}
-		private static NSString cellKey = new NSString("Identifier");
+		static NSString cellKey = new NSString("Identifier");
 		protected override NSString CellKey
 		{
 			get
@@ -1258,7 +1274,7 @@ namespace DynaPad
 				if (_picker_present)
 				{
 					// Remove the picker.
-					cell.DetailTextLabel.TextColor = UIColor.Gray;
+					cell.DetailTextLabel.TextColor = UIColor.Black;
 					section.Remove(_inline_date_element);
 					_picker_present = false;
 					if (PickerClosed != null)
@@ -1285,7 +1301,7 @@ namespace DynaPad
 						DateValue = null_date;
 						cell.DetailTextLabel.Text = " ";
 						Value = cell.DetailTextLabel.Text;
-						cell.DetailTextLabel.TextColor = UIColor.Gray;
+						cell.DetailTextLabel.TextColor = UIColor.Black;
 						section.Remove(_inline_date_element);
 						_picker_present = false;
 						if (PickerClosed != null)
@@ -1332,8 +1348,9 @@ namespace DynaPad
 
 			cell.UserInteractionEnabled = Enabled;
 
+			cell.DetailTextLabel.TextColor = UIColor.Black;
 
-			cell.TextLabel.TextColor = UIColor.Black;
+			cell.TextLabel.TextColor = UIColor.FromRGB(200, 200, 205);
 			cell.BackgroundColor = UIColor.White;
 
 			if (!Enabled)

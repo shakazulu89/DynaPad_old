@@ -5,6 +5,8 @@ using Foundation;
 using MonoTouch.Dialog;
 using Newtonsoft.Json;
 using System.Drawing;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace DynaPad
 {
@@ -208,7 +210,6 @@ namespace DynaPad
 				var formPresetsRoot = new DynaRootElement("Preset Answers", formPresetGroup);
 				formPresetsRoot.IsPreset = true;
 
-
 				var noPresetRadio = new MyRadioElement("No Preset", "FormPresetAnswers");
 				noPresetRadio.OnSelected += delegate (object sender, EventArgs e)
 				{
@@ -339,9 +340,71 @@ namespace DynaPad
 				//formDVC.NavigationItem.LeftBarButtonItem.Title = "Back";
 			}
 
+			string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			var directoryname = Path.Combine(documents, "DynaRestore");
+			var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+
+
+			if (File.Exists(filename))
+			{
+				var restoreFile = File.ReadAllText(filename);
+				string sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+				JObject sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+				JObject targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+				if (!JToken.DeepEquals(sourceJObject, targetJObject))
+				{
+					messageLabel = new UILabel();
+					formDVC.NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Restore"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
+				  	{
+						  //Create Alert
+						  var RestorePrompt = UIAlertController.Create("Restore Form", "Administrative use only. Please enter password to restore", UIAlertControllerStyle.Alert);
+						  RestorePrompt.AddTextField((field) =>
+						  {
+							  field.SecureTextEntry = true;
+							  field.Placeholder = "Password";
+						  });
+
+						  RestorePrompt.Add(messageLabel);
+						  RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm)));
+						  RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+
+						  //Present Alert
+						  PresentViewController(RestorePrompt, true, null);
+				  	});
+				}
+			}
+
 			loadingOverlay.Hide();
 
 			return formDVC;
+		}
+
+
+		void RestoreForm(string password, string restoreFile, bool IsDoctorForm)
+		{
+			bool isValid = password == Constants.Password;
+			if (isValid)
+			{
+				if (DetailViewController.QuestionsView != null)
+				{
+					DetailViewController.Title = "";
+					DetailViewController.QuestionsView = null; //.Clear();
+				}
+
+				JsonHandler.OriginalFormJsonString = restoreFile;
+				SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(restoreFile);
+				LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+			}
+			else
+			{
+				messageLabel.Text = "Wrong password, administrative use only";
+				var FailAlert = UIAlertController.Create("Error", "Wrong password", UIAlertControllerStyle.Alert);
+				FailAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Cancel, null));
+				// Present Alert
+				PresentViewController(FailAlert, true, null);
+			}
 		}
 
 
@@ -430,10 +493,18 @@ namespace DynaPad
 					{
 						var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[nextSectionIndex];
 						string nextSectionJson = JsonConvert.SerializeObject(nextSectionQuestions);
-
-						//DetailViewController.SetDetailItem(new Section(nextSectionQuestions.SectionName), nextSectionQuestions.SectionName, nextSectionQuestions.SectionId, nextSectionJson, IsDoctorForm, btnNextSection);
 						LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
 					}
+
+					// Serialize object
+					string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+					// Save to file
+					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+					var directoryname = Path.Combine (documents, "DynaRestore");
+					Directory.CreateDirectory(directoryname);
+					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+					File.WriteAllText(filename, restoreJson);
 				};
 			}
 

@@ -48,6 +48,8 @@ namespace DynaPad
 			// Perform any additional setup after loading the view, typically from a nib.
 			base.TableView.ScrollsToTop = true;
 
+			ModalInPopover = true;
+
 			var tap = new UITapGestureRecognizer();
 			tap.AddTarget(() =>
 			{
@@ -173,7 +175,7 @@ namespace DynaPad
 						rootSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 						rootSection.FooterView.Hidden = true;
 
-						var sigPad = new SignaturePad.SignaturePadView(new CGRect(0, 0, View.Frame.Width, 300));
+						var sigPad = new SignaturePad.SignaturePadView(new CGRect(0, 0, View.Frame.Width, 600));
 						sigPad.CaptionText = "Sign here:";
 						sigPad.BackgroundColor = UIColor.White;
 
@@ -301,7 +303,19 @@ namespace DynaPad
 						var hlab = new UILabel(new CGRect(0, 0, 160, 50));
 						hlab.TextAlignment = UITextAlignment.Center;
 						hlab.Text = "Dictation";
-						var sec = new Section(hlab, CancelRecording);
+						var clab = new UILabel(new CGRect(0, 0, 160, 50));
+						clab.TextAlignment = UITextAlignment.Center;
+						clab.Text = "Dictation";
+
+						var segDict = new UISegmentedControl();
+						segDict.Frame = new CGRect(0, 0, 350, 50);
+						segDict.Momentary = true;
+						segDict.InsertSegment(UIImage.FromBundle("Back"), 0, true);
+						segDict.InsertSegment("Dictation", 1, true);
+						segDict.SetWidth(50, 0);
+						segDict.SetWidth(324, 1);
+
+						var sec = new Section(segDict, CancelRecording);
 
 						RecordingStatusLabel.Text = string.Empty;
 						RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 50);
@@ -390,7 +404,7 @@ namespace DynaPad
 							sec.Add(cellDict);
 						}
 
-						var roo = new RootElement("dick");
+						var roo = new RootElement("Dictation");
 						roo.Add(sec);
 
 						var dia = new DialogViewController(roo);
@@ -402,6 +416,7 @@ namespace DynaPad
 						con.Add(vie);
 
 						var pop = new UIPopoverController(dia);
+						pop.ShouldDismiss = (popoverController) => false;
 						pop.DidDismiss += delegate
 						{
 							//AVAudioSession.SharedInstance().Dispose();
@@ -419,12 +434,20 @@ namespace DynaPad
 							audioFilePath = null;
 						};
 
-						CancelRecording.TouchUpInside += delegate
+
+						segDict.ValueChanged += (s, e) =>
 						{
-							pop.Dismiss(true);
+							if (segDict.SelectedSegment == 0)
+							{
+								pop.Dismiss(true);
+							}
 						};
 
-						pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Any, true);
+						CancelRecording.TouchUpInside += delegate
+						{ pop.Dismiss(true); };
+
+						pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Unknown, true);
+
 					}), true);
 
 					/*
@@ -668,8 +691,9 @@ namespace DynaPad
 						case "Date":
 							var dt = new DateTime();
 							dt = !string.IsNullOrEmpty(question.AnswerText) ? Convert.ToDateTime(question.AnswerText) : DateTime.Today;
-
+							//dt.ToUniversalTime();
 							var dateElement = new NullableDateElementInline("", dt);
+							dateElement.Caption = "Tap to select date";
 							dateElement.Enabled = enabled;
 							dateElement.Alignment = UITextAlignment.Left;
 							dateElement.QuestionId = question.QuestionId;

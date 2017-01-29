@@ -220,6 +220,9 @@
     <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Circled Play-20.png" />
     <ImageAsset Include="Media.xcassets\Back.imageset\Contents.json" />
     <ImageAsset Include="Media.xcassets\Back.imageset\Back-20.png" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Reuse-20.png" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Recycling symbol-20.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -239,6 +242,7 @@
     <Folder Include="Media.xcassets\Plus.imageset\" />
     <Folder Include="Media.xcassets\CircledPlay.imageset\" />
     <Folder Include="Media.xcassets\Back.imageset\" />
+    <Folder Include="Media.xcassets\Restore.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -300,6 +304,9 @@
     <BundleResource Include="Resources\Password-20.png" />
     <BundleResource Include="Resources\Voice Recognition Scan-20.png" />
     <BundleResource Include="Resources\Play-20.png" />
+    <BundleResource Include="Resources\Data Recovery-20.png" />
+    <BundleResource Include="Resources\Reuse-20.png" />
+    <BundleResource Include="Resources\Return-20.png" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />

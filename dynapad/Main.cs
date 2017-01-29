@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UIKit;
 
 namespace DynaPad
@@ -145,4 +146,9 @@ public class QForm
 	public int FormSelectedTemplateId { get; set; }
 	public List<FormSection> FormSections { get; set; }
 	public QForm() { FormSelectedTemplateId = 0; }
+
+	public static explicit operator string(QForm v)
+	{
+		throw new NotImplementedException();
+	}
 }

@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Foundation;
 using UIKit;
 
@@ -34,6 +36,25 @@ namespace DynaPad
 			var navigationController = (UINavigationController)splitViewController.ViewControllers[1];
 			navigationController.TopViewController.NavigationItem.LeftBarButtonItem = splitViewController.DisplayModeButtonItem;
 			splitViewController.WeakDelegate = this;
+
+			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			var directoryname = Path.Combine(documents, "DynaRestore");
+			var d = new DirectoryInfo(directoryname);
+
+			//foreach (FileInfo fi in d.GetFiles())
+			//{
+			//	if fi.CreationTime
+			//}
+
+			string[] restorefiles = Directory.GetFiles(directoryname);
+			foreach (var file in Directory.GetFiles(directoryname))
+			{
+				if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 2)
+				{
+					File.Delete(file);
+				}
+			}
+
 
 			return true;
 		}
