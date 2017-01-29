@@ -496,15 +496,38 @@ namespace DynaPad
 						LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
 					}
 
-					// Serialize object
-					string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-					// Save to file
 					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-					var directoryname = Path.Combine (documents, "DynaRestore");
-					Directory.CreateDirectory(directoryname);
+					var directoryname = Path.Combine(documents, "DynaRestore");
 					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
-					File.WriteAllText(filename, restoreJson);
+
+					string sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+					if (File.Exists(filename))
+					{
+						var restoreFile = File.ReadAllText(filename);
+						JObject sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+						JObject targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+						if (!JToken.DeepEquals(sourceJObject, targetJObject))
+						{
+							// Serialize object
+							//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+							//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+							// Save to file
+							//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+							//var directoryname = Path.Combine(documents, "DynaRestore");
+							Directory.CreateDirectory(directoryname);
+							//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+							File.WriteAllText(filename, sourceJson);
+						}
+
+					}
+					else
+					{
+						Directory.CreateDirectory(directoryname);
+						File.WriteAllText(filename, sourceJson);
+					}
 				};
 			}
 

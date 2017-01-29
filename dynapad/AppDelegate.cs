@@ -45,16 +45,17 @@ namespace DynaPad
 			//{
 			//	if fi.CreationTime
 			//}
-
-			string[] restorefiles = Directory.GetFiles(directoryname);
-			foreach (var file in Directory.GetFiles(directoryname))
+			if (Directory.Exists(directoryname))
 			{
-				if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 2)
+				//string[] restorefiles = Directory.GetFiles(directoryname);
+				foreach (var file in Directory.GetFiles(directoryname))
 				{
-					File.Delete(file);
+					if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 2)
+					{
+						File.Delete(file);
+					}
 				}
 			}
-
 
 			return true;
 		}
