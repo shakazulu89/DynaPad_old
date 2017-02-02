@@ -174,6 +174,9 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="Xamarin.Controls.LoginScreen.iOS">
+      <HintPath>..\packages\Xamarin.LoginScreen.1.5.0\lib\Xamarin.iOS10\Xamarin.Controls.LoginScreen.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -223,6 +226,12 @@
     <ImageAsset Include="Media.xcassets\Restore.imageset\Contents.json" />
     <ImageAsset Include="Media.xcassets\Restore.imageset\Reuse-20.png" />
     <ImageAsset Include="Media.xcassets\Restore.imageset\Recycling symbol-20.png" />
+    <ImageAsset Include="Media.xcassets\Close.imageset\Close Window-20.png" />
+    <ImageAsset Include="Media.xcassets\Close.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\QRecord.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\QRecord.imageset\Add Record-20.png" />
+    <ImageAsset Include="Media.xcassets\Delete.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Delete.imageset\Delete-20.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -243,6 +252,9 @@
     <Folder Include="Media.xcassets\CircledPlay.imageset\" />
     <Folder Include="Media.xcassets\Back.imageset\" />
     <Folder Include="Media.xcassets\Restore.imageset\" />
+    <Folder Include="Media.xcassets\Close.imageset\" />
+    <Folder Include="Media.xcassets\QRecord.imageset\" />
+    <Folder Include="Media.xcassets\Delete.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -307,6 +319,7 @@
     <BundleResource Include="Resources\Data Recovery-20.png" />
     <BundleResource Include="Resources\Reuse-20.png" />
     <BundleResource Include="Resources\Return-20.png" />
+    <BundleResource Include="Resources\Add Record-20.png" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />

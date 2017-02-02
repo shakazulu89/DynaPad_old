@@ -48,9 +48,9 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback GetDoctorInputOperationCompleted;
         
-        private System.Threading.SendOrPostCallback GetShortFormsOperationCompleted;
+        private System.Threading.SendOrPostCallback GetDynaReportsOperationCompleted;
         
-        private System.Threading.SendOrPostCallback CreateShortFormOperationCompleted;
+        private System.Threading.SendOrPostCallback CreateDynaReportOperationCompleted;
         
         private System.Threading.SendOrPostCallback GenerateReportOperationCompleted;
         
@@ -100,10 +100,10 @@ namespace DynaPad.DynaPadService {
         public event GetDoctorInputCompletedEventHandler GetDoctorInputCompleted;
         
         /// CodeRemarks
-        public event GetShortFormsCompletedEventHandler GetShortFormsCompleted;
+        public event GetDynaReportsCompletedEventHandler GetDynaReportsCompleted;
         
         /// CodeRemarks
-        public event CreateShortFormCompletedEventHandler CreateShortFormCompleted;
+        public event CreateDynaReportCompletedEventHandler CreateDynaReportCompleted;
         
         /// CodeRemarks
         public event GenerateReportCompletedEventHandler GenerateReportCompleted;
@@ -515,9 +515,9 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetShortForms", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetShortForms(string qFormID, string docId, bool showcase) {
-            object[] results = this.Invoke("GetShortForms", new object[] {
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetDynaReports", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GetDynaReports(string qFormID, string docId, bool showcase) {
+            object[] results = this.Invoke("GetDynaReports", new object[] {
                         qFormID,
                         docId,
                         showcase});
@@ -525,54 +525,54 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GetShortFormsAsync(string qFormID, string docId, bool showcase) {
-            this.GetShortFormsAsync(qFormID, docId, showcase, null);
+        public void GetDynaReportsAsync(string qFormID, string docId, bool showcase) {
+            this.GetDynaReportsAsync(qFormID, docId, showcase, null);
         }
         
         /// CodeRemarks
-        public void GetShortFormsAsync(string qFormID, string docId, bool showcase, object userState) {
-            if ((this.GetShortFormsOperationCompleted == null)) {
-                this.GetShortFormsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetShortFormsOperationCompleted);
+        public void GetDynaReportsAsync(string qFormID, string docId, bool showcase, object userState) {
+            if ((this.GetDynaReportsOperationCompleted == null)) {
+                this.GetDynaReportsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetDynaReportsOperationCompleted);
             }
-            this.InvokeAsync("GetShortForms", new object[] {
+            this.InvokeAsync("GetDynaReports", new object[] {
                         qFormID,
                         docId,
-                        showcase}, this.GetShortFormsOperationCompleted, userState);
+                        showcase}, this.GetDynaReportsOperationCompleted, userState);
         }
         
-        private void OnGetShortFormsOperationCompleted(object arg) {
-            if ((this.GetShortFormsCompleted != null)) {
+        private void OnGetDynaReportsOperationCompleted(object arg) {
+            if ((this.GetDynaReportsCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.GetShortFormsCompleted(this, new GetShortFormsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+                this.GetDynaReportsCompleted(this, new GetDynaReportsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/CreateShortForm", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string CreateShortForm(string formId) {
-            object[] results = this.Invoke("CreateShortForm", new object[] {
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/CreateDynaReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string CreateDynaReport(string formId) {
+            object[] results = this.Invoke("CreateDynaReport", new object[] {
                         formId});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void CreateShortFormAsync(string formId) {
-            this.CreateShortFormAsync(formId, null);
+        public void CreateDynaReportAsync(string formId) {
+            this.CreateDynaReportAsync(formId, null);
         }
         
         /// CodeRemarks
-        public void CreateShortFormAsync(string formId, object userState) {
-            if ((this.CreateShortFormOperationCompleted == null)) {
-                this.CreateShortFormOperationCompleted = new System.Threading.SendOrPostCallback(this.OnCreateShortFormOperationCompleted);
+        public void CreateDynaReportAsync(string formId, object userState) {
+            if ((this.CreateDynaReportOperationCompleted == null)) {
+                this.CreateDynaReportOperationCompleted = new System.Threading.SendOrPostCallback(this.OnCreateDynaReportOperationCompleted);
             }
-            this.InvokeAsync("CreateShortForm", new object[] {
-                        formId}, this.CreateShortFormOperationCompleted, userState);
+            this.InvokeAsync("CreateDynaReport", new object[] {
+                        formId}, this.CreateDynaReportOperationCompleted, userState);
         }
         
-        private void OnCreateShortFormOperationCompleted(object arg) {
-            if ((this.CreateShortFormCompleted != null)) {
+        private void OnCreateDynaReportOperationCompleted(object arg) {
+            if ((this.CreateDynaReportCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.CreateShortFormCompleted(this, new CreateShortFormCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+                this.CreateDynaReportCompleted(this, new CreateDynaReportCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -933,17 +933,17 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void GetShortFormsCompletedEventHandler(object sender, GetShortFormsCompletedEventArgs e);
+    public delegate void GetDynaReportsCompletedEventHandler(object sender, GetDynaReportsCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class GetShortFormsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+    public partial class GetDynaReportsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
         
-        internal GetShortFormsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+        internal GetDynaReportsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -959,17 +959,17 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void CreateShortFormCompletedEventHandler(object sender, CreateShortFormCompletedEventArgs e);
+    public delegate void CreateDynaReportCompletedEventHandler(object sender, CreateDynaReportCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class CreateShortFormCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+    public partial class CreateDynaReportCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
         
-        internal CreateShortFormCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+        internal CreateDynaReportCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }

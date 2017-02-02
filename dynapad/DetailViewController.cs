@@ -27,6 +27,7 @@ namespace DynaPad
 		NSObject observer;
 		UILabel RecordingStatusLabel = new UILabel();
 		UILabel LengthOfRecordingLabel = new UILabel();
+		UILabel PlayRecordedSoundStatusLabel = new UILabel();
 		UIButton StartRecordingButton = new UIButton();
 		UIButton StopRecordingButton = new UIButton();
 		UIButton PlayRecordedSoundButton = new UIButton();
@@ -44,6 +45,10 @@ namespace DynaPad
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+
+			Root.Caption = "Welcome to DynaPad";
+			Root.Add(new Section("Login to the app"));
+
 			base.TableView.CellLayoutMarginsFollowReadableWidth = false;
 			// Perform any additional setup after loading the view, typically from a nib.
 			base.TableView.ScrollsToTop = true;
@@ -300,22 +305,36 @@ namespace DynaPad
 						CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
 						//CancelRecording.TouchUpInside += OnCancelRecording;
 
-						var hlab = new UILabel(new CGRect(0, 0, 160, 50));
-						hlab.TextAlignment = UITextAlignment.Center;
-						hlab.Text = "Dictation";
 						var clab = new UILabel(new CGRect(0, 0, 160, 50));
 						clab.TextAlignment = UITextAlignment.Center;
 						clab.Text = "Dictation";
 
-						var segDict = new UISegmentedControl();
-						segDict.Frame = new CGRect(0, 0, 350, 50);
-						segDict.Momentary = true;
-						segDict.InsertSegment(UIImage.FromBundle("Back"), 0, true);
-						segDict.InsertSegment("Dictation", 1, true);
-						segDict.SetWidth(50, 0);
-						segDict.SetWidth(324, 1);
+						//var segDict = new UISegmentedControl();
+						//segDict.Frame = new CGRect(0, 0, 350, 50);
+						//segDict.Momentary = true;
+						//segDict.InsertSegment(UIImage.FromBundle("Delete"), 0, true);
+						//segDict.InsertSegment("Dictation", 1, true);
+						//segDict.SetWidth(50, 0);
+						//segDict.SetWidth(324, 1);
 
-						var sec = new Section(segDict, CancelRecording);
+						var cellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
+						cellHeader.Frame = new CGRect(0, 0, 350, 50);
+						//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
+
+						var headclosebtn = new UIButton(new CGRect(0, 0, 50, 50));
+						headclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+						cellHeader.ContentView.Add(headclosebtn);
+						cellHeader.ContentView.Add(clab);
+
+						var cellFooter = new UITableViewCell(UITableViewCellStyle.Default, null);
+						cellFooter.Frame = new CGRect(0, 0, 350, 50);
+						//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
+						cellFooter.ContentView.Add(CancelRecording);
+
+
+						var sec = new Section(cellHeader, cellFooter);
+						sec.FooterView.Frame = new CGRect(0, 0, 350, 50);
 
 						RecordingStatusLabel.Text = string.Empty;
 						RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 50);
@@ -333,14 +352,17 @@ namespace DynaPad
 						StopRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						StopRecordingButton.TouchUpInside += OnStopRecording;
 						StopRecordingButton.Enabled = false;
+						StopRecordingButton.Alpha = (nfloat)0.5;
 
 						PlayRecordedSoundButton.Frame = new CGRect(20, 0, 160, 50);
 						PlayRecordedSoundButton.SetTitle("Play Recording", UIControlState.Normal);
 						PlayRecordedSoundButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
 						PlayRecordedSoundButton.Enabled = false;
+						PlayRecordedSoundButton.Alpha = (nfloat)0.5;
 
-						SaveRecordedSound.Enabled = false;
+						SaveRecordedSound.Enabled = false; 
+						SaveRecordedSound.Alpha = (nfloat)0.5;
 						SaveRecordedSound.Frame = new CGRect(20, 0, 160, 50);
 						SaveRecordedSound.SetTitle("Save Recording", UIControlState.Normal);
 						SaveRecordedSound.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
@@ -350,8 +372,6 @@ namespace DynaPad
 						};
 
 						observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
-
-
 
 						var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellRecord.Frame = new CGRect(0, 0, 350, 50);
@@ -388,19 +408,33 @@ namespace DynaPad
 
 						foreach (string[] dictation in dictations)
 						{
+							byte[] bytes = Convert.FromBase64String(dictation[2]);
+							NSData dataDictation = NSData.FromArray(bytes);
+							NSError err;
+							var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
+
+							var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
+
+							var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
+							statusLabel.Text = duration;
+
 							var PlaySavedDictationButton = new UIButton();
-							PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 50);
+							PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
 							PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
 							PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+							//PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
 							PlaySavedDictationButton.TouchUpInside += delegate
 							{
-								OnPlaySavedDictation(dictation[1], dictation[2]);
+								OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel);
 							};
+
 							var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
 							cellDict.Frame = new CGRect(0, 0, 350, 50);
 							cellDict.BackgroundColor = UIColor.LightGray;
 							cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 							cellDict.ContentView.Add(PlaySavedDictationButton);
+							cellDict.ContentView.Add(statusLabel);
+
 							sec.Add(cellDict);
 						}
 
@@ -415,7 +449,10 @@ namespace DynaPad
 
 						con.Add(vie);
 
+						var popHeight = sec.Elements.Count > 8 ? 500 : sec.Elements.Count * 50 + 100;
+
 						var pop = new UIPopoverController(dia);
+						pop.PopoverContentSize = new CGSize(350, popHeight);
 						pop.ShouldDismiss = (popoverController) => false;
 						pop.DidDismiss += delegate
 						{
@@ -434,16 +471,18 @@ namespace DynaPad
 							audioFilePath = null;
 						};
 
-
-						segDict.ValueChanged += (s, e) =>
-						{
-							if (segDict.SelectedSegment == 0)
-							{
-								pop.Dismiss(true);
-							}
-						};
+						//segDict.ValueChanged += (s, e) =>
+						//{
+						//	if (segDict.SelectedSegment == 0)
+						//	{
+						//		pop.Dismiss(true);
+						//	}
+						//};
 
 						CancelRecording.TouchUpInside += delegate
+						{ pop.Dismiss(true); };
+
+						headclosebtn.TouchUpInside += delegate
 						{ pop.Dismiss(true); };
 
 						pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Unknown, true);
@@ -555,23 +594,55 @@ namespace DynaPad
 					qSection.QuestionId = question.QuestionId;
 					qSection.Enabled = enabled;
 
+					nfloat qWidth = IsDoctorForm ? View.Frame.Width - 50 : 0;
+					UITableViewCell cellQ = null;
+
+					if (IsDoctorForm)
+					{
+						cellQ = new UITableViewCell(UITableViewCellStyle.Default, null);
+						cellQ.Frame = new CGRect(0, 0, View.Frame.Width, 30);
+					}
+
+					var qPaddedView = new PaddedUIView<UILabel>();
+					qPaddedView.Enabled = enabled;
+					qPaddedView.Frame = new CGRect(0, 0, qWidth, 30);
+					qPaddedView.Padding = 5f;
+					qPaddedView.NestedView.Text = question.QuestionText.ToUpper();
+					qPaddedView.Type = "Question";
+					qPaddedView.setStyle();
+
+					if (cellQ != null)
+					{
+						var qDictationButton = new UIButton(new CGRect(View.Frame.GetMaxX() - 50, 0, 50, 30));
+						qDictationButton.Enabled = enabled;
+						qDictationButton.SetImage(UIImage.FromBundle("QRecord"), UIControlState.Normal);
+						if (qDictationButton.Enabled)
+						{
+							qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+						}
+						else
+						{
+							qDictationButton.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+						}
+
+						cellQ.ContentView.Add(qPaddedView);
+						cellQ.ContentView.Add(qDictationButton);
+
+						qSection.HeaderView = cellQ;
+					}
+					else
+					{
+						qSection.HeaderView = qPaddedView;
+					}
+
+					qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+					qSection.FooterView.Hidden = true;
+
 					switch (question.QuestionType)
 					{
 						case "BodyParts":
 						case "Check":
-							var checkPaddedView = new PaddedUIView<UILabel>();
-							checkPaddedView.Enabled = enabled;
-							checkPaddedView.Frame = new CGRect(0, 0, 0, 30);
-							checkPaddedView.Padding = 5f;
-							checkPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							//checkPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-							checkPaddedView.Type = "Question";
-							checkPaddedView.setStyle();
-
-							qSection.HeaderView = checkPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							qSection.FooterView.Hidden = true;
-
+							
 							foreach (QuestionOption opt in question.QuestionOptions)
 							{
 								var chk = new DynaCheckBoxElement(opt.OptionText, false, opt.OptionId);
@@ -594,22 +665,11 @@ namespace DynaPad
 							QuestionsView.Add(qSection);
 
 							break;
+							
 						case "Radio":
 						case "Bool":
 						case "YesNo":
-							var radioPaddedView = new PaddedUIView<UILabel>();
-							radioPaddedView.Frame = new CGRect(0, 0, 0, 30);
-							radioPaddedView.Padding = 5f;
-							radioPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							//radioPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-							radioPaddedView.Type = "Question";
-							radioPaddedView.Enabled = enabled;
-							radioPaddedView.setStyle();
-
-							qSection.HeaderView = radioPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							qSection.FooterView.Hidden = true;
-
+							
 							foreach (QuestionOption opt in question.QuestionOptions)
 							{
 								var radio = new DynaMultiRadioElement(opt.OptionText, question.QuestionId);
@@ -619,6 +679,11 @@ namespace DynaPad
 								radio.ElementSelected += delegate
 								{
 									Radio_Tapped(question, opt);
+									NavigationController.PopViewController(true);
+								};
+								radio.OnDeselected += delegate
+								{
+									Radio_UnTapped(question, opt);
 									NavigationController.PopViewController(true);
 								};
 
@@ -643,7 +708,9 @@ namespace DynaPad
 							QuestionsView.Add(qSection);
 
 							break;
+							
 						case "TextInput":
+							
 							var entryElement = new DynaEntryElement("", "Enter your answer here", question.AnswerText);
 
 							switch (question.QuestionKeyboardType)
@@ -670,28 +737,18 @@ namespace DynaPad
 							entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
 							entryElement.EntryEnded += (sender, e) => { question.AnswerText = entryElement.Value; };
 
-							var textPaddedView = new PaddedUIView<UILabel>();
-							textPaddedView.Enabled = enabled;
-							textPaddedView.Frame = new CGRect(0, 0, 0, 30);
-							textPaddedView.Padding = 5f;
-							textPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							//textPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-							textPaddedView.Type = "Question";
-							textPaddedView.setStyle();
-
-							qSection.HeaderView = textPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							qSection.FooterView.Hidden = true;
-
 							qSection.Add(entryElement);
 
 							QuestionsView.Add(qSection);
 
 							break;
+							
 						case "Date":
+							
 							var dt = new DateTime();
 							dt = !string.IsNullOrEmpty(question.AnswerText) ? Convert.ToDateTime(question.AnswerText) : DateTime.Today;
 							//dt.ToUniversalTime();
+
 							var dateElement = new NullableDateElementInline("", dt);
 							dateElement.Caption = "Tap to select date";
 							dateElement.Enabled = enabled;
@@ -703,19 +760,6 @@ namespace DynaPad
 								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();
 							};
 
-							var datePaddedView = new PaddedUIView<UILabel>();
-							datePaddedView.Enabled = enabled;
-							datePaddedView.Frame = new CGRect(0, 0, 0, 30);
-							datePaddedView.Padding = 5f;
-							datePaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							//datePaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-							datePaddedView.Type = "Question";
-							datePaddedView.setStyle();
-
-							qSection.HeaderView = datePaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							qSection.FooterView.Hidden = true;
-
 							qSection.Add(dateElement);
 
 							QuestionsView.UnevenRows = true;
@@ -723,6 +767,7 @@ namespace DynaPad
 							QuestionsView.Add(qSection);
 
 							break;
+							
 						case "Height":
 						case "Weight":
 						case "Amount":
@@ -774,19 +819,6 @@ namespace DynaPad
 							sliderElement.QuestionId = question.QuestionId;
 							sliderElement.ConditionTriggerId = question.ParentConditionTriggerId;
 
-							var amountPaddedView = new PaddedUIView<UILabel>();
-							amountPaddedView.Enabled = enabled;
-							amountPaddedView.Frame = new CGRect(0, 0, 0, 30);
-							amountPaddedView.Padding = 5f;
-							amountPaddedView.NestedView.Text = question.QuestionText.ToUpper();
-							//amountPaddedView.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-							amountPaddedView.Type = "Question";
-							amountPaddedView.setStyle();
-
-							qSection.HeaderView = amountPaddedView;
-							qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							qSection.FooterView.Hidden = true;
-
 							qSection.Add(sliderElement);
 
 							QuestionsView.UnevenRows = true;
@@ -830,6 +862,19 @@ namespace DynaPad
 			List<string> newTriggerIds = rOption.ConditionTriggerIds;
 			rQuestion.QuestionOptions.ForEach((obj) => obj.Chosen = false);
 			rOption.Chosen = true;
+
+			ConditionalCheck(rQuestion.ActiveTriggerIds, newTriggerIds, rQuestion.SectionId);
+
+			rQuestion.ActiveTriggerIds = newTriggerIds;
+
+			QuestionsView.TableView.ReloadData();
+		}
+		void Radio_UnTapped(SectionQuestion rQuestion, QuestionOption rOption)
+		{
+			//string newTriggerId = rOption.ConditionTriggerIds;
+			List<string> newTriggerIds = new List<string>();
+			rQuestion.QuestionOptions.ForEach((obj) => obj.Chosen = false);
+			rOption.Chosen = false;
 
 			ConditionalCheck(rQuestion.ActiveTriggerIds, newTriggerIds, rQuestion.SectionId);
 
@@ -941,7 +986,6 @@ namespace DynaPad
 
 				tQuestion.IsEnabled = triggered;
 
-
 				foreach (DynaSection sec in QuestionsView)
 				{
 					if (sec.QuestionId == tQuestion.QuestionId)
@@ -993,9 +1037,13 @@ namespace DynaPad
 			LengthOfRecordingLabel.Text = string.Format("{0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 			RecordingStatusLabel.Text = "";
 			StartRecordingButton.Enabled = true;
+			StartRecordingButton.Alpha = 1;
 			StopRecordingButton.Enabled = false;
+			StopRecordingButton.Alpha = (nfloat)0.5;
 			PlayRecordedSoundButton.Enabled = true;
+			PlayRecordedSoundButton.Alpha = 1;
 			SaveRecordedSound.Enabled = true;
+			SaveRecordedSound.Alpha = 1;
 		}
 
 
@@ -1038,9 +1086,13 @@ namespace DynaPad
 			LengthOfRecordingLabel.Text = "";
 			RecordingStatusLabel.Text = "Recording";
 			StartRecordingButton.Enabled = false;
+			StartRecordingButton.Alpha = (nfloat)0.5;
 			StopRecordingButton.Enabled = true;
+			StopRecordingButton.Alpha = 1;
 			PlayRecordedSoundButton.Enabled = false;
+			PlayRecordedSoundButton.Alpha = (nfloat)0.5;
 			SaveRecordedSound.Enabled = false;
+			SaveRecordedSound.Alpha = (nfloat)0.5;
 		}
 
 
@@ -1076,7 +1128,6 @@ namespace DynaPad
 				NSError audioError;
 				//player = new AVPlayer(audioFilePath);
 				player = new AVAudioPlayer(audioFilePath, "aac", out audioError);
-				player.Play();
 			}
 			catch (Exception ex)
 			{
@@ -1086,7 +1137,7 @@ namespace DynaPad
 		}
 
 
-		void OnPlaySavedDictation(string title, string dictationBytes)
+		void OnPlaySavedDictation(string title, string dictationBytes, AVAudioPlayer pplayer, UILabel statusLabel)
 		{
 			try
 			{
@@ -1099,11 +1150,20 @@ namespace DynaPad
 				AVAudioSession.SharedInstance().SetCategory(AVAudioSession.CategoryPlayback, out error);
 				if (error != null)
 					throw new Exception(error.DebugDescription);
-				byte[] bytes = Convert.FromBase64String(dictationBytes);
-				NSData dataDictation = NSData.FromArray(bytes);
-				NSError audioError;
-				player = new AVAudioPlayer(dataDictation, "aac", out audioError);
-				player.Play();
+				//byte[] bytes = Convert.FromBase64String(dictationBytes);
+				//NSData dataDictation = NSData.FromArray(bytes);
+				//NSError audioError;
+
+				statusLabel.Text = "Playing";
+
+				//player = new AVAudioPlayer(dataDictation, "aac", out audioError);
+				//player.FinishedPlaying += (se, ea) => { PlayRecordedSoundStatusLabel.Text = string.Format("{0:hh\\:mm\\:ss}", player.Data.Length); };
+				//player.Play();
+
+				var duration = TimeSpan.FromSeconds(pplayer.Duration).ToString(@"hh\:mm\:ss");
+
+				pplayer.FinishedPlaying += (se, ea) => { statusLabel.Text = duration; };
+				pplayer.Play();
 			}
 			catch (Exception ex)
 			{
@@ -1189,19 +1249,33 @@ namespace DynaPad
 
 				foreach (string[] dictation in dictations)
 				{
+					byte[] bytes = Convert.FromBase64String(dictation[2]);
+					NSData dataDictation = NSData.FromArray(bytes);
+					NSError err;
+					var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
+
+					var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
+
+					var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
+					statusLabel.Text = duration;
+
 					var PlaySavedDictationButton = new UIButton();
-					PlaySavedDictationButton.Frame = new CGRect(20, 0, 160, 50);
+					PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
 					PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
 					PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+					//PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
 					PlaySavedDictationButton.TouchUpInside += delegate
 					{
-						OnPlaySavedDictation(dictation[1], dictation[2]);
+						OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel);
 					};
+
 					var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
 					cellDict.Frame = new CGRect(0, 0, 350, 50);
 					cellDict.BackgroundColor = UIColor.LightGray;
 					cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 					cellDict.ContentView.Add(PlaySavedDictationButton);
+					cellDict.ContentView.Add(statusLabel);
+
 					dicSec.Add(cellDict);
 				}
 

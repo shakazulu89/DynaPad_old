@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Drawing;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using LoginScreen;
 
 namespace DynaPad
 {
@@ -22,7 +23,27 @@ namespace DynaPad
 		protected MasterViewController(IntPtr handle) : base(handle)
 		{
 			// Note: this .ctor should not contain any initialization logic.
-			Title = "Welcome to DynaPad";
+			Title = "";
+		}
+
+		bool needLogin = true;
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+
+			if (needLogin)
+			{
+				LoginScreenControl<CredentialsProvider, DefaultLoginScreenMessages>.Activate(this);
+				needLogin = false;
+			}
+			else
+			{
+				Title = NSBundle.MainBundle.LocalizedString("Menu", "Form Sections");
+				DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+				DetailViewController.Root.Clear();
+				DetailViewController.Root.Add(new Section("Logged in"));
+			}
 		}
 
 
@@ -30,13 +51,12 @@ namespace DynaPad
 		{
 			base.ViewDidLoad();
 
-			Title = NSBundle.MainBundle.LocalizedString("Menu", "Form Sections");
+			Title = NSBundle.MainBundle.LocalizedString("Login", "Form Sections");
 
 			ClearsSelectionOnViewWillAppear &= UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad;
 
 			DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			DetailViewController.Style = UITableViewStyle.Plain;
-
 			// TODO pull to refresh: (problem scrolling with it..)
 			//DetailViewController.RefreshRequested += delegate
 			//{
@@ -95,12 +115,12 @@ namespace DynaPad
 						break;
 					case "GetReport":
 						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadReportView(mItem.MenuItemValue, "Report"); }));
-					//rootMenu.createOnSelected = GetReportService;
-					//Section sectionReport = new Section();
+						//rootMenu.createOnSelected = GetReportService;
+						//Section sectionReport = new Section();
 
-					//sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));
+						//sectionReport.Add(new StringElement(rootMenu.MenuValue, delegate { LoadReportView("Report", rootMenu.MenuValue); }));
 
-					//rootMenu.Add(sectionReport);
+						//rootMenu.Add(sectionReport);
 						break;
 				}
 				if (mItem.MenuItemAction != "GetReport")
@@ -151,9 +171,9 @@ namespace DynaPad
 			}
 
 			var dfElemet = (DynaFormRootElement)rElement;
-			//var ShortForm = SelectedAppointment.ApptShortForms.Find((QShortForm obj) => obj.FormId == dfElemet.MenuValue);
+			//var DynaReport = SelectedAppointment.ApptDynaReports.Find((DynaReport obj) => obj.FormId == dfElemet.MenuValue);
 			var dds = new DynaPadService.DynaPadService();
-			string origJson = dds.GetShortForms(dfElemet.FormID, dfElemet.DoctorID, false);
+			string origJson = dds.GetDynaReports(dfElemet.FormID, dfElemet.DoctorID, false);
 			JsonHandler.OriginalFormJsonString = origJson;
 			var rootReports = new RootElement(dfElemet.FormName);
 			var sectionReports = new Section();
@@ -221,7 +241,7 @@ namespace DynaPad
 				formPresetSection.Add(noPresetRadio);
 
 
-				foreach(string[] arrPreset in FormPresetNames)
+				foreach (string[] arrPreset in FormPresetNames)
 				{
 					var radioPreset = new MyRadioElement(arrPreset[1], "FormPresetAnswers");
 					radioPreset.OnSelected += delegate (object sender, EventArgs e)
@@ -269,7 +289,8 @@ namespace DynaPad
 
 			foreach (FormSection fSection in SelectedAppointment.SelectedQForm.FormSections)
 			{
-				var section = new SectionStringElement(fSection.SectionName, delegate { 
+				var section = new SectionStringElement(fSection.SectionName, delegate
+				{
 					LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm, sectionFormSections);
 					foreach (Element d in sectionFormSections.Elements)
 					{
@@ -288,7 +309,8 @@ namespace DynaPad
 				//sectionFormSections.Add(new StringElement(fSection.SectionName, delegate { LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm); }));
 			}
 
-			var finalizeSection = new SectionStringElement("Finalize", delegate {
+			var finalizeSection = new SectionStringElement("Finalize", delegate
+			{
 				LoadSectionView("", "Finalize", null, IsDoctorForm);
 
 				foreach (Element d in sectionFormSections.Elements)
@@ -310,7 +332,7 @@ namespace DynaPad
 			rootFormSections.Add(sectionFormSections);
 
 			var formDVC = new DynaDialogViewController(rootFormSections, true);
-				
+
 			// TODO pull to refresh: (problamatic scrolling with it)
 			//formDVC.RefreshRequested += delegate 
 			//{ 
@@ -322,20 +344,20 @@ namespace DynaPad
 				messageLabel = new UILabel();
 				formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Lock"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
 			  	{
-				  //Create Alert
-				  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue", UIAlertControllerStyle.Alert);
-				  BackPrompt.AddTextField((field) =>
-				  {
-					  field.SecureTextEntry = true;
-					  field.Placeholder = "Password";
-				  });
+					  //Create Alert
+					  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue", UIAlertControllerStyle.Alert);
+					  BackPrompt.AddTextField((field) =>
+					  {
+						  field.SecureTextEntry = true;
+						  field.Placeholder = "Password";
+					  });
 
-				  BackPrompt.Add(messageLabel);
-				  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text)));
-				  BackPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+					  BackPrompt.Add(messageLabel);
+					  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text)));
+					  BackPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 
-				  //Present Alert
-				  PresentViewController(BackPrompt, true, null);
+					  //Present Alert
+					  PresentViewController(BackPrompt, true, null);
 			  	});
 				//formDVC.NavigationItem.LeftBarButtonItem.Title = "Back";
 			}
@@ -421,7 +443,7 @@ namespace DynaPad
 
 				NavigationController.PopViewController(true);
 			}
-			else 
+			else
 			{
 				messageLabel.Text = "Wrong password, administrative use only";
 				var FailAlert = UIAlertController.Create("Error", "Wrong password", UIAlertControllerStyle.Alert);
@@ -439,7 +461,7 @@ namespace DynaPad
 
 			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 			var dds = new DynaPadService.DynaPadService();
-			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId); 
+			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId);
 		}
 
 
@@ -628,7 +650,7 @@ namespace DynaPad
 			public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 			{
 				//if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-					//controller.DetailViewController.SetDetailItem(sectionItems[indexPath.Row]);
+				//controller.DetailViewController.SetDetailItem(sectionItems[indexPath.Row]);
 			}
 		}
 	}

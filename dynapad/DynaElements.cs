@@ -27,9 +27,112 @@ using CGPoint = global::System.Drawing.PointF;
 using CGRect = global::System.Drawing.RectangleF;
 #endif
 
+using LoginScreen;
+
 namespace DynaPad
 {
 
+
+
+	public class CredentialsProvider : ICredentialsProvider
+	{
+		// Constructor without parameters is required
+
+		public bool NeedLoginAfterRegistration
+		{
+			get
+			{
+				// If you want your user to login after he/she has been registered
+				return true;
+
+				// Otherwise you can:
+				// return false;
+			}
+		}
+
+		public void Login(string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
+		{
+			// Do some operations to login user
+			bool isValid = (userName == Constants.Username && password == Constants.Password);
+			if (isValid)
+			{
+				// If login was successfully completed
+				successCallback();
+			}
+			else
+			{
+				var loginDetails = new LoginScreenFaultDetails();
+				if (userName != Constants.Username)
+				{
+					loginDetails.UserNameErrorMessage = "User name is wrong or does not exist";
+				}
+				else if (password != Constants.Password)
+				{
+					loginDetails.PasswordErrorMessage = "Password is wrong or does not match user name";
+				}
+				else
+				{
+					loginDetails.CommonErrorMessage = "Some error message relative to whole form";
+				}
+				// Otherwise
+				failCallback(loginDetails);
+			}
+		}
+
+		public void Register(string email, string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
+		{
+			// Do some operations to register user
+
+			// If registration was successfully completed
+			successCallback();
+
+			// Otherwise
+			// failCallback(new LoginScreenFaultDetails {
+			//  CommonErrorMessage = "Some error message relative to whole form",
+			//  EmailErrorMessage = "Some error message relative to e-mail form field",
+			//  UserNameErrorMessage = "Some error message relative to user name form field",
+			//  PasswordErrorMessage = "Some error message relative to password form field"
+			// });
+		}
+
+		public void ResetPassword(string email, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
+		{
+			// Do some operations to reset user's password
+
+			// If password was successfully reset
+			successCallback();
+
+			// Otherwise
+			// failCallback(new LoginScreenFaultDetails {
+			//  CommonErrorMessage = "Some error message relative to whole form",
+			//  EmailErrorMessage = "Some error message relative to e-mail form field"
+			// });
+		}
+
+		public bool ShowPasswordResetLink
+		{
+			get
+			{
+				// If you want your login screen to have a forgot password button
+				//return true;
+
+				// Otherwise you can:
+				 return false;
+			}
+		}
+
+		public bool ShowRegistration
+		{
+			get
+			{
+				// If you want your login screen to have a register new user button
+				//return true;
+
+				// Otherwise you can:
+				 return false;
+			}
+		}
+	}
 
 
 
@@ -997,6 +1100,8 @@ namespace DynaPad
 		public bool Chosen { get; set; }
 		public string QuestionId { get; set; }
 
+		public event Action<DynaMultiRadioElement> OnDeselected;
+
 		public event Action<DynaMultiRadioElement> ElementSelected;
 
 		private readonly static NSString ReuseId = new NSString("CustomRadioElement");
@@ -1019,7 +1124,6 @@ namespace DynaPad
 
 		public override UITableViewCell GetCell(UITableView tv)
 		{
-
 			EnsureIndex();
 			//tv.CellLayoutMarginsFollowReadableWidth = false;
 			var cell = tv.DequeueReusableCell(CellKey);
@@ -1032,11 +1136,11 @@ namespace DynaPad
 			//cell.ApplyStyle(this);
 			//this.GetContainerTableView().CellLayoutMarginsFollowReadableWidth = false;
 			cell.TextLabel.Text = Caption;
+
 			if (!string.IsNullOrEmpty(_subtitle))
 			{
 				cell.DetailTextLabel.Text = _subtitle;
 			}
-
 
 			var selected = false;
 			var slRoot = Parent.Parent as DynaMultiRootElement;
@@ -1088,14 +1192,36 @@ namespace DynaPad
 
 			if (slRoot != null)
 			{
-				var radioGroup = slRoot.GetGroup(Group);
+				RadioGroup radioGroup = slRoot.GetGroup(Group);
+
+				UITableViewCell cell;
 
 				if (radioGroup.Selected == Index)
 				{
+					var deSelectedIndex = slRoot.PathForRadioElement(Group, radioGroup.Selected);
+					if (deSelectedIndex != null)
+					{
+						cell = tableView.CellAt(deSelectedIndex);
+						if (cell != null)
+						{
+							cell.Selected = false;
+							cell.BackgroundColor = UIColor.White;
+							cell.Accessory = UITableViewCellAccessory.None;
+						}
+					}
+
+					var unhandler = OnDeselected;
+					if (unhandler != null)
+					{
+						unhandler(this);
+					}
+
+					radioGroup.Selected = -1;
+					slRoot.Deselected(dvc, tableView, indexPath);
+
 					return;
 				}
 
-				UITableViewCell cell;
 
 				var selectedIndex = slRoot.PathForRadioElement(Group, radioGroup.Selected);
 				if (selectedIndex != null)
@@ -1127,6 +1253,16 @@ namespace DynaPad
 			{
 				base.Selected(dvc, tableView, indexPath);
 			}
+		}
+
+		public override void Deselected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		{
+			base.Deselected(dvc, tableView, path);
+			var deselected = OnDeselected;
+			if (deselected != null)
+				//base.GetActiveCell().Highlighted = false;	
+				//Value = false;
+				deselected(this);
 		}
 
 		private void EnsureIndex()

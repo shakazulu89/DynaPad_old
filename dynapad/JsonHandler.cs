@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Json;
 using MonoTouch.Dialog;
@@ -25,7 +25,7 @@ namespace DynaPad
 			set;
 		}
 
-		public static List<Report> ShortForms
+		public static List<Report> DynaReports
 		{
 			get;
 			set;
