@@ -32,6 +32,8 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback SaveAnswerPresetOperationCompleted;
         
+        private System.Threading.SendOrPostCallback DeleteAnswerPresetOperationCompleted;
+        
         private System.Threading.SendOrPostCallback SaveDictationOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetFormDictationsOperationCompleted;
@@ -74,6 +76,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         public event SaveAnswerPresetCompletedEventHandler SaveAnswerPresetCompleted;
+        
+        /// CodeRemarks
+        public event DeleteAnswerPresetCompletedEventHandler DeleteAnswerPresetCompleted;
         
         /// CodeRemarks
         public event SaveDictationCompletedEventHandler SaveDictationCompleted;
@@ -205,7 +210,7 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveAnswerPreset", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string SaveAnswerPreset(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId) {
+        public string SaveAnswerPreset(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
             object[] results = this.Invoke("SaveAnswerPreset", new object[] {
                         formId,
                         sectionId,
@@ -213,17 +218,18 @@ namespace DynaPad.DynaPadService {
                         isDocInput,
                         presetName,
                         presetJson,
-                        locationId});
+                        locationId,
+                        existingPresetId});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void SaveAnswerPresetAsync(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId) {
-            this.SaveAnswerPresetAsync(formId, sectionId, doctorId, isDocInput, presetName, presetJson, locationId, null);
+        public void SaveAnswerPresetAsync(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
+            this.SaveAnswerPresetAsync(formId, sectionId, doctorId, isDocInput, presetName, presetJson, locationId, existingPresetId, null);
         }
         
         /// CodeRemarks
-        public void SaveAnswerPresetAsync(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, object userState) {
+        public void SaveAnswerPresetAsync(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId, object userState) {
             if ((this.SaveAnswerPresetOperationCompleted == null)) {
                 this.SaveAnswerPresetOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveAnswerPresetOperationCompleted);
             }
@@ -234,13 +240,48 @@ namespace DynaPad.DynaPadService {
                         isDocInput,
                         presetName,
                         presetJson,
-                        locationId}, this.SaveAnswerPresetOperationCompleted, userState);
+                        locationId,
+                        existingPresetId}, this.SaveAnswerPresetOperationCompleted, userState);
         }
         
         private void OnSaveAnswerPresetOperationCompleted(object arg) {
             if ((this.SaveAnswerPresetCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.SaveAnswerPresetCompleted(this, new SaveAnswerPresetCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/DeleteAnswerPreset", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void DeleteAnswerPreset(string formId, string sectionId, string doctorId, string existingPresetId) {
+            this.Invoke("DeleteAnswerPreset", new object[] {
+                        formId,
+                        sectionId,
+                        doctorId,
+                        existingPresetId});
+        }
+        
+        /// CodeRemarks
+        public void DeleteAnswerPresetAsync(string formId, string sectionId, string doctorId, string existingPresetId) {
+            this.DeleteAnswerPresetAsync(formId, sectionId, doctorId, existingPresetId, null);
+        }
+        
+        /// CodeRemarks
+        public void DeleteAnswerPresetAsync(string formId, string sectionId, string doctorId, string existingPresetId, object userState) {
+            if ((this.DeleteAnswerPresetOperationCompleted == null)) {
+                this.DeleteAnswerPresetOperationCompleted = new System.Threading.SendOrPostCallback(this.OnDeleteAnswerPresetOperationCompleted);
+            }
+            this.InvokeAsync("DeleteAnswerPreset", new object[] {
+                        formId,
+                        sectionId,
+                        doctorId,
+                        existingPresetId}, this.DeleteAnswerPresetOperationCompleted, userState);
+        }
+        
+        private void OnDeleteAnswerPresetOperationCompleted(object arg) {
+            if ((this.DeleteAnswerPresetCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.DeleteAnswerPresetCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -722,6 +763,10 @@ namespace DynaPad.DynaPadService {
             }
         }
     }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void DeleteAnswerPresetCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]

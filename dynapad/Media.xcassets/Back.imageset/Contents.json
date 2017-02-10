@@ -40,10 +40,12 @@
       "idiom": "ipad"
     },
     {
+      "filename": "back32.png",
       "scale": "1x",
       "idiom": "ipad"
     },
     {
+      "filename": "back40.png",
       "scale": "2x",
       "idiom": "ipad"
     },

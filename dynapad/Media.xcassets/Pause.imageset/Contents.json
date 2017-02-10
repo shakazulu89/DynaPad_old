@@ -4,7 +4,7 @@
       "idiom": "universal"
     },
     {
-      "filename": "Pause-20.png",
+      "filename": "Pause-32.png",
       "scale": "1x",
       "idiom": "universal"
     },
@@ -40,10 +40,12 @@
       "idiom": "ipad"
     },
     {
+      "filename": "pause32.png",
       "scale": "1x",
       "idiom": "ipad"
     },
     {
+      "filename": "Pause-32.png",
       "scale": "2x",
       "idiom": "ipad"
     },

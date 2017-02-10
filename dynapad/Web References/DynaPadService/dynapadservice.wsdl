@@ -64,6 +64,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="presetName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="presetJson" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="existingPresetId" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -73,6 +74,19 @@
             <s:element minOccurs="0" maxOccurs="1" name="SaveAnswerPresetResult" type="s:string" />
           </s:sequence>
         </s:complexType>
+      </s:element>
+      <s:element name="DeleteAnswerPreset">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="existingPresetId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteAnswerPresetResponse">
+        <s:complexType />
       </s:element>
       <s:element name="SaveDictation">
         <s:complexType>
@@ -278,6 +292,12 @@
   <wsdl:message name="SaveAnswerPresetSoapOut">
     <wsdl:part name="parameters" element="tns:SaveAnswerPresetResponse" />
   </wsdl:message>
+  <wsdl:message name="DeleteAnswerPresetSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteAnswerPreset" />
+  </wsdl:message>
+  <wsdl:message name="DeleteAnswerPresetSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteAnswerPresetResponse" />
+  </wsdl:message>
   <wsdl:message name="SaveDictationSoapIn">
     <wsdl:part name="parameters" element="tns:SaveDictation" />
   </wsdl:message>
@@ -361,6 +381,10 @@
       <wsdl:input message="tns:SaveAnswerPresetSoapIn" />
       <wsdl:output message="tns:SaveAnswerPresetSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="DeleteAnswerPreset">
+      <wsdl:input message="tns:DeleteAnswerPresetSoapIn" />
+      <wsdl:output message="tns:DeleteAnswerPresetSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="SaveDictation">
       <wsdl:input message="tns:SaveDictationSoapIn" />
       <wsdl:output message="tns:SaveDictationSoapOut" />
@@ -437,6 +461,15 @@
     </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
       <soap:operation soapAction="http://tempuri.org/SaveAnswerPreset" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAnswerPreset">
+      <soap:operation soapAction="http://tempuri.org/DeleteAnswerPreset" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -575,6 +608,15 @@
     </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
       <soap12:operation soapAction="http://tempuri.org/SaveAnswerPreset" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAnswerPreset">
+      <soap12:operation soapAction="http://tempuri.org/DeleteAnswerPreset" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

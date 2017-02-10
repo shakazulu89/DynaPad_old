@@ -4,7 +4,7 @@
       "idiom": "universal"
     },
     {
-      "filename": "Voice Recognition Scan-20.png",
+      "filename": "Add Record-32.png",
       "scale": "1x",
       "idiom": "universal"
     },
@@ -40,10 +40,12 @@
       "idiom": "ipad"
     },
     {
+      "filename": "dictation32.png",
       "scale": "1x",
       "idiom": "ipad"
     },
     {
+      "filename": "dictation40.png",
       "scale": "2x",
       "idiom": "ipad"
     },

@@ -33,6 +33,15 @@ namespace DynaPad
 		UIButton PlayRecordedSoundButton = new UIButton();
 		UIButton SaveRecordedSound = new UIButton();
 		UIButton CancelRecording = new UIButton();
+		UITableViewCell cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
+		UITableViewCell cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
+		UITableViewCell cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
+		UITableViewCell cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
+		UIButton PlaySavedDictationButton = new UIButton();
+		UIButton DeleteSavedDictationButton = new UIButton();
+		UITableViewCell cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+		UIPopoverController pop;
+
 		public Menu DynaMenu { get; set; }
 
 		protected DetailViewController(IntPtr handle) : base(handle)
@@ -305,9 +314,10 @@ namespace DynaPad
 						CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
 						//CancelRecording.TouchUpInside += OnCancelRecording;
 
-						var clab = new UILabel(new CGRect(0, 0, 160, 50));
-						clab.TextAlignment = UITextAlignment.Center;
-						clab.Text = "Dictation";
+						var clab = new UILabel(new CGRect(10, 0, 290, 50));
+						//clab.TextAlignment = UITextAlignment.Center;
+						clab.Text = "DICTATION(S):";
+						//clab.Font = UIFont.BoldSystemFontOfSize(17);
 
 						//var segDict = new UISegmentedControl();
 						//segDict.Frame = new CGRect(0, 0, 350, 50);
@@ -321,11 +331,11 @@ namespace DynaPad
 						cellHeader.Frame = new CGRect(0, 0, 350, 50);
 						//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
 
-						var headclosebtn = new UIButton(new CGRect(0, 0, 50, 50));
+						var headclosebtn = new UIButton(new CGRect(300, 0, 50, 50));
 						headclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
 
-						cellHeader.ContentView.Add(headclosebtn);
 						cellHeader.ContentView.Add(clab);
+						cellHeader.ContentView.Add(headclosebtn);
 
 						var cellFooter = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellFooter.Frame = new CGRect(0, 0, 350, 50);
@@ -343,11 +353,13 @@ namespace DynaPad
 						LengthOfRecordingLabel.Frame = new CGRect(210, 0, 120, 50);
 
 						StartRecordingButton.Frame = new CGRect(20, 0, 160, 50);
+						//StartRecordingButton.SetImage(UIImage.FromBundle("Record"), UIControlState.Normal);
 						StartRecordingButton.TouchUpInside += OnStartRecording;
 						StartRecordingButton.SetTitle("Start Recording", UIControlState.Normal);
 						StartRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 
 						StopRecordingButton.Frame = new CGRect(20, 0, 160, 50);
+						//StopRecordingButton.SetImage(UIImage.FromBundle("Stop"), UIControlState.Normal);
 						StopRecordingButton.SetTitle("Stop Recording", UIControlState.Normal);
 						StopRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						StopRecordingButton.TouchUpInside += OnStopRecording;
@@ -355,6 +367,7 @@ namespace DynaPad
 						StopRecordingButton.Alpha = (nfloat)0.5;
 
 						PlayRecordedSoundButton.Frame = new CGRect(20, 0, 160, 50);
+						//PlayRecordedSoundButton.SetImage(UIImage.FromBundle("Play"), UIControlState.Normal);
 						PlayRecordedSoundButton.SetTitle("Play Recording", UIControlState.Normal);
 						PlayRecordedSoundButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
 						PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
@@ -364,16 +377,13 @@ namespace DynaPad
 						SaveRecordedSound.Enabled = false; 
 						SaveRecordedSound.Alpha = (nfloat)0.5;
 						SaveRecordedSound.Frame = new CGRect(20, 0, 160, 50);
+						//SaveRecordedSound.SetImage(UIImage.FromBundle("Save"), UIControlState.Normal);
 						SaveRecordedSound.SetTitle("Save Recording", UIControlState.Normal);
 						SaveRecordedSound.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
-						SaveRecordedSound.TouchUpInside += delegate
-						{
-							OnSaveRecordedSound(sectionId, sec);
-						};
 
 						observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
 
-						var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
+						//var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellRecord.Frame = new CGRect(0, 0, 350, 50);
 						cellRecord.ImageView.Image = UIImage.FromBundle("Record");
 						cellRecord.ContentView.Add(StartRecordingButton);
@@ -381,7 +391,7 @@ namespace DynaPad
 
 						sec.Add(cellRecord);
 
-						var cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
+						//var cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellStop.Frame = new CGRect(0, 0, 350, 50);
 						cellStop.ImageView.Image = UIImage.FromBundle("Stop");
 						cellStop.ContentView.Add(StopRecordingButton);
@@ -389,14 +399,14 @@ namespace DynaPad
 
 						sec.Add(cellStop);
 
-						var cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
+						//var cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellPlay.Frame = new CGRect(0, 0, 350, 50);
 						cellPlay.ImageView.Image = UIImage.FromBundle("Play");
 						cellPlay.ContentView.Add(PlayRecordedSoundButton);
 
 						sec.Add(cellPlay);
 
-						var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
+						//var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
 						cellSave.Frame = new CGRect(0, 0, 350, 50);
 						cellSave.ImageView.Image = UIImage.FromBundle("Save");
 						cellSave.ContentView.Add(SaveRecordedSound);
@@ -415,27 +425,55 @@ namespace DynaPad
 
 							var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
 
-							var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
+							var statusLabel = new UILabel(new CGRect(200, 0, 100, 50));
 							statusLabel.Text = duration;
 
-							var PlaySavedDictationButton = new UIButton();
-							PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
+							PlaySavedDictationButton = new UIButton();
+							PlaySavedDictationButton.Frame = new CGRect(10, 0, 190, 50);
 							PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
 							PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
-							//PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
-							PlaySavedDictationButton.TouchUpInside += delegate
+							PlaySavedDictationButton.HorizontalAlignment = UIControlContentHorizontalAlignment.Left;
+							PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
+							PlaySavedDictationButton.ImageEdgeInsets = new UIEdgeInsets(0, 0, 0, 5);
+							PlaySavedDictationButton.TitleEdgeInsets = new UIEdgeInsets(0, 5, 0, 0);
+
+							messageLabel = new UILabel();
+
+							DeleteSavedDictationButton = new UIButton();
+							DeleteSavedDictationButton.Frame = new CGRect(300, 0, 50, 50);
+							DeleteSavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+							DeleteSavedDictationButton.SetImage(UIImage.FromBundle("Delete"), UIControlState.Normal);
+							DeleteSavedDictationButton.TouchUpInside += (sende, er) =>
 							{
-								OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel);
+								var DeletePrompt = UIAlertController.Create("Delete Dictation", "Administrative use only. Deleteing dictation '" + dictation[1] + "', continue?", UIAlertControllerStyle.Alert);
+								DeletePrompt.AddTextField((field) =>
+								{
+									field.SecureTextEntry = true;
+									field.Placeholder = "Password";
+								});
+								DeletePrompt.Add(messageLabel);
+								DeletePrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DeleteSavedDictation(DeletePrompt.TextFields[0].Text, IsDoctorForm, dictation)));
+								DeletePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+								//Present Alert
+								ParentViewController.PresentedViewController.PresentViewController(DeletePrompt, true, null);
+
 							};
 
-							var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+							cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
 							cellDict.Frame = new CGRect(0, 0, 350, 50);
 							cellDict.BackgroundColor = UIColor.LightGray;
-							cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
+							//cellDict.ImageView.Frame = new CGRect(0, 0, 20, 50);
+							//cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
 							cellDict.ContentView.Add(PlaySavedDictationButton);
 							cellDict.ContentView.Add(statusLabel);
+							cellDict.ContentView.Add(DeleteSavedDictationButton);
 
 							sec.Add(cellDict);
+
+							PlaySavedDictationButton.TouchUpInside += delegate
+							{
+								OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel, PlaySavedDictationButton, sec);
+							};
 						}
 
 						var roo = new RootElement("Dictation");
@@ -451,7 +489,7 @@ namespace DynaPad
 
 						var popHeight = sec.Elements.Count > 8 ? 500 : sec.Elements.Count * 50 + 100;
 
-						var pop = new UIPopoverController(dia);
+						pop = new UIPopoverController(dia);
 						pop.PopoverContentSize = new CGSize(350, popHeight);
 						pop.ShouldDismiss = (popoverController) => false;
 						pop.DidDismiss += delegate
@@ -479,6 +517,11 @@ namespace DynaPad
 						//	}
 						//};
 
+						SaveRecordedSound.TouchUpInside += delegate
+						{
+							OnSaveRecordedSound(sectionId, sec, pop);
+						};
+
 						CancelRecording.TouchUpInside += delegate
 						{ pop.Dismiss(true); };
 
@@ -486,7 +529,6 @@ namespace DynaPad
 						{ pop.Dismiss(true); };
 
 						pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Unknown, true);
-
 					}), true);
 
 					/*
@@ -516,7 +558,8 @@ namespace DynaPad
 					var presetsRoot = new DynaRootElement("Preset Answers", presetGroup);
 					presetsRoot.IsPreset = true;
 
-					var noPresetRadio = new MyRadioElement("No Preset", "PresetAnswers");
+					var noPresetRadio = new PresetRadioElement("No Preset", "PresetAnswers");
+					noPresetRadio.PresetName = "No Preset";
 					noPresetRadio.OnSelected += delegate (object sender, EventArgs e)
 					{
 						string presetJson = origS;
@@ -534,19 +577,7 @@ namespace DynaPad
 
 					foreach (string[] arrPreset in FormPresetNames)
 					{
-						var mre = new MyRadioElement(arrPreset[1], "PresetAnswers");
-						mre.OnSelected += delegate (object sender, EventArgs e)
-						{
-							string presetJson = arrPreset[2];
-							SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
-							var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
-							if (selectedSection != null)
-							{
-								selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
-							}
-
-							SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm, nextbtn);
-						};
+						var mre = GetPreset(arrPreset[3], arrPreset[1], arrPreset[2], fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, IsDoctorForm, nextbtn);
 
 						presetSection.Add(mre);
 					}
@@ -565,7 +596,7 @@ namespace DynaPad
 							field.Placeholder = "Preset Name";
 						});
 						//Add Actions
-						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(SavePresetPrompt.TextFields[0].Text, sectionId, presetSection, presetGroup, origS, nextbtn)));
+						SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(null, SavePresetPrompt.TextFields[0].Text, sectionId, presetSection, null, presetGroup, origS, nextbtn)));
 						SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 						//Present Alert
 						PresentViewController(SavePresetPrompt, true, null);
@@ -593,6 +624,7 @@ namespace DynaPad
 					var qSection = new DynaSection(question.QuestionText);
 					qSection.QuestionId = question.QuestionId;
 					qSection.Enabled = enabled;
+					//question.IsEnabled = enabled;
 
 					nfloat qWidth = IsDoctorForm ? View.Frame.Width - 50 : 0;
 					UITableViewCell cellQ = null;
@@ -614,19 +646,21 @@ namespace DynaPad
 					if (cellQ != null)
 					{
 						var qDictationButton = new UIButton(new CGRect(View.Frame.GetMaxX() - 50, 0, 50, 30));
-						qDictationButton.Enabled = enabled;
+						qDictationButton.Enabled = false;
 						qDictationButton.SetImage(UIImage.FromBundle("QRecord"), UIControlState.Normal);
-						if (qDictationButton.Enabled)
-						{
-							qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-						}
-						else
-						{
-							qDictationButton.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
-						}
+						//if (qDictationButton.Enabled)
+						//{
+						//	qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+						//}
+						//else
+						//{
+						//	qDictationButton.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+						//}
+						qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
 
 						cellQ.ContentView.Add(qPaddedView);
 						cellQ.ContentView.Add(qDictationButton);
+						//cellQ.AccessoryView = qDictationButton;
 
 						qSection.HeaderView = cellQ;
 					}
@@ -637,6 +671,8 @@ namespace DynaPad
 
 					qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 					qSection.FooterView.Hidden = true;
+
+					var ass = question;
 
 					switch (question.QuestionType)
 					{
@@ -710,36 +746,58 @@ namespace DynaPad
 							break;
 							
 						case "TextInput":
-							
-							var entryElement = new DynaEntryElement("", "Enter your answer here", question.AnswerText);
 
-							switch (question.QuestionKeyboardType)
+							if (IsDoctorForm)
 							{
-								case "numeric":
-									entryElement.KeyboardType = UIKeyboardType.NumberPad;
-									break;
-								case "email":
-									entryElement.KeyboardType = UIKeyboardType.EmailAddress;
-									break;
-								case "decimal":
-									entryElement.KeyboardType = UIKeyboardType.DecimalPad;
-									break;
-								case "phone":
-									entryElement.KeyboardType = UIKeyboardType.PhonePad;
-									break;
-								default:
-									entryElement.KeyboardType = UIKeyboardType.Default;
-									break;
+								var entryElement = new PlaceholderEnabledUITextView(new CGRect(5,0,View.Frame.Width, 100));
+								entryElement.Placeholder = "Enter answer here";
+								entryElement.Text = question.AnswerText;
+								entryElement.Editable = true;
+								entryElement.Enabled = enabled;
+								entryElement.QuestionId = question.QuestionId;
+								entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
+								entryElement.AllowWhiteSpace = true;
+								entryElement.Ended += (sender, e) => 
+								{ 
+									question.AnswerText = entryElement.Text; 
+								};
+
+								qSection.Add(entryElement);
+
+								QuestionsView.Add(qSection);
 							}
+							else
+							{
+								var entryElement = new DynaEntryElement("", "Enter your answer here", question.AnswerText);
 
-							entryElement.Enabled = enabled;
-							entryElement.QuestionId = question.QuestionId;
-							entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
-							entryElement.EntryEnded += (sender, e) => { question.AnswerText = entryElement.Value; };
+								switch (question.QuestionKeyboardType)
+								{
+									case "numeric":
+										entryElement.KeyboardType = UIKeyboardType.NumberPad;
+										break;
+									case "email":
+										entryElement.KeyboardType = UIKeyboardType.EmailAddress;
+										break;
+									case "decimal":
+										entryElement.KeyboardType = UIKeyboardType.DecimalPad;
+										break;
+									case "phone":
+										entryElement.KeyboardType = UIKeyboardType.PhonePad;
+										break;
+									default:
+										entryElement.KeyboardType = UIKeyboardType.Default;
+										break;
+								}
+								entryElement.ClearButtonMode = UITextFieldViewMode.Always;
+								entryElement.Enabled = enabled;
+								entryElement.QuestionId = question.QuestionId;
+								entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
+								entryElement.EntryEnded += (sender, e) => { question.AnswerText = entryElement.Value; };
 
-							qSection.Add(entryElement);
+								qSection.Add(entryElement);
 
-							QuestionsView.Add(qSection);
+								QuestionsView.Add(qSection);
+							}
 
 							break;
 							
@@ -842,7 +900,6 @@ namespace DynaPad
 				Root.TableView.ScrollRectToVisible(new CGRect(0, 0, 1, 1), true);
 			}
 		}
-
 
 		void Chk_Tapped(SectionQuestion cQuestion, QuestionOption cOption, bool selected, string sectionId)
 		{
@@ -990,18 +1047,59 @@ namespace DynaPad
 				{
 					if (sec.QuestionId == tQuestion.QuestionId)
 					{
-						var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView;
-						if (headerLabel != null)
+						var headtype = sec.HeaderView.GetType();
+
+						if (sec.HeaderView is UITableViewCell)
 						{
-							headerLabel.Enabled = triggered;
-							headerLabel.setStyle();
+							var headcell = (UITableViewCell)sec.HeaderView;
+							var headerLabel = (PaddedUIView<UILabel>)headcell.ContentView.Subviews[0];
+							var headerDic = (UIButton)headcell.ContentView.Subviews[1];
+							if (headerLabel != null)
+							{
+								headerLabel.Enabled = triggered;
+								headerLabel.setStyle();
+
+								if (headerDic != null)
+								{
+									headerDic.Enabled = triggered;
+									if (headerDic.Enabled)
+									{
+										headerDic.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+									}
+									else
+									{
+										headerDic.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+									}
+								}
+							}
+						}
+						else
+						{
+							var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView;
+
+							if (headerLabel != null)
+							{
+								headerLabel.Enabled = triggered;
+								headerLabel.setStyle();
+							}
 						}
 
 						foreach (dynamic element in sec.Elements)
 						{
 							if (element != null)
 							{
-								element.Enabled = triggered;
+								if (!(element is UIViewElement))
+								{
+									element.Enabled = triggered;
+								}
+								else
+								{
+									//PlaceholderEnabledUITextView pelement = (PlaceholderEnabledUITextView)element as PlaceholderEnabledUITextView;
+									UIViewElement pelement = element;
+									PlaceholderEnabledUITextView peui = (PlaceholderEnabledUITextView)pelement.ContainerView.Subviews[0];
+									peui.Enabled = triggered;
+									peui.UserInteractionEnabled = triggered;
+								}
 
 								if (element.GetContainerTableView() != null)
 								{
@@ -1026,20 +1124,31 @@ namespace DynaPad
 		}
 
 
+		void DeleteSavedDictation(string text, bool isDoctorForm, string[] dictation)
+		{
+			throw new NotImplementedException();
+		}
+
+
 		void OnStopRecording(object sender, EventArgs e)
 		{
+			//if (player.Playing)
+			//	player.Stop();
+
 			if (recorder == null)
 				return;
 
 			recorder.Stop();
 			stopwatch.Stop();
 
+			cellRecord.ImageView.Image = UIImage.FromBundle("Record");
 			LengthOfRecordingLabel.Text = string.Format("{0:hh\\:mm\\:ss}", stopwatch.Elapsed);
 			RecordingStatusLabel.Text = "";
 			StartRecordingButton.Enabled = true;
 			StartRecordingButton.Alpha = 1;
 			StopRecordingButton.Enabled = false;
 			StopRecordingButton.Alpha = (nfloat)0.5;
+			cellStop.ImageView.Image = UIImage.FromBundle("Stop");
 			PlayRecordedSoundButton.Enabled = true;
 			PlayRecordedSoundButton.Alpha = 1;
 			SaveRecordedSound.Enabled = true;
@@ -1083,12 +1192,14 @@ namespace DynaPad
 			stopwatch = new Stopwatch();
 			stopwatch.Start();
 
+			cellRecord.ImageView.Image = UIImage.FromBundle("RecordRed");
 			LengthOfRecordingLabel.Text = "";
 			RecordingStatusLabel.Text = "Recording";
 			StartRecordingButton.Enabled = false;
 			StartRecordingButton.Alpha = (nfloat)0.5;
 			StopRecordingButton.Enabled = true;
 			StopRecordingButton.Alpha = 1;
+			cellStop.ImageView.Image = UIImage.FromBundle("StopBlack");
 			PlayRecordedSoundButton.Enabled = false;
 			PlayRecordedSoundButton.Alpha = (nfloat)0.5;
 			SaveRecordedSound.Enabled = false;
@@ -1107,13 +1218,51 @@ namespace DynaPad
 
 		void OnDidPlayToEndTime(object sender, NSNotificationEventArgs e)
 		{
+			//StartRecordingButton.Enabled = true;
+			//StartRecordingButton.Alpha = 1;
+			//StopRecordingButton.Enabled = false;
+			//StopRecordingButton.Alpha = (nfloat)0.5;
+			PlayRecordedSoundButton.Enabled = false;
+			PlayRecordedSoundButton.Alpha = (nfloat)0.5;
+
+			//StopRecordingButton.TouchUpInside += OnStopRecording;
+
 			player.Dispose();
 			player = null;
 		}
 
 
+		void StopRecordingPlayback(object sender, EventArgs e)
+		{
+			player.Stop();
+			//player.PrepareToPlay();
+
+			StartRecordingButton.Enabled = true;
+			StartRecordingButton.Alpha = 1;
+			StopRecordingButton.Enabled = false;
+			StopRecordingButton.Alpha = (nfloat)0.5;
+			StopRecordingButton.SetTitle("Stop Recording", UIControlState.Normal);
+			cellStop.ImageView.Image = UIImage.FromBundle("Stop");
+			PlayRecordedSoundButton.Enabled = true;
+			PlayRecordedSoundButton.Alpha = 1;
+			RecordingStatusLabel.Text = "";
+			cellPlay.ImageView.Image = UIImage.FromBundle("Play");
+			StopRecordingButton.TouchUpInside += OnStopRecording;
+		}
+
+
 		void OnPlayRecordedSound(object sender, EventArgs e)
 		{
+			StartRecordingButton.Enabled = false;
+			StartRecordingButton.Alpha = (nfloat)0.5;
+			StopRecordingButton.Enabled = true;
+			StopRecordingButton.Alpha = 1;
+			StopRecordingButton.SetTitle("Stop Playback", UIControlState.Normal);
+			cellStop.ImageView.Image = UIImage.FromBundle("StopBlack");
+			cellPlay.ImageView.Image = UIImage.FromBundle("PlayGreen");
+			PlayRecordedSoundButton.Enabled = false;
+			PlayRecordedSoundButton.Alpha = (nfloat)0.5;
+
 			try
 			{
 				System.Console.WriteLine("Playing Back Recording {0}", audioFilePath);
@@ -1128,6 +1277,44 @@ namespace DynaPad
 				NSError audioError;
 				//player = new AVPlayer(audioFilePath);
 				player = new AVAudioPlayer(audioFilePath, "aac", out audioError);
+
+				player.FinishedPlaying += (sen, ee) =>
+				{
+					StartRecordingButton.Enabled = true;
+					StartRecordingButton.Alpha = 1;
+					StopRecordingButton.Enabled = false;
+					StopRecordingButton.Alpha = (nfloat)0.5;
+					StopRecordingButton.SetTitle("Stop Recording", UIControlState.Normal);
+					cellStop.ImageView.Image = UIImage.FromBundle("Stop");
+					PlayRecordedSoundButton.Enabled = true;
+					PlayRecordedSoundButton.Alpha = 1;
+					RecordingStatusLabel.Text = "";
+					cellPlay.ImageView.Image = UIImage.FromBundle("Play");
+					StopRecordingButton.TouchUpInside += OnStopRecording;
+					//PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
+				};
+
+				//PlayRecordedSoundButton.TouchUpInside += (sendi, eve) =>
+				//{
+				//	StartRecordingButton.Enabled = true;
+				//	StartRecordingButton.Alpha = 1;
+				//	StopRecordingButton.Enabled = false;
+				//	StopRecordingButton.Alpha = (nfloat)0.5;
+				//	PlayRecordedSoundButton.Enabled = true;
+				//	PlayRecordedSoundButton.Alpha = 1;
+				//	RecordingStatusLabel.Text = "";
+				//	cellPlay.ImageView.Image = UIImage.FromBundle("Play");
+				//	PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
+
+				//	player.Stop();
+				//};
+
+				StopRecordingButton.TouchUpInside += StopRecordingPlayback; 
+
+				RecordingStatusLabel.Text = "Playing";
+
+				player.Play();
+
 			}
 			catch (Exception ex)
 			{
@@ -1137,7 +1324,7 @@ namespace DynaPad
 		}
 
 
-		void OnPlaySavedDictation(string title, string dictationBytes, AVAudioPlayer pplayer, UILabel statusLabel)
+		void OnPlaySavedDictation(string title, string dictationBytes, AVAudioPlayer pplayer, UILabel statusLabel, UIButton cd, Section cdsec)
 		{
 			try
 			{
@@ -1162,7 +1349,31 @@ namespace DynaPad
 
 				var duration = TimeSpan.FromSeconds(pplayer.Duration).ToString(@"hh\:mm\:ss");
 
-				pplayer.FinishedPlaying += (se, ea) => { statusLabel.Text = duration; };
+				//cd.SetImage(UIImage.FromBundle("CircledStop"), UIControlState.Normal);
+				//cdsec.GetImmediateRootElement().Reload(cdsec, UITableViewRowAnimation.Fade);
+
+				pplayer.FinishedPlaying += (se, ea) =>
+				{
+					statusLabel.Text = duration;
+					//cd.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
+					//PlaySavedDictationButton.TouchUpInside += delegate
+				 //  {
+					//   OnPlaySavedDictation(title, dictationBytes, pplayer, statusLabel, cd);
+				 //  };
+				};
+
+				//PlaySavedDictationButton.TouchUpInside += (sender, e) => 
+				//{ 
+				//	pplayer.Stop();
+				//	//pplayer.Dispose();
+				//	statusLabel.Text = duration;
+				//	cd.ImageView.Image = UIImage.FromBundle("CircledPlay");
+				//	PlaySavedDictationButton.TouchUpInside += delegate
+				//   {
+				//	   OnPlaySavedDictation(title, dictationBytes, pplayer, statusLabel, cd);
+				//   };
+				//};
+
 				pplayer.Play();
 			}
 			catch (Exception ex)
@@ -1230,8 +1441,14 @@ namespace DynaPad
 		}
 
 
-		void OnSaveRecordedSound(string sectionId, Section dicSec)
+		void OnSaveRecordedSound(string sectionId, Section dicSec, UIPopoverController popd)
 		{
+			var bounds = pop.PopoverContentSize;
+			loadingOverlay = new LoadingOverlay(new CGRect(new CGPoint(0, 0), bounds));
+			//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+			//mvc.Add(loadingOverlay);
+			popd.ContentViewController.Add(loadingOverlay);
+
 			var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
 			var dictationArray = dictationData.ToArray();
 			try
@@ -1243,42 +1460,48 @@ namespace DynaPad
 				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, "Roy_" + DateTime.Now.ToShortTimeString(), dictationArray);
 				System.Console.WriteLine("Saving Recording {0}", audioFilePath);
 
-				var dps = new DynaPadService.DynaPadService();
-				var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
-				dicSec.RemoveRange(4, dicSec.Elements.Count - 4);
+				//var dps = new DynaPadService.DynaPadService();
+				//var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
+				//dicSec.RemoveRange(4, dicSec.Elements.Count - 4);
 
-				foreach (string[] dictation in dictations)
-				{
-					byte[] bytes = Convert.FromBase64String(dictation[2]);
-					NSData dataDictation = NSData.FromArray(bytes);
-					NSError err;
-					var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
+				//foreach (string[] dictation in dictations)
+				//{
+				//	byte[] bytes = Convert.FromBase64String(dictation[2]);
+				//	NSData dataDictation = NSData.FromArray(bytes);
+				//	NSError err;
 
-					var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
+				//	var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
 
-					var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
-					statusLabel.Text = duration;
+				//	var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
 
-					var PlaySavedDictationButton = new UIButton();
-					PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
-					PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
-					PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
-					//PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
-					PlaySavedDictationButton.TouchUpInside += delegate
-					{
-						OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel);
-					};
+				//	var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
+				//	statusLabel.Text = duration;
 
-					var cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-					cellDict.Frame = new CGRect(0, 0, 350, 50);
-					cellDict.BackgroundColor = UIColor.LightGray;
-					cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
-					cellDict.ContentView.Add(PlaySavedDictationButton);
-					cellDict.ContentView.Add(statusLabel);
+				//	//var PlaySavedDictationButton = new UIButton();
+				//	PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
+				//	PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
+				//	PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+				//	//PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
 
-					dicSec.Add(cellDict);
-				}
+				//	cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+				//	cellDict.Frame = new CGRect(0, 0, 350, 50);
+				//	cellDict.BackgroundColor = UIColor.LightGray;
+				//	cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
+				//	cellDict.ContentView.Add(PlaySavedDictationButton);
+				//	cellDict.ContentView.Add(statusLabel);
 
+				//	PlaySavedDictationButton.TouchUpInside += delegate
+				//	{
+				//		OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel, cellDict);
+				//	};
+
+				//	dicSec.Add(cellDict);
+				//	dicSec.GetImmediateRootElement().Reload(dicSec, UITableViewRowAnimation.Fade);
+				//}
+
+				loadingOverlay.Hide();
+
+				pop.Dismiss(true);
 			}
 			catch (Exception ex)
 			{
@@ -1301,7 +1524,7 @@ namespace DynaPad
 			}
 		}
 
-		void SaveSectionPreset(string presetName, string sectionId, Section presetSection, RadioGroup presetGroup, string origS, GlassButton nextbtn, bool isDoctorInput = true)
+		void SaveSectionPreset(string presetId, string presetName, string sectionId, Section presetSection, PresetRadioElement pre, RadioGroup presetGroup, string origS, GlassButton nextbtn, bool isDoctorInput = true)
 		{
 			// doctorid = 123 / 321
 			// locationid = 321 / 123
@@ -1311,11 +1534,66 @@ namespace DynaPad
 
 			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
 			var dds = new DynaPadService.DynaPadService();
-			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId);
+			dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
 
+			if (presetId == null)
+			{
+				var mre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);
 
+				presetSection.Insert(presetSection.Count - 1, UITableViewRowAnimation.Fade, mre);
+				presetSection.GetImmediateRootElement().RadioSelected = presetSection.Count - 2;
 
-			var mre = new MyRadioElement(presetName, "PresetAnswers");
+				presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
+			}
+			else
+			{
+				presetSection.GetImmediateRootElement().RadioSelected = presetGroup.Selected;
+				pre.PresetName = presetName;
+				pre.Caption = presetName;
+				//pre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);
+
+				//pre.GetImmediateRootElement().Reload(pre, UITableViewRowAnimation.Fade);
+				//var p = pre.Parent.Parent.Parent;
+				//var pp = pre.Parent.Parent.Parent.Parent;
+
+				presetSection.GetImmediateRootElement().Reload(pre, UITableViewRowAnimation.Fade);
+				//presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
+			}
+			//presetSection.GetContainerTableView().RemoveFromSuperview();
+			//QuestionsView.TableView.ReloadData();
+			//SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput, nextbtn);
+			NavigationController.PopViewController(true);
+		}
+
+		void DeleteSectionPreset(string presetId, string presetName, string sectionId, Section presetSection, PresetRadioElement pre, RadioGroup presetGroup, string origS, GlassButton nextbtn, bool isDoctorInput = true)
+		{
+			var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+			int fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
+
+			string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
+			var dds = new DynaPadService.DynaPadService();
+			dds.DeleteAnswerPreset(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, presetId);
+
+			//var mre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);
+
+			//presetSection.Insert(presetSection.Count - 1, UITableViewRowAnimation.Automatic, mre);
+			if (presetSection.GetImmediateRootElement().RadioSelected == pre.Index)
+			{
+				presetSection.GetImmediateRootElement().RadioSelected = 0;
+			}
+			presetSection.Remove(pre);
+			//presetSection.GetImmediateRootElement().Reload(pre, UITableViewRowAnimation.Fade);
+			presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
+
+			NavigationController.PopViewController(true);
+		}
+
+		public PresetRadioElement GetPreset(string presetId, string presetName, string presetJson, int fs, string sectionId, RadioGroup presetGroup, FormSection sectionQuestions, Section presetSection, string origS, bool isDoctorInput, GlassButton nextbtn)
+		{
+			var mre = new PresetRadioElement(presetName, "PresetAnswers");
+			mre.PresetID = presetId;
+			mre.PresetName = presetName;
+			mre.PresetJson = presetJson;
 			mre.OnSelected += delegate (object sender, EventArgs e)
 			{
 				SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
@@ -1327,10 +1605,33 @@ namespace DynaPad
 
 				SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput, nextbtn);
 			};
+			mre.editPresetBtn.TouchUpInside += (sender, e) =>
+			{
+				var UpdatePresetPrompt = UIAlertController.Create("Update Section Preset", "Overwriting preset '" + mre.PresetName + "', do you wish to continue?", UIAlertControllerStyle.Alert);
+				//Add Actions
+				UpdatePresetPrompt.AddTextField((field) =>
+				{
+					field.Placeholder = "Preset Name";
+					field.Text = mre.PresetName;
+				});
+				UpdatePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveSectionPreset(mre.PresetID, UpdatePresetPrompt.TextFields[0].Text, sectionId, presetSection, mre, presetGroup, origS, nextbtn)));
+				UpdatePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+				//Present Alert
 
-			presetSection.Insert(presetSection.Count - 1, UITableViewRowAnimation.Automatic, mre);
-			presetSection.GetImmediateRootElement().RadioSelected = presetSection.Count - 2;
+				PresentViewController(UpdatePresetPrompt, true, null);
+			};
+			mre.deletePresetBtn.TouchUpInside += (sender, e) =>
+			{
+				var UpdatePresetPrompt = UIAlertController.Create("Delete Section Preset", "Deleting preset '" + mre.PresetName + "', do you wish to continue?", UIAlertControllerStyle.Alert);
+				//Add Actions
+				UpdatePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DeleteSectionPreset(mre.PresetID, mre.PresetName, sectionId, presetSection, mre, presetGroup, origS, nextbtn)));
+				UpdatePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+				//Present Alert
 
+				PresentViewController(UpdatePresetPrompt, true, null);
+			};
+
+			return mre;
 		}
 	}
 }

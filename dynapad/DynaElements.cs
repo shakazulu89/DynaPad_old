@@ -34,6 +34,7 @@ namespace DynaPad
 
 
 
+
 	public class CredentialsProvider : ICredentialsProvider
 	{
 		// Constructor without parameters is required
@@ -261,9 +262,19 @@ namespace DynaPad
 
 
 
-	class MyRadioElement : RadioElement
+	public class PresetRadioElement : RadioElement
 	{
-		public MyRadioElement(string cCaption, string cGroup) : base(cCaption, cGroup) { Group = cGroup; }
+		private readonly static NSString ReuseId = new NSString("PresetRadioElement");
+		public int? Index { get; protected set; }
+		public string PresetID;
+		public string PresetName;
+		public string PresetJson;
+
+		public UIAlertController UpdatePresetPrompt;
+		public UIButton editPresetBtn = new UIButton(new CGRect(0, 0, 50, 50));
+		public UIButton deletePresetBtn = new UIButton(new CGRect(50, 0, 50, 50));
+
+		public PresetRadioElement(string cCaption, string cGroup) : base(cCaption, cGroup) { Group = cGroup; }
 		//public MyRadioElement(string s) : base(s) { }
 
 		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
@@ -274,6 +285,117 @@ namespace DynaPad
 				selected(this, EventArgs.Empty);
 			
 			dvc.DeactivateController(true);
+		}
+
+		protected override NSString CellKey
+		{
+			get
+			{
+				return ReuseId;
+			}
+		}
+
+		public override UITableViewCell GetCell(UITableView tv)
+		{
+			EnsureIndex();
+
+			var cell = tv.DequeueReusableCell(CellKey);
+			if (cell == null)
+			{
+				cell = new UITableViewCell(UITableViewCellStyle.Subtitle, CellKey);
+			}
+
+			//var cell = base.GetCell(tv);
+			cell.ContentView.AutosizesSubviews = false;
+			//cell.SelectionStyle = UITableViewCellSelectionStyle.Blue;
+			//cell.TextLabel.TextColor = UIColor.Black;
+			//cell.BackgroundColor = UIColor.White;
+
+			cell.TextLabel.Text = Caption;
+
+			//if (!string.IsNullOrEmpty(_subtitle))
+			//{
+			//	cell.DetailTextLabel.Text = _subtitle;
+			//}
+
+			var selected = false;
+
+			var slRoot = Parent.Parent as DynaRootElement;
+
+			if (slRoot != null)
+			{
+				if (Index == slRoot.RadioSelected)
+				{
+					selected = true;
+				}
+				else selected |= PresetID == slRoot.RadioSelected.ToString();
+				//selected = Index == slRoot.RadioSelected;
+				//selected = PresetID == slRoot.RadioSelected.ToString();
+			}
+			else
+			{
+				var root = (RootElement)Parent.Parent;
+				selected = Index == root.RadioSelected;
+			}
+
+			cell.Accessory = selected ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
+
+			cell.Selected = selected;
+
+			cell.UserInteractionEnabled = true;
+
+			cell.TextLabel.TextColor = UIColor.Black;
+
+			cell.BackgroundColor = UIColor.White;
+
+			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+
+			if (selected)
+			{
+				cell.BackgroundColor = UIColor.FromRGB(239, 246, 223);
+			}
+
+			if (!cell.UserInteractionEnabled)
+			{
+				cell.TextLabel.TextColor = UIColor.LightGray;
+				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				if (selected)
+				{
+					cell.Accessory = UITableViewCellAccessory.None;
+				}
+			}
+
+			editPresetBtn.Enabled = selected;
+
+			cell.Accessory = UITableViewCellAccessory.None;
+
+			if (PresetName != "No Preset")
+			{
+				editPresetBtn.SetImage(UIImage.FromBundle("Save"), UIControlState.Normal);
+				deletePresetBtn.SetImage(UIImage.FromBundle("Delete"), UIControlState.Normal);
+
+				var cellPreset = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellPreset.Frame = new CGRect(0, 0, 100, 50);
+				//cellPreset.BackgroundColor = UIColor.FromRGB(224, 238, 240);
+				////cellPreset.ImageView.Image = UIImage.FromBundle("CircledPlay");
+				//cellPreset.ContentView.Add(mre);
+				cellPreset.ContentView.Add(editPresetBtn);
+				cellPreset.ContentView.Add(deletePresetBtn);
+
+				cell.AccessoryView = cellPreset;
+			}
+
+			return cell;
+		}
+
+		private void EnsureIndex()
+		{
+			if (!Index.HasValue)
+			{
+				var parent = Parent as Section;
+
+				Index = parent.Elements.IndexOf(this);
+			}
 		}
 
 		public event EventHandler<EventArgs> OnSelected;
@@ -731,6 +853,148 @@ namespace DynaPad
 
 
 
+	public class PlaceholderEnabledUITextView : UITextView
+	{
+		public bool Enabled;
+		public string ConditionTriggerId;
+		public string ActiveTriggerId = "";
+		public List<QuestionOption> QuestionOptions;
+		public List<QuestionOption> QuestionAnswers;
+		public string QuestionId { get; set; }
+		public string QuestionParentId { get; set; }
+		public string QuestionText { get; set; }
+		public string QuestionType { get; set; }
+		public string QuestionKeyboardType { get; set; }
+		public bool Answered { get; set; }
+		public bool Disabled { get; set; }
+		public string AnswerId { get; set; }
+		public string AnswerText { get; set; }
+		public string ParentConditionTriggerId { get; set; }
+		public bool IsConditional { get; set; }
+
+		private UILabel placeholderLabel;
+
+		public PlaceholderEnabledUITextView()
+			: base()
+		{
+			this.CommonInit();
+		}
+
+		public PlaceholderEnabledUITextView(CGRect frame)
+			: base(frame)
+		{
+			this.CommonInit();
+		}
+
+		public PlaceholderEnabledUITextView(CGRect frame, NSTextContainer container)
+			: base(frame, container)
+		{
+			this.CommonInit();
+		}
+
+		public PlaceholderEnabledUITextView(NSCoder coder)
+			: base(coder)
+		{
+			this.CommonInit();
+		}
+
+		public PlaceholderEnabledUITextView(NSObjectFlag t)
+			: base(t)
+		{
+			this.CommonInit();
+		}
+
+		public PlaceholderEnabledUITextView(IntPtr handler)
+			: base(handler)
+		{
+			this.CommonInit();
+		}
+
+		public string Placeholder { get; set; }
+
+		public UIColor PlaceholderColor { get; set; }
+
+		public UIFont PlaceholderFont { get; set; }
+
+		public bool AllowWhiteSpace { get; set; }
+
+		public override void Draw(CGRect rect)
+		{
+			base.Draw(rect);
+
+			UserInteractionEnabled = Enabled;
+
+			var inset = this.TextContainerInset;
+			var leftInset = inset.Left + this.TextContainer.LineFragmentPadding;
+			var rightInset = inset.Left + this.TextContainer.LineFragmentPadding;
+			var maxSize = new CGSize()
+			{
+				Width = this.Frame.Width - (leftInset + rightInset),
+				Height = this.Frame.Height - (inset.Top + inset.Bottom)
+			};
+			var size = new NSString(this.Placeholder).StringSize(this.PlaceholderFont, maxSize, UILineBreakMode.WordWrap);
+			var frame = new CGRect(new CGPoint(leftInset, inset.Top), size);
+
+			this.placeholderLabel = new UILabel(frame)
+			{
+				BackgroundColor = UIColor.Clear,
+				Font = this.PlaceholderFont,
+				LineBreakMode = UILineBreakMode.WordWrap,
+				Lines = 0,
+				TextColor = this.PlaceholderColor
+			};
+
+			if (this.Text == null)
+			{
+				this.placeholderLabel.Text = this.Placeholder;
+			}
+
+			if (!Enabled)
+			{
+				if (this.Text == null)
+				{
+					placeholderLabel.Text = "Not applicable";
+				}
+				placeholderLabel.TextColor = UIColor.LightGray;
+				placeholderLabel.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				TextColor = UIColor.LightGray;
+			}
+
+			this.Add(this.placeholderLabel);
+		}
+
+		private void CommonInit()
+		{
+			this.PlaceholderColor = UIColor.Gray;
+			this.PlaceholderFont = UIFont.SystemFontOfSize(17);
+			this.TextColor = UIColor.Black;
+			this.Font = UIFont.SystemFontOfSize(17);
+
+			this.Started += this.OnStarted;
+
+			this.Ended += this.OnEnded;
+		}
+
+		private void OnStarted(object sender, EventArgs e)
+		{
+			this.placeholderLabel.Hidden = true;
+		}
+
+		private void OnEnded(object sender, EventArgs e)
+		{
+			if (this.AllowWhiteSpace)
+			{
+				this.placeholderLabel.Hidden = !string.IsNullOrEmpty(this.Text);
+			}
+			else
+			{
+				this.placeholderLabel.Hidden = !string.IsNullOrWhiteSpace(this.Text);
+			}
+		}
+	}
+
+
+
 	public class DynaEntryElement : EntryElement
 	{
 		public DynaEntryElement(string cCaption, string cPlaceHolder, string cValue) : base(cCaption, cPlaceHolder, cValue) { }
@@ -757,6 +1021,8 @@ namespace DynaPad
 
 			cell.ContentView.AutosizesSubviews = false;
 			//cell.ContentView.Frame = new CGRect(48, 0, 310, 44);
+			cell.ContentView.Bounds = new CGRect(cell.Bounds.X, cell.Bounds.Y, tv.Bounds.Width, cell.Bounds.Height);
+			cell.ContentView.Frame = new CGRect(cell.Frame.X, cell.Frame.Y, tv.Frame.Width, cell.Frame.Height);
 			cell.UserInteractionEnabled = Enabled;
 			cell.TextLabel.TextColor = UIColor.Black;
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
@@ -764,12 +1030,14 @@ namespace DynaPad
 			EntryTextField.TextColor = UIColor.Black;
 			//EntryTextField.Placeholder = "Enter your answer here";
 
-			var offset = (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone) ? 20 : 90;
+			//var offset = (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone) ? 20 : 90;
+			var offset = 20;
 			cell.Frame = new RectangleF((float)cell.Frame.X, (float)cell.Frame.Y, (float)(tv.Frame.Width - offset), (float)cell.Frame.Height);
 			//  SizeF size = s.EntryAlignment;
 			SizeF size = GetEntryPosition(UIFont.BoldSystemFontOfSize(17));
 			var yOffset = (float)((cell.ContentView.Bounds.Height - size.Height) / 2 - 1);
 			var width = (float)(cell.ContentView.Bounds.Width - size.Width);
+			//var width = (float)(cell.ContentView.Bounds.Width);
 			if (TextAlignment == UITextAlignment.Right)
 			{
 				// Add padding if right aligned
@@ -1091,7 +1359,6 @@ namespace DynaPad
 
 	public class DynaMultiRadioElement : RadioElement
 	{
-
 		public bool Enabled;
 		public string ParentQuestionId { get; set; }
 		public string OptionText { get; set; }
@@ -1101,7 +1368,6 @@ namespace DynaPad
 		public string QuestionId { get; set; }
 
 		public event Action<DynaMultiRadioElement> OnDeselected;
-
 		public event Action<DynaMultiRadioElement> ElementSelected;
 
 		private readonly static NSString ReuseId = new NSString("CustomRadioElement");
@@ -1798,6 +2064,12 @@ namespace DynaPad
 			);
 		}
 	}
+
+
+
+
+
+
 
 
 
