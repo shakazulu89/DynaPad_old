@@ -34,11 +34,13 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback DeleteAnswerPresetOperationCompleted;
         
+        private System.Threading.SendOrPostCallback SaveFileOperationCompleted;
+        
         private System.Threading.SendOrPostCallback SaveDictationOperationCompleted;
         
-        private System.Threading.SendOrPostCallback GetFormDictationsOperationCompleted;
+        private System.Threading.SendOrPostCallback DeleteDicatationOperationCompleted;
         
-        private System.Threading.SendOrPostCallback GetMenuJsonOperationCompleted;
+        private System.Threading.SendOrPostCallback GetFormDictationsOperationCompleted;
         
         private System.Threading.SendOrPostCallback ExportToPdfOperationCompleted;
         
@@ -81,13 +83,16 @@ namespace DynaPad.DynaPadService {
         public event DeleteAnswerPresetCompletedEventHandler DeleteAnswerPresetCompleted;
         
         /// CodeRemarks
+        public event SaveFileCompletedEventHandler SaveFileCompleted;
+        
+        /// CodeRemarks
         public event SaveDictationCompletedEventHandler SaveDictationCompleted;
         
         /// CodeRemarks
-        public event GetFormDictationsCompletedEventHandler GetFormDictationsCompleted;
+        public event DeleteDicatationCompletedEventHandler DeleteDicatationCompleted;
         
         /// CodeRemarks
-        public event GetMenuJsonCompletedEventHandler GetMenuJsonCompleted;
+        public event GetFormDictationsCompletedEventHandler GetFormDictationsCompleted;
         
         /// CodeRemarks
         public event ExportToPdfCompletedEventHandler ExportToPdfCompleted;
@@ -286,6 +291,47 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveFile", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string SaveFile(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrFile) {
+            object[] results = this.Invoke("SaveFile", new object[] {
+                        apptId,
+                        patientId,
+                        doctorId,
+                        locationId,
+                        fileName,
+                        folderName,
+                        arrFile});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile) {
+            this.SaveFileAsync(apptId, patientId, doctorId, locationId, fileName, folderName, arrFile, null);
+        }
+        
+        /// CodeRemarks
+        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile, object userState) {
+            if ((this.SaveFileOperationCompleted == null)) {
+                this.SaveFileOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveFileOperationCompleted);
+            }
+            this.InvokeAsync("SaveFile", new object[] {
+                        apptId,
+                        patientId,
+                        doctorId,
+                        locationId,
+                        fileName,
+                        folderName,
+                        arrFile}, this.SaveFileOperationCompleted, userState);
+        }
+        
+        private void OnSaveFileOperationCompleted(object arg) {
+            if ((this.SaveFileCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SaveFileCompleted(this, new SaveFileCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveDictation", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string SaveDictation(string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrDictation) {
             object[] results = this.Invoke("SaveDictation", new object[] {
@@ -327,6 +373,41 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/DeleteDicatation", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string DeleteDicatation(string dictationId, string formId, string sectionId, string doctorId) {
+            object[] results = this.Invoke("DeleteDicatation", new object[] {
+                        dictationId,
+                        formId,
+                        sectionId,
+                        doctorId});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void DeleteDicatationAsync(string dictationId, string formId, string sectionId, string doctorId) {
+            this.DeleteDicatationAsync(dictationId, formId, sectionId, doctorId, null);
+        }
+        
+        /// CodeRemarks
+        public void DeleteDicatationAsync(string dictationId, string formId, string sectionId, string doctorId, object userState) {
+            if ((this.DeleteDicatationOperationCompleted == null)) {
+                this.DeleteDicatationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnDeleteDicatationOperationCompleted);
+            }
+            this.InvokeAsync("DeleteDicatation", new object[] {
+                        dictationId,
+                        formId,
+                        sectionId,
+                        doctorId}, this.DeleteDicatationOperationCompleted, userState);
+        }
+        
+        private void OnDeleteDicatationOperationCompleted(object arg) {
+            if ((this.DeleteDicatationCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.DeleteDicatationCompleted(this, new DeleteDicatationCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormDictations", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
         [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
@@ -362,41 +443,6 @@ namespace DynaPad.DynaPadService {
             if ((this.GetFormDictationsCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetFormDictationsCompleted(this, new GetFormDictationsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetMenuJson", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetMenuJson(string formId, string clientId, string apptDate, bool isDocInput) {
-            object[] results = this.Invoke("GetMenuJson", new object[] {
-                        formId,
-                        clientId,
-                        apptDate,
-                        isDocInput});
-            return ((string)(results[0]));
-        }
-        
-        /// CodeRemarks
-        public void GetMenuJsonAsync(string formId, string clientId, string apptDate, bool isDocInput) {
-            this.GetMenuJsonAsync(formId, clientId, apptDate, isDocInput, null);
-        }
-        
-        /// CodeRemarks
-        public void GetMenuJsonAsync(string formId, string clientId, string apptDate, bool isDocInput, object userState) {
-            if ((this.GetMenuJsonOperationCompleted == null)) {
-                this.GetMenuJsonOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetMenuJsonOperationCompleted);
-            }
-            this.InvokeAsync("GetMenuJson", new object[] {
-                        formId,
-                        clientId,
-                        apptDate,
-                        isDocInput}, this.GetMenuJsonOperationCompleted, userState);
-        }
-        
-        private void OnGetMenuJsonOperationCompleted(object arg) {
-            if ((this.GetMenuJsonCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.GetMenuJsonCompleted(this, new GetMenuJsonCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -493,28 +539,34 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormQuestions", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetFormQuestions(string formId, string clientId, string apptId, bool isDocInput) {
+        public string GetFormQuestions(string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput) {
             object[] results = this.Invoke("GetFormQuestions", new object[] {
                         formId,
-                        clientId,
+                        doctorId,
+                        locationId,
+                        patientId,
+                        patientName,
                         apptId,
                         isDocInput});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void GetFormQuestionsAsync(string formId, string clientId, string apptId, bool isDocInput) {
-            this.GetFormQuestionsAsync(formId, clientId, apptId, isDocInput, null);
+        public void GetFormQuestionsAsync(string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput) {
+            this.GetFormQuestionsAsync(formId, doctorId, locationId, patientId, patientName, apptId, isDocInput, null);
         }
         
         /// CodeRemarks
-        public void GetFormQuestionsAsync(string formId, string clientId, string apptId, bool isDocInput, object userState) {
+        public void GetFormQuestionsAsync(string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput, object userState) {
             if ((this.GetFormQuestionsOperationCompleted == null)) {
                 this.GetFormQuestionsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetFormQuestionsOperationCompleted);
             }
             this.InvokeAsync("GetFormQuestions", new object[] {
                         formId,
-                        clientId,
+                        doctorId,
+                        locationId,
+                        patientId,
+                        patientName,
                         apptId,
                         isDocInput}, this.GetFormQuestionsOperationCompleted, userState);
         }
@@ -770,6 +822,32 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void SaveFileCompletedEventHandler(object sender, SaveFileCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class SaveFileCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal SaveFileCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     public delegate void SaveDictationCompletedEventHandler(object sender, SaveDictationCompletedEventArgs e);
     
     /// CodeRemarks
@@ -781,6 +859,32 @@ namespace DynaPad.DynaPadService {
         private object[] results;
         
         internal SaveDictationCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void DeleteDicatationCompletedEventHandler(object sender, DeleteDicatationCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class DeleteDicatationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal DeleteDicatationCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -816,32 +920,6 @@ namespace DynaPad.DynaPadService {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((string[][])(this.results[0]));
-            }
-        }
-    }
-    
-    /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void GetMenuJsonCompletedEventHandler(object sender, GetMenuJsonCompletedEventArgs e);
-    
-    /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class GetMenuJsonCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal GetMenuJsonCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// CodeRemarks
-        public string Result {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[0]));
             }
         }
     }

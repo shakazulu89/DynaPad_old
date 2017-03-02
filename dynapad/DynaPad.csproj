@@ -19,7 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Developer: dharel@live.com (VB44SNM8QD)</CodesignKey>
+    <CodesignKey>iPhone Distribution</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <MtouchFastDev>true</MtouchFastDev>
     <MtouchUseSGen>true</MtouchUseSGen>
@@ -54,6 +54,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <CodesignProvision></CodesignProvision>
     <BuildIpa>false</BuildIpa>
+    <MtouchDebug>false</MtouchDebug>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <Optimize>true</Optimize>
@@ -96,6 +97,7 @@
     <MtouchSdkVersion>10.2</MtouchSdkVersion>
     <CodesignProvision></CodesignProvision>
     <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
+<IOSDebugOverWiFi>false</IOSDebugOverWiFi>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AdHoc|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -122,10 +124,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Data" />
-    <Reference Include="FloatLabeledEntry.iOS">
-      <HintPath>..\packages\FloatLabeledEntry.iOS.1.0.1\lib\Xamarin.iOS10\FloatLabeledEntry.iOS.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="FloatLabeledEntry.iOS.Dialog">
       <HintPath>..\packages\FloatLabeledEntry.iOS.Dialog.1.0.0\lib\Xamarin.iOS10\FloatLabeledEntry.iOS.Dialog.dll</HintPath>
       <Private>False</Private>
@@ -136,24 +134,8 @@
       <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\System.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Runtime">
-      <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\Facades\System.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Web.Services">
       <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\System.Web.Services.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.IO">
-      <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\Facades\System.IO.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ObjectModel">
-      <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\Facades\System.ObjectModel.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Dynamic.Runtime">
-      <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\Facades\System.Dynamic.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HtmlAgilityPack">
@@ -176,6 +158,25 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="Xamarin.Controls.LoginScreen.iOS">
       <HintPath>..\packages\Xamarin.LoginScreen.1.5.0\lib\Xamarin.iOS10\Xamarin.Controls.LoginScreen.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Mobile">
+      <HintPath>..\Components\xamarin.mobile-0.7.7\lib\ios-unified\Xamarin.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="FloatLabeledEntry.iOS">
+      <HintPath>..\packages\FloatLabeledEntry.iOS.1.1.1\lib\Xamarin.iOS10\FloatLabeledEntry.iOS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Plugin.Media.Abstractions">
+      <HintPath>..\packages\Xam.Plugin.Media.2.6.2\lib\Xamarin.iOS10\Plugin.Media.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Media">
+      <HintPath>..\packages\Xam.Plugin.Media.2.6.2\lib\Xamarin.iOS10\Plugin.Media.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.TextToSpeech.Abstractions">
+      <HintPath>..\packages\Xam.Plugins.TextToSpeech.2.0.0\lib\Xamarin.iOS10\Plugin.TextToSpeech.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.TextToSpeech">
+      <HintPath>..\packages\Xam.Plugins.TextToSpeech.2.0.0\lib\Xamarin.iOS10\Plugin.TextToSpeech.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -273,10 +274,54 @@
     <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\circleplayblack32.png" />
     <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\circleplayblack40.png" />
     <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\Contents.json" />
-    <ImageAsset Include="Media.xcassets\Image.imageset\Contents.json" />
-    <ImageAsset Include="Media.xcassets\Image.imageset\circleplaygreen48.png" />
-    <ImageAsset Include="Media.xcassets\Image.imageset\circleplaygreen40.png" />
-    <ImageAsset Include="Media.xcassets\Image.imageset\circleplaygreen32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\circleplaygreen32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\circleplaygreen40.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\circleplaygreen48.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CanvasClose.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CanvasClose.imageset\Close-iPad.png" />
+    <ImageAsset Include="Media.xcassets\CanvasClose.imageset\Close-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPad.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPhone.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPhone%402x.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPhone%403x.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPhone.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPhone%402x.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPhone%403x.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPad.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPhone.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPhone%402x.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPhone%403x.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPad.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Writing.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Writing.imageset\write32.png" />
+    <ImageAsset Include="Media.xcassets\Writing.imageset\write48.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-60%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-72.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-72%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-76.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-76%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-50.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-50%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Writepad-icon-167.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-120.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-180.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-58.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-87.png" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Default-568h%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -307,6 +352,12 @@
     <Folder Include="Media.xcassets\CircledStop.imageset\" />
     <Folder Include="Media.xcassets\StopBlack.imageset\" />
     <Folder Include="Media.xcassets\CircledPlayFill.imageset\" />
+    <Folder Include="Media.xcassets\CircledPlayGreen.imageset\" />
+    <Folder Include="Media.xcassets\CanvasClose.imageset\" />
+    <Folder Include="Media.xcassets\Calligraphy.imageset\" />
+    <Folder Include="Media.xcassets\Ink.imageset\" />
+    <Folder Include="Media.xcassets\Debug.imageset\" />
+    <Folder Include="Media.xcassets\Writing.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -337,26 +388,26 @@
     <Compile Include="JsonHandler.cs" />
     <Compile Include="DynaElements.cs" />
     <Compile Include="Console.cs" />
-    <Compile Include="SqlFunctions.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Controls\RingControl.cs" />
+    <Compile Include="Controls\RingView.cs" />
+    <Compile Include="DrawingEngine\CGContextExtensions.cs" />
+    <Compile Include="DrawingEngine\CGDrawingEngine.cs" />
+    <Compile Include="Helpers\CGMathExtensions.cs" />
+    <Compile Include="Helpers\CountableClosedRange.cs" />
+    <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="StrokeModel\Stroke.cs" />
+    <Compile Include="StrokeModel\StrokeCollection.cs" />
+    <Compile Include="StrokeModel\StrokeGestureRecognizer.cs" />
+    <Compile Include="StrokeModel\StrokeSample.cs" />
+    <Compile Include="StrokeModel\StrokeSegment.cs" />
+    <Compile Include="CanvasMainViewController.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Web References\DynaPadService\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="SampleForm.json" />
-    <BundleResource Include="preset_RightShoulderSprain.json" />
-    <BundleResource Include="preset_LeftShoulderSprain.json" />
-    <BundleResource Include="preset_NeckComplaints.json" />
-    <BundleResource Include="preset_BackComplaints.json" />
-    <BundleResource Include="preset_NothingIsWrong.json" />
-    <BundleResource Include="preset_form_Spanish.json" />
-    <BundleResource Include="preset_form_Chinese.json" />
-    <BundleResource Include="preset_form_Russian.json" />
-    <BundleResource Include="preset_section_Spanish.json" />
-    <BundleResource Include="preset_section_Chinese.json" />
-    <BundleResource Include="preset_section_Russian.json" />
-    <BundleResource Include="MenuD.json" />
     <BundleResource Include="Resources\Circled Play-20.png" />
     <BundleResource Include="Resources\Create New-20.png" />
     <BundleResource Include="Resources\Plus-20.png" />
@@ -384,11 +435,22 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SampleMenu.json" />
-  </ItemGroup>
-  <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork" />
     <ITunesArtwork Include="iTunesArtwork%402x" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="xamarin.mobile">
+      <Version>0.7.7</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="TextToSpeechPlugin">
+      <Version>1.0.2</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="MediaPlugin">
+      <Version>1.0.1</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

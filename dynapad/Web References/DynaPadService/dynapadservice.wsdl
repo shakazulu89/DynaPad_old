@@ -88,6 +88,26 @@
       <s:element name="DeleteAnswerPresetResponse">
         <s:complexType />
       </s:element>
+      <s:element name="SaveFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="folderName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="arrFile" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SaveFileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SaveFileResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="SaveDictation">
         <s:complexType>
           <s:sequence>
@@ -108,6 +128,23 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="DeleteDicatation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dictationId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteDicatationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="DeleteDicatationResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetFormDictations">
         <s:complexType>
           <s:sequence>
@@ -123,23 +160,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GetFormDictationsResult" type="tns:ArrayOfArrayOfString" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetMenuJson">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="clientId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="apptDate" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetMenuJsonResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetMenuJsonResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -191,7 +211,10 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="clientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
           </s:sequence>
@@ -298,23 +321,29 @@
   <wsdl:message name="DeleteAnswerPresetSoapOut">
     <wsdl:part name="parameters" element="tns:DeleteAnswerPresetResponse" />
   </wsdl:message>
+  <wsdl:message name="SaveFileSoapIn">
+    <wsdl:part name="parameters" element="tns:SaveFile" />
+  </wsdl:message>
+  <wsdl:message name="SaveFileSoapOut">
+    <wsdl:part name="parameters" element="tns:SaveFileResponse" />
+  </wsdl:message>
   <wsdl:message name="SaveDictationSoapIn">
     <wsdl:part name="parameters" element="tns:SaveDictation" />
   </wsdl:message>
   <wsdl:message name="SaveDictationSoapOut">
     <wsdl:part name="parameters" element="tns:SaveDictationResponse" />
   </wsdl:message>
+  <wsdl:message name="DeleteDicatationSoapIn">
+    <wsdl:part name="parameters" element="tns:DeleteDicatation" />
+  </wsdl:message>
+  <wsdl:message name="DeleteDicatationSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteDicatationResponse" />
+  </wsdl:message>
   <wsdl:message name="GetFormDictationsSoapIn">
     <wsdl:part name="parameters" element="tns:GetFormDictations" />
   </wsdl:message>
   <wsdl:message name="GetFormDictationsSoapOut">
     <wsdl:part name="parameters" element="tns:GetFormDictationsResponse" />
-  </wsdl:message>
-  <wsdl:message name="GetMenuJsonSoapIn">
-    <wsdl:part name="parameters" element="tns:GetMenuJson" />
-  </wsdl:message>
-  <wsdl:message name="GetMenuJsonSoapOut">
-    <wsdl:part name="parameters" element="tns:GetMenuJsonResponse" />
   </wsdl:message>
   <wsdl:message name="ExportToPdfSoapIn">
     <wsdl:part name="parameters" element="tns:ExportToPdf" />
@@ -385,17 +414,21 @@
       <wsdl:input message="tns:DeleteAnswerPresetSoapIn" />
       <wsdl:output message="tns:DeleteAnswerPresetSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="SaveFile">
+      <wsdl:input message="tns:SaveFileSoapIn" />
+      <wsdl:output message="tns:SaveFileSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="SaveDictation">
       <wsdl:input message="tns:SaveDictationSoapIn" />
       <wsdl:output message="tns:SaveDictationSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="DeleteDicatation">
+      <wsdl:input message="tns:DeleteDicatationSoapIn" />
+      <wsdl:output message="tns:DeleteDicatationSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetFormDictations">
       <wsdl:input message="tns:GetFormDictationsSoapIn" />
       <wsdl:output message="tns:GetFormDictationsSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetMenuJson">
-      <wsdl:input message="tns:GetMenuJsonSoapIn" />
-      <wsdl:output message="tns:GetMenuJsonSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ExportToPdf">
       <wsdl:input message="tns:ExportToPdfSoapIn" />
@@ -477,6 +510,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="SaveFile">
+      <soap:operation soapAction="http://tempuri.org/SaveFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SaveDictation">
       <soap:operation soapAction="http://tempuri.org/SaveDictation" style="document" />
       <wsdl:input>
@@ -486,8 +528,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetFormDictations">
-      <soap:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
+    <wsdl:operation name="DeleteDicatation">
+      <soap:operation soapAction="http://tempuri.org/DeleteDicatation" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -495,8 +537,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetMenuJson">
-      <soap:operation soapAction="http://tempuri.org/GetMenuJson" style="document" />
+    <wsdl:operation name="GetFormDictations">
+      <soap:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -624,6 +666,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="SaveFile">
+      <soap12:operation soapAction="http://tempuri.org/SaveFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SaveDictation">
       <soap12:operation soapAction="http://tempuri.org/SaveDictation" style="document" />
       <wsdl:input>
@@ -633,8 +684,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetFormDictations">
-      <soap12:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
+    <wsdl:operation name="DeleteDicatation">
+      <soap12:operation soapAction="http://tempuri.org/DeleteDicatation" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -642,8 +693,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetMenuJson">
-      <soap12:operation soapAction="http://tempuri.org/GetMenuJson" style="document" />
+    <wsdl:operation name="GetFormDictations">
+      <soap12:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

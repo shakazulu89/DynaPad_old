@@ -9,6 +9,9 @@ using CoreGraphics;
 using AVFoundation;
 using System.Diagnostics;
 using System.IO;
+using Xamarin.Media;
+using System.Threading.Tasks;
+using Plugin.TextToSpeech;
 
 namespace DynaPad
 {
@@ -118,7 +121,7 @@ namespace DynaPad
 		}
 
 
-		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm, GlassButton nextbtn = null)
+		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm, GlassButton nextbtn = null, bool IsViewSummary = false, string SummaryFileName = null)
 		{
 			//var bounds = UIScreen.MainScreen.Bounds;
 			var bounds = base.TableView.Frame;
@@ -140,25 +143,36 @@ namespace DynaPad
 						summaryPaddedView.Type = "Section";
 						summaryPaddedView.Frame = new CGRect(0, 0, 0, 40);
 						summaryPaddedView.Padding = 5f;
-						summaryPaddedView.NestedView.Text = "SUMARRY";
+						summaryPaddedView.NestedView.Text = "SUMMARY";
 						summaryPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
 						summaryPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
 						summaryPaddedView.setStyle();
 
-						var summarySection = new DynaSection("SUMARRY");
+						var summarySection = new DynaSection("SUMMARY");
 						summarySection.HeaderView = summaryPaddedView;
 						summarySection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 						summarySection.FooterView.Hidden = true;
 
-						var dds = new DynaPadService.DynaPadService();
-						string finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-						var summaryFileName = dds.ExportToPdf(finalJson);
+						var summaryFileName = "";
+
+						if (!IsViewSummary)
+						{
+							var dds = new DynaPadService.DynaPadService();
+							string finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+							summaryFileName = dds.ExportToPdf(finalJson);
+						}
+						else
+						{
+							summaryFileName = SummaryFileName;
+						}
 
 						var webViews = new UIWebView(View.Bounds);
 						webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
 						//string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
 						string localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
-						webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
+						//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
+						webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/" + summaryFileName)));
+						//webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl)));
 						webViews.ScalesPageToFit = true;
 
 						summarySection.Add(webViews);
@@ -234,7 +248,7 @@ namespace DynaPad
 						reportPaddedView.Type = "Section";
 						reportPaddedView.Frame = new CGRect(0, 0, 0, 40);
 						reportPaddedView.Padding = 5f;
-						reportPaddedView.NestedView.Text = "the report"; //Report.ReportName.ToUpper();
+						reportPaddedView.NestedView.Text = "REPORT"; //Report.ReportName.ToUpper();
 						reportPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
 						reportPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
 						reportPaddedView.setStyle();
@@ -271,7 +285,7 @@ namespace DynaPad
 						break;
 					default:
 						// Update the view
-						ConfigureView(valueId, origSectionJson, IsDoctorForm, nextbtn);
+						ConfigureView(context, valueId, origSectionJson, IsDoctorForm, nextbtn);
 						break;
 				}
 			}
@@ -280,7 +294,7 @@ namespace DynaPad
 		}
 
 
-		void ConfigureView(string sectionId, string origS, bool IsDoctorForm, GlassButton nextbtn)
+		void ConfigureView(string context, string sectionId, string origS, bool IsDoctorForm, GlassButton nextbtn)
 		{
 			// Update the user interface for the detail item
 			if (DetailItem != null)
@@ -304,237 +318,17 @@ namespace DynaPad
 
 				if (IsDoctorForm)
 				{
-					NavigationItem.SetRightBarButtonItem(
-					new UIBarButtonItem(UIImage.FromBundle("Dictation"), UIBarButtonItemStyle.Plain, (sender, args) =>
-					{
-						audioFilePath = null;
+					// Notes/Dictation
+					UIBarButtonItem drawNavBtn = GetDrawNavBtn(sectionId);
+					UIBarButtonItem dicNavBtn = GetDicNavBtn(sectionId, IsDoctorForm);
 
-						CancelRecording.Frame = new CGRect(0, 0, 350, 50);
-						CancelRecording.SetTitle("Close", UIControlState.Normal);
-						CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
-						//CancelRecording.TouchUpInside += OnCancelRecording;
+					UIBarButtonItem picNavBtn = GetPhotoNavBtn(sectionId, context, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
 
-						var clab = new UILabel(new CGRect(10, 0, 290, 50));
-						//clab.TextAlignment = UITextAlignment.Center;
-						clab.Text = "DICTATION(S):";
-						//clab.Font = UIFont.BoldSystemFontOfSize(17);
+					NavigationItem.SetLeftBarButtonItem(picNavBtn, true);
 
-						//var segDict = new UISegmentedControl();
-						//segDict.Frame = new CGRect(0, 0, 350, 50);
-						//segDict.Momentary = true;
-						//segDict.InsertSegment(UIImage.FromBundle("Delete"), 0, true);
-						//segDict.InsertSegment("Dictation", 1, true);
-						//segDict.SetWidth(50, 0);
-						//segDict.SetWidth(324, 1);
+					NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { dicNavBtn, drawNavBtn }, true);
 
-						var cellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellHeader.Frame = new CGRect(0, 0, 350, 50);
-						//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
-
-						var headclosebtn = new UIButton(new CGRect(300, 0, 50, 50));
-						headclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
-
-						cellHeader.ContentView.Add(clab);
-						cellHeader.ContentView.Add(headclosebtn);
-
-						var cellFooter = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellFooter.Frame = new CGRect(0, 0, 350, 50);
-						//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
-						cellFooter.ContentView.Add(CancelRecording);
-
-
-						var sec = new Section(cellHeader, cellFooter);
-						sec.FooterView.Frame = new CGRect(0, 0, 350, 50);
-
-						RecordingStatusLabel.Text = string.Empty;
-						RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 50);
-
-						LengthOfRecordingLabel.Text = string.Empty;
-						LengthOfRecordingLabel.Frame = new CGRect(210, 0, 120, 50);
-
-						StartRecordingButton.Frame = new CGRect(20, 0, 160, 50);
-						//StartRecordingButton.SetImage(UIImage.FromBundle("Record"), UIControlState.Normal);
-						StartRecordingButton.TouchUpInside += OnStartRecording;
-						StartRecordingButton.SetTitle("Start Recording", UIControlState.Normal);
-						StartRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
-
-						StopRecordingButton.Frame = new CGRect(20, 0, 160, 50);
-						//StopRecordingButton.SetImage(UIImage.FromBundle("Stop"), UIControlState.Normal);
-						StopRecordingButton.SetTitle("Stop Recording", UIControlState.Normal);
-						StopRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
-						StopRecordingButton.TouchUpInside += OnStopRecording;
-						StopRecordingButton.Enabled = false;
-						StopRecordingButton.Alpha = (nfloat)0.5;
-
-						PlayRecordedSoundButton.Frame = new CGRect(20, 0, 160, 50);
-						//PlayRecordedSoundButton.SetImage(UIImage.FromBundle("Play"), UIControlState.Normal);
-						PlayRecordedSoundButton.SetTitle("Play Recording", UIControlState.Normal);
-						PlayRecordedSoundButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
-						PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
-						PlayRecordedSoundButton.Enabled = false;
-						PlayRecordedSoundButton.Alpha = (nfloat)0.5;
-
-						SaveRecordedSound.Enabled = false; 
-						SaveRecordedSound.Alpha = (nfloat)0.5;
-						SaveRecordedSound.Frame = new CGRect(20, 0, 160, 50);
-						//SaveRecordedSound.SetImage(UIImage.FromBundle("Save"), UIControlState.Normal);
-						SaveRecordedSound.SetTitle("Save Recording", UIControlState.Normal);
-						SaveRecordedSound.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
-
-						observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
-
-						//var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellRecord.Frame = new CGRect(0, 0, 350, 50);
-						cellRecord.ImageView.Image = UIImage.FromBundle("Record");
-						cellRecord.ContentView.Add(StartRecordingButton);
-						cellRecord.ContentView.Add(RecordingStatusLabel);
-
-						sec.Add(cellRecord);
-
-						//var cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellStop.Frame = new CGRect(0, 0, 350, 50);
-						cellStop.ImageView.Image = UIImage.FromBundle("Stop");
-						cellStop.ContentView.Add(StopRecordingButton);
-						cellStop.ContentView.Add(LengthOfRecordingLabel);
-
-						sec.Add(cellStop);
-
-						//var cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellPlay.Frame = new CGRect(0, 0, 350, 50);
-						cellPlay.ImageView.Image = UIImage.FromBundle("Play");
-						cellPlay.ContentView.Add(PlayRecordedSoundButton);
-
-						sec.Add(cellPlay);
-
-						//var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellSave.Frame = new CGRect(0, 0, 350, 50);
-						cellSave.ImageView.Image = UIImage.FromBundle("Save");
-						cellSave.ContentView.Add(SaveRecordedSound);
-
-						sec.Add(cellSave);
-
-						var dps = new DynaPadService.DynaPadService();
-						var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
-
-						foreach (string[] dictation in dictations)
-						{
-							byte[] bytes = Convert.FromBase64String(dictation[2]);
-							NSData dataDictation = NSData.FromArray(bytes);
-							NSError err;
-							var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
-
-							var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
-
-							var statusLabel = new UILabel(new CGRect(200, 0, 100, 50));
-							statusLabel.Text = duration;
-
-							PlaySavedDictationButton = new UIButton();
-							PlaySavedDictationButton.Frame = new CGRect(10, 0, 190, 50);
-							PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
-							PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
-							PlaySavedDictationButton.HorizontalAlignment = UIControlContentHorizontalAlignment.Left;
-							PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
-							PlaySavedDictationButton.ImageEdgeInsets = new UIEdgeInsets(0, 0, 0, 5);
-							PlaySavedDictationButton.TitleEdgeInsets = new UIEdgeInsets(0, 5, 0, 0);
-
-							messageLabel = new UILabel();
-
-							DeleteSavedDictationButton = new UIButton();
-							DeleteSavedDictationButton.Frame = new CGRect(300, 0, 50, 50);
-							DeleteSavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
-							DeleteSavedDictationButton.SetImage(UIImage.FromBundle("Delete"), UIControlState.Normal);
-							DeleteSavedDictationButton.TouchUpInside += (sende, er) =>
-							{
-								var DeletePrompt = UIAlertController.Create("Delete Dictation", "Administrative use only. Deleteing dictation '" + dictation[1] + "', continue?", UIAlertControllerStyle.Alert);
-								DeletePrompt.AddTextField((field) =>
-								{
-									field.SecureTextEntry = true;
-									field.Placeholder = "Password";
-								});
-								DeletePrompt.Add(messageLabel);
-								DeletePrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DeleteSavedDictation(DeletePrompt.TextFields[0].Text, IsDoctorForm, dictation)));
-								DeletePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-								//Present Alert
-								ParentViewController.PresentedViewController.PresentViewController(DeletePrompt, true, null);
-
-							};
-
-							cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-							cellDict.Frame = new CGRect(0, 0, 350, 50);
-							cellDict.BackgroundColor = UIColor.LightGray;
-							//cellDict.ImageView.Frame = new CGRect(0, 0, 20, 50);
-							//cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
-							cellDict.ContentView.Add(PlaySavedDictationButton);
-							cellDict.ContentView.Add(statusLabel);
-							cellDict.ContentView.Add(DeleteSavedDictationButton);
-
-							sec.Add(cellDict);
-
-							PlaySavedDictationButton.TouchUpInside += delegate
-							{
-								OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel, PlaySavedDictationButton, sec);
-							};
-						}
-
-						var roo = new RootElement("Dictation");
-						roo.Add(sec);
-
-						var dia = new DialogViewController(roo);
-
-						var vie = new UIView();
-
-						var con = new UIViewController();
-
-						con.Add(vie);
-
-						var popHeight = sec.Elements.Count > 8 ? 500 : sec.Elements.Count * 50 + 100;
-
-						pop = new UIPopoverController(dia);
-						pop.PopoverContentSize = new CGSize(350, popHeight);
-						pop.ShouldDismiss = (popoverController) => false;
-						pop.DidDismiss += delegate
-						{
-							//AVAudioSession.SharedInstance().Dispose();
-							session.Dispose();
-							session = null;
-
-							observer.Dispose();
-							observer = null;
-							//recorder.Dispose();
-							stopwatch = null;
-							recorder = null;
-							player = null;
-							pop.Dispose();
-							pop = null;
-							audioFilePath = null;
-						};
-
-						//segDict.ValueChanged += (s, e) =>
-						//{
-						//	if (segDict.SelectedSegment == 0)
-						//	{
-						//		pop.Dismiss(true);
-						//	}
-						//};
-
-						SaveRecordedSound.TouchUpInside += delegate
-						{
-							OnSaveRecordedSound(sectionId, sec, pop);
-						};
-
-						CancelRecording.TouchUpInside += delegate
-						{ pop.Dismiss(true); };
-
-						headclosebtn.TouchUpInside += delegate
-						{ pop.Dismiss(true); };
-
-						pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItem, UIPopoverArrowDirection.Unknown, true);
-					}), true);
-
-					/*
-					 * TODO: make presets password protected (maybe not needed since is for doctor only?)! (maybe component: Passcode)
-					*/
-
+					// Presets
 					var presetPaddedView = new PaddedUIView<UILabel>();
 					presetPaddedView.Enabled = true;
 					presetPaddedView.Type = "Preset";
@@ -626,13 +420,30 @@ namespace DynaPad
 					qSection.Enabled = enabled;
 					//question.IsEnabled = enabled;
 
-					nfloat qWidth = IsDoctorForm ? View.Frame.Width - 50 : 0;
-					UITableViewCell cellQ = null;
+					nfloat qWidth = !IsDoctorForm ? View.Frame.Width - 50 : View.Frame.Width;
 
-					if (IsDoctorForm)
+					//var cellStyle = !string.IsNullOrEmpty(question.Subtitle) ? UITableViewCellStyle.Subtitle : UITableViewCellStyle.Default;
+					var cellHeight = !string.IsNullOrEmpty(question.Subtitle) ? 50 : 30;
+
+					qSection.HeaderView = new UIView(new CGRect(0, 0, View.Frame.Width, cellHeight));
+
+					//var cellQ = new UITableViewCell(cellStyle, null);
+					//cellQ.Frame = new CGRect(0, 0, View.Frame.Width, cellHeight);
+					//cellQ.SelectionStyle = UITableViewCellSelectionStyle.None;
+
+					if (!string.IsNullOrEmpty(question.Subtitle))
 					{
-						cellQ = new UITableViewCell(UITableViewCellStyle.Default, null);
-						cellQ.Frame = new CGRect(0, 0, View.Frame.Width, 30);
+						var qsPaddedView = new PaddedUIView<UILabel>();
+						qsPaddedView.Enabled = enabled;
+						qsPaddedView.Frame = new CGRect(0, 30, View.Frame.Width, 20);
+						qsPaddedView.Padding = 5f;
+						qsPaddedView.NestedView.Text = question.Subtitle.ToUpper();
+						qsPaddedView.Type = "Subtitle";
+						qsPaddedView.setStyle();
+
+						//cellQ.Add(qsPaddedView);
+
+						qSection.HeaderView.Add(qsPaddedView);
 					}
 
 					var qPaddedView = new PaddedUIView<UILabel>();
@@ -643,42 +454,67 @@ namespace DynaPad
 					qPaddedView.Type = "Question";
 					qPaddedView.setStyle();
 
-					if (cellQ != null)
+					if (!IsDoctorForm)
 					{
 						var qDictationButton = new UIButton(new CGRect(View.Frame.GetMaxX() - 50, 0, 50, 30));
-						qDictationButton.Enabled = false;
+						qDictationButton.Enabled = enabled;
 						qDictationButton.SetImage(UIImage.FromBundle("QRecord"), UIControlState.Normal);
-						//if (qDictationButton.Enabled)
-						//{
-						//	qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
-						//}
-						//else
-						//{
-						//	qDictationButton.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
-						//}
-						qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+						if (enabled)
+						{
+							qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+						}
+						else
+						{
+							qDictationButton.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+						}
+						//qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+						if (question.QuestionText.Length < 250)
+						{
+							var que = question.QuestionText;
+							var opts = "";
 
-						cellQ.ContentView.Add(qPaddedView);
-						cellQ.ContentView.Add(qDictationButton);
+							if (question.QuestionOptions.Count >= 1)
+							{
+								opts = "... The options are: ";
+
+								foreach (QuestionOption opt in question.QuestionOptions)
+								{
+									opts += (question.QuestionOptions.IndexOf(opt) + 1) + ". " + opt.OptionText + ".";
+								}
+							}
+
+							qDictationButton.TouchUpInside += (sender, e) =>
+							{
+								CrossTextToSpeech.Current.Speak(question.QuestionText + opts, false);
+								//CrossTextToSpeech.Current.Speak(opts);
+								CrossTextToSpeech.Current.Dispose();
+							};
+						}
+
+						//cellQ.ContentView.Add(qPaddedView);
+						//cellQ.ContentView.Add(qDictationButton);
 						//cellQ.AccessoryView = qDictationButton;
 
-						qSection.HeaderView = cellQ;
+						qSection.HeaderView.Add(qPaddedView);
+						qSection.HeaderView.Add(qDictationButton);
 					}
 					else
 					{
-						qSection.HeaderView = qPaddedView;
+						//cellQ.ContentView.Add(qPaddedView);
+
+						qSection.HeaderView.Add(qPaddedView);
 					}
+
+					//qSection.HeaderView = cellQ;
 
 					qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 					qSection.FooterView.Hidden = true;
-
-					var ass = question;
 
 					switch (question.QuestionType)
 					{
 						case "BodyParts":
 						case "Check":
-							
+
 							foreach (QuestionOption opt in question.QuestionOptions)
 							{
 								var chk = new DynaCheckBoxElement(opt.OptionText, false, opt.OptionId);
@@ -701,11 +537,11 @@ namespace DynaPad
 							QuestionsView.Add(qSection);
 
 							break;
-							
+
 						case "Radio":
 						case "Bool":
 						case "YesNo":
-							
+
 							foreach (QuestionOption opt in question.QuestionOptions)
 							{
 								var radio = new DynaMultiRadioElement(opt.OptionText, question.QuestionId);
@@ -744,23 +580,46 @@ namespace DynaPad
 							QuestionsView.Add(qSection);
 
 							break;
-							
+
 						case "TextInput":
+
+							var dval = question.AnswerText;
+							if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
+							{
+								dval = question.DefaultValue;
+							}
 
 							if (IsDoctorForm)
 							{
-								var entryElement = new PlaceholderEnabledUITextView(new CGRect(5,0,View.Frame.Width, 100));
+								var entryElement = new PlaceholderEnabledUITextView(new CGRect(0, 0, View.Frame.Width, 100));
+								entryElement.AutocorrectionType = UITextAutocorrectionType.No;
+								entryElement.SpellCheckingType = UITextSpellCheckingType.No;
+								entryElement.EnablesReturnKeyAutomatically = false;
 								entryElement.Placeholder = "Enter answer here";
-								entryElement.Text = question.AnswerText;
+								entryElement.Text = dval;
+
 								entryElement.Editable = true;
 								entryElement.Enabled = enabled;
 								entryElement.QuestionId = question.QuestionId;
 								entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
 								entryElement.AllowWhiteSpace = true;
-								entryElement.Ended += (sender, e) => 
-								{ 
-									question.AnswerText = entryElement.Text; 
+								entryElement.Ended += (sender, e) =>
+								{
+									question.AnswerText = entryElement.Text;
 								};
+
+								if (!enabled)
+								{
+									entryElement.PlaceholderColor = UIColor.GroupTableViewBackgroundColor;
+									entryElement.TextColor = UIColor.LightGray;
+								}
+								else
+								{
+									entryElement.TextColor = UIColor.Black;
+									entryElement.BackgroundColor = UIColor.White;
+								}
+
+								entryElement.PlaceholderColor = UIColor.LightGray;
 
 								qSection.Add(entryElement);
 
@@ -768,31 +627,46 @@ namespace DynaPad
 							}
 							else
 							{
-								var entryElement = new DynaEntryElement("", "Enter your answer here", question.AnswerText);
+								var ass = new UITextField();
 
-								switch (question.QuestionKeyboardType)
+								var entryElement = new DynaEntryElement("", "Enter your answer here", dval);
+
+								entryElement.EntryEnded += (sender, e) =>
 								{
-									case "numeric":
-										entryElement.KeyboardType = UIKeyboardType.NumberPad;
-										break;
-									case "email":
+									question.AnswerText = entryElement.Value;
+								};
+
+								switch (question.QuestionKeyboardTypeId)
+								{
+									case "1"://"Email":
 										entryElement.KeyboardType = UIKeyboardType.EmailAddress;
 										break;
-									case "decimal":
+									case "2"://"Normal":
+										entryElement.KeyboardType = UIKeyboardType.Default;
+										break;
+									case "3"://"Numeric":
+										entryElement.KeyboardType = UIKeyboardType.NumberPad;
+										break;
+									case "4"://"Decimal":
 										entryElement.KeyboardType = UIKeyboardType.DecimalPad;
 										break;
-									case "phone":
+									case "5"://"NumericPunctuation":
+										entryElement.KeyboardType = UIKeyboardType.NumbersAndPunctuation;
+										break;
+									case "6"://"Phone":
 										entryElement.KeyboardType = UIKeyboardType.PhonePad;
 										break;
 									default:
 										entryElement.KeyboardType = UIKeyboardType.Default;
 										break;
 								}
+
+								entryElement.AutocorrectionType = UITextAutocorrectionType.No;
+								entryElement.EnablesReturnKeyAutomatically = false;
 								entryElement.ClearButtonMode = UITextFieldViewMode.Always;
 								entryElement.Enabled = enabled;
 								entryElement.QuestionId = question.QuestionId;
 								entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
-								entryElement.EntryEnded += (sender, e) => { question.AnswerText = entryElement.Value; };
 
 								qSection.Add(entryElement);
 
@@ -800,19 +674,26 @@ namespace DynaPad
 							}
 
 							break;
-							
+
 						case "Date":
-							
+
 							var dt = new DateTime();
 							dt = !string.IsNullOrEmpty(question.AnswerText) ? Convert.ToDateTime(question.AnswerText) : DateTime.Today;
 							//dt.ToUniversalTime();
 
 							var dateElement = new NullableDateElementInline("", dt);
+
+							if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
+							{
+								dateElement.SetDate(Convert.ToDateTime(question.DefaultValue));
+							}
+
 							dateElement.Caption = "Tap to select date";
 							dateElement.Enabled = enabled;
 							dateElement.Alignment = UITextAlignment.Left;
 							dateElement.QuestionId = question.QuestionId;
 							dateElement.ConditionTriggerId = question.ParentConditionTriggerId;
+
 							dateElement.DateSelected += delegate
 							{
 								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();
@@ -825,7 +706,7 @@ namespace DynaPad
 							QuestionsView.Add(qSection);
 
 							break;
-							
+
 						case "Height":
 						case "Weight":
 						case "Amount":
@@ -841,6 +722,7 @@ namespace DynaPad
 
 							float questionmin = 0;
 							float questionmax = 20;
+							float increment = 1;
 							float qanswer = 0;
 
 							switch (question.QuestionType)
@@ -863,19 +745,35 @@ namespace DynaPad
 								questionmax = Convert.ToInt32(question.MaxValue);
 							}
 
+							if (!string.IsNullOrEmpty(question.Increment))
+							{
+								increment = Convert.ToInt32(question.Increment);
+							}
+
 							if (!string.IsNullOrEmpty(question.AnswerText))
 							{
 								qanswer = Convert.ToInt32(question.AnswerText);
 							}
+							else if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
+							{
+								qanswer = Convert.ToInt32(question.DefaultValue);
+							}
+							else if (!string.IsNullOrEmpty(question.Increment) && !string.IsNullOrEmpty(question.MinValue))
+							{
+								qanswer = Convert.ToInt32(question.MinValue);
+							}
 
+							//var sliderElement = new DynaSlider(qanswer, question, (val) => SliderValueChanged(val, question));
 							var sliderElement = new DynaSlider(qanswer, question);
 							sliderElement.MinValue = questionmin;
 							sliderElement.MaxValue = questionmax;
+							sliderElement.Increment = increment;
 							sliderElement.ShowCaption = true;
 							sliderElement.Caption = qanswer.ToString();
 							sliderElement.Enabled = enabled;
 							sliderElement.QuestionId = question.QuestionId;
 							sliderElement.ConditionTriggerId = question.ParentConditionTriggerId;
+
 
 							qSection.Add(sliderElement);
 
@@ -900,6 +798,439 @@ namespace DynaPad
 				Root.TableView.ScrollRectToVisible(new CGRect(0, 0, 1, 1), true);
 			}
 		}
+
+		//object SliderValueChanged(int val, SectionQuestion question)
+		//{
+		//	question.AnswerText = val.ToString();
+
+		//	return val;
+		//}
+
+		public async void CaptureImage()
+		{
+			var picker = new MediaPicker();
+			if (!picker.IsCameraAvailable)
+				System.Console.WriteLine("No camera!");
+			else {
+				try
+				{
+					MediaFile file = await picker.TakePhotoAsync(new StoreCameraMediaOptions
+					{
+						Name = "test.jpg",
+						Directory = "MediaPickerSample"
+					});
+
+					System.Console.WriteLine(file.Path);
+				}
+				catch (OperationCanceledException)
+				{
+					System.Console.WriteLine("Canceled");
+				}
+			}
+		}
+
+		public static bool IsCameraAuthorized()
+		{
+			AVAuthorizationStatus authStatus = AVCaptureDevice.GetAuthorizationStatus(AVMediaType.Video);
+			if (authStatus == AVAuthorizationStatus.Authorized)
+			{
+				// do your logic
+				return true;
+			}
+			else if (authStatus == AVAuthorizationStatus.Denied)
+			{
+				// denied
+				return false;
+			}
+			else if (authStatus == AVAuthorizationStatus.Restricted)
+			{
+				// restricted, normally won't happen
+				return false;
+			}
+			else if (authStatus == AVAuthorizationStatus.NotDetermined)
+			{
+				// not determined?!
+				return false;
+			}
+			else {
+				return false;
+				// impossible, unknown authorization status
+			}
+		}
+
+		//UIButton cameraButton;
+
+		public UIBarButtonItem GetPhotoNavBtn(string sectionId, string sectionName, string patientName, string apptId, string patientId, string doctorId, string locationId)
+		{
+			var cameraButton = new UIBarButtonItem(UIBarButtonSystemItem.Camera, (sender, args) => 
+			{
+				var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				var directoryname = Path.Combine(documents, "DynaPhotos");
+				var d = new DirectoryInfo(directoryname);
+
+				if (!Directory.Exists(directoryname))
+				{
+					Directory.CreateDirectory(directoryname);
+				}
+
+				var picker = new MediaPicker();
+				MediaPickerController controller = picker.GetTakePhotoUI(new StoreCameraMediaOptions
+				{
+					Name = "test.jpg",
+					Directory = "MediaPickerSample"
+				});
+
+				// On iPad, you'll use UIPopoverController to present the controller
+				//PresentViewController(controller, true, null);
+				NavigationController.PresentViewController(controller, true, null);
+
+				controller.GetResultAsync().ContinueWith(t =>
+				{
+					// Dismiss the UI yourself
+					controller.DismissViewController(true, () =>
+					{
+						if (!t.IsCanceled)
+						{
+							MediaFile file = t.Result;
+							byte[] testByte = ByteArrayFromStream(file.Path);
+							var ass = testByte.Length;
+							var filename = patientName.Replace(" ", "_") + "_" + sectionName + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
+							 
+							var dps = new DynaPadService.DynaPadService();
+							var savefile = dps.SaveFile(apptId, patientId, doctorId, locationId, filename, "DynaPad", testByte);
+						}
+					});
+
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			});
+
+			var camauth = IsCameraAuthorized();
+
+			if (!UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) && !camauth)
+			{
+				cameraButton.Enabled = false;
+			}
+			                        
+			return cameraButton;
+		}
+
+		public byte[] ByteArrayFromStream(string path)
+		{
+			UIImage originalImage = UIImage.FromFile(path);
+			return originalImage.AsPNG().ToArray();
+		}
+
+		public UIBarButtonItem GetDrawNavBtn(string sectionId)
+		{
+			var navdraw = new UIBarButtonItem(UIImage.FromBundle("Writing"), UIBarButtonItemStyle.Plain, (sender, args) =>
+			{
+				var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width - 60, 50));
+				nlab.Text = "NOTES: (" + SelectedAppointment.SelectedQForm.FormName + ")";
+
+				var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
+				ncellHeader.Frame = new CGRect(0, 0, View.Bounds.Width, 50);
+
+				var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 0, 50, 50));
+				nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+				ncellHeader.ContentView.Add(nlab);
+				ncellHeader.ContentView.Add(nheadclosebtn);
+
+				var nsec = new Section(ncellHeader);
+				nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+				nsec.FooterView.Hidden = true;
+
+				var dcanvas = new CanvasMainViewController();
+				nsec.Add(dcanvas.View);
+				//CanvasContainerView notesCanvas = CanvasContainerView.FromCanvasSize(new CGSize(800, 800));
+				//nsec.Add(notesCanvas);
+
+				var nroo = new RootElement("Notes");
+				nroo.Add(nsec);
+
+				var ndia = new DialogViewController(nroo);
+				ndia.ModalInPopover = true;
+				ndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+				//ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+
+				nheadclosebtn.TouchUpInside += delegate
+				{ 
+					NavigationController.DismissViewController(true, null);
+				};
+
+				NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
+				NavigationController.PresentViewController(dcanvas, true, null);
+				NavigationController.View.SizeToFit();
+
+				//viewController = new xamarin_sampleViewController();
+				//viewController.View.SizeToFit();
+
+				//var nnsec = new Section(ncellHeader);
+				//nnsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+				//nnsec.FooterView.Hidden = true;
+
+				//nnsec.Add(viewController.View);
+
+				//var nnroo = new RootElement("Notes");
+				//nnroo.Add(nnsec);
+
+				//var nndia = new DialogViewController(nnroo);
+				//nndia.ModalInPopover = true;
+				//nndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+				//nndia.View.Frame = new CGRect(0, 0, 600, 600);
+				////nndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+				//NavigationController.PresentViewController(viewController, true, null);
+				//NavigationController.View.SizeToFit();
+
+			});
+
+			return navdraw;
+		}
+
+
+		public UIBarButtonItem GetDicNavBtn(string sectionId, bool IsDoctorForm)
+		{
+			var navdic = new UIBarButtonItem(UIImage.FromBundle("Dictation"), UIBarButtonItemStyle.Plain, (sender, args) =>
+			{
+				audioFilePath = null;
+
+				CancelRecording.Frame = new CGRect(0, 0, 350, 50);
+				CancelRecording.SetTitle("Close", UIControlState.Normal);
+				CancelRecording.SetTitleColor(UIColor.Black, UIControlState.Normal);
+				//CancelRecording.TouchUpInside += OnCancelRecording;
+
+				var clab = new UILabel(new CGRect(10, 0, 290, 50));
+				//clab.TextAlignment = UITextAlignment.Center;
+				clab.Text = "DICTATION(S):";
+				//clab.Font = UIFont.BoldSystemFontOfSize(17);
+
+				//var segDict = new UISegmentedControl();
+				//segDict.Frame = new CGRect(0, 0, 350, 50);
+				//segDict.Momentary = true;
+				//segDict.InsertSegment(UIImage.FromBundle("Delete"), 0, true);
+				//segDict.InsertSegment("Dictation", 1, true);
+				//segDict.SetWidth(50, 0);
+				//segDict.SetWidth(324, 1);
+
+				var cellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellHeader.Frame = new CGRect(0, 0, 350, 50);
+				//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
+
+				var headclosebtn = new UIButton(new CGRect(300, 0, 50, 50));
+				headclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+				cellHeader.ContentView.Add(clab);
+				cellHeader.ContentView.Add(headclosebtn);
+
+				var cellFooter = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellFooter.Frame = new CGRect(0, 0, 350, 50);
+				//cellHeader.ImageView.Image = UIImage.FromBundle("Close");
+				cellFooter.ContentView.Add(CancelRecording);
+
+
+				var sec = new Section(cellHeader, cellFooter);
+				sec.FooterView.Frame = new CGRect(0, 0, 350, 50);
+
+				RecordingStatusLabel.Text = string.Empty;
+				RecordingStatusLabel.Frame = new CGRect(210, 0, 120, 50);
+
+				LengthOfRecordingLabel.Text = string.Empty;
+				LengthOfRecordingLabel.Frame = new CGRect(210, 0, 120, 50);
+
+				StartRecordingButton.Frame = new CGRect(20, 0, 160, 50);
+				//StartRecordingButton.SetImage(UIImage.FromBundle("Record"), UIControlState.Normal);
+				StartRecordingButton.TouchUpInside += OnStartRecording;
+				StartRecordingButton.SetTitle("Start Recording", UIControlState.Normal);
+				StartRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
+
+				StopRecordingButton.Frame = new CGRect(20, 0, 160, 50);
+				//StopRecordingButton.SetImage(UIImage.FromBundle("Stop"), UIControlState.Normal);
+				StopRecordingButton.SetTitle("Stop Recording", UIControlState.Normal);
+				StopRecordingButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
+				StopRecordingButton.TouchUpInside += OnStopRecording;
+				StopRecordingButton.Enabled = false;
+				StopRecordingButton.Alpha = (nfloat)0.5;
+
+				PlayRecordedSoundButton.Frame = new CGRect(20, 0, 160, 50);
+				//PlayRecordedSoundButton.SetImage(UIImage.FromBundle("Play"), UIControlState.Normal);
+				PlayRecordedSoundButton.SetTitle("Play Recording", UIControlState.Normal);
+				PlayRecordedSoundButton.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
+				PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
+				PlayRecordedSoundButton.Enabled = false;
+				PlayRecordedSoundButton.Alpha = (nfloat)0.5;
+
+				SaveRecordedSound.Enabled = false;
+				SaveRecordedSound.Alpha = (nfloat)0.5;
+				SaveRecordedSound.Frame = new CGRect(20, 0, 160, 50);
+				//SaveRecordedSound.SetImage(UIImage.FromBundle("Save"), UIControlState.Normal);
+				SaveRecordedSound.SetTitle("Save Recording", UIControlState.Normal);
+				SaveRecordedSound.SetTitleColor(UIColor.FromRGB(45, 137, 221), UIControlState.Normal);
+
+				observer = AVPlayerItem.Notifications.ObserveDidPlayToEndTime(OnDidPlayToEndTime);
+
+				//var cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellRecord.Frame = new CGRect(0, 0, 350, 50);
+				cellRecord.ImageView.Image = UIImage.FromBundle("Record");
+				cellRecord.ContentView.Add(StartRecordingButton);
+				cellRecord.ContentView.Add(RecordingStatusLabel);
+
+				sec.Add(cellRecord);
+
+				//var cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellStop.Frame = new CGRect(0, 0, 350, 50);
+				cellStop.ImageView.Image = UIImage.FromBundle("Stop");
+				cellStop.ContentView.Add(StopRecordingButton);
+				cellStop.ContentView.Add(LengthOfRecordingLabel);
+
+				sec.Add(cellStop);
+
+				//var cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellPlay.Frame = new CGRect(0, 0, 350, 50);
+				cellPlay.ImageView.Image = UIImage.FromBundle("Play");
+				cellPlay.ContentView.Add(PlayRecordedSoundButton);
+
+				sec.Add(cellPlay);
+
+				//var cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
+				cellSave.Frame = new CGRect(0, 0, 350, 50);
+				cellSave.ImageView.Image = UIImage.FromBundle("Save");
+				cellSave.ContentView.Add(SaveRecordedSound);
+
+				sec.Add(cellSave);
+
+				var dps = new DynaPadService.DynaPadService();
+				var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
+
+				foreach (string[] dictation in dictations)
+				{
+					byte[] bytes = Convert.FromBase64String(dictation[2]);
+					NSData dataDictation = NSData.FromArray(bytes);
+					NSError err;
+					var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
+
+					var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
+
+					var statusLabel = new UILabel(new CGRect(200, 0, 100, 50));
+					statusLabel.Text = duration;
+
+					PlaySavedDictationButton = new UIButton();
+					PlaySavedDictationButton.Frame = new CGRect(10, 0, 190, 50);
+					PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
+					PlaySavedDictationButton.SetTitleColor(UIColor.Blue, UIControlState.Normal);
+					PlaySavedDictationButton.HorizontalAlignment = UIControlContentHorizontalAlignment.Left;
+					PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
+					PlaySavedDictationButton.ImageEdgeInsets = new UIEdgeInsets(0, 0, 0, 5);
+					PlaySavedDictationButton.TitleEdgeInsets = new UIEdgeInsets(0, 5, 0, 0);
+
+					messageLabel = new UILabel();
+
+					DeleteSavedDictationButton = new UIButton();
+					DeleteSavedDictationButton.Frame = new CGRect(300, 0, 50, 50);
+					DeleteSavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+					DeleteSavedDictationButton.SetImage(UIImage.FromBundle("Delete"), UIControlState.Normal);
+					DeleteSavedDictationButton.TouchUpInside += (sende, er) =>
+					{
+						var DeletePrompt = UIAlertController.Create("Delete Dictation", "Administrative use only. Deleteing dictation '" + dictation[1] + "', continue?", UIAlertControllerStyle.Alert);
+						DeletePrompt.AddTextField((field) =>
+						{
+							field.SecureTextEntry = true;
+							field.Placeholder = "Password";
+						});
+						DeletePrompt.Add(messageLabel);
+						DeletePrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DeleteSavedDictation(DeletePrompt.TextFields[0].Text, SelectedAppointment.SelectedQForm.FormId, sectionId, dictation)));
+						DeletePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+						//Present Alert
+						ParentViewController.PresentedViewController.PresentViewController(DeletePrompt, true, null);
+
+					};
+
+					cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+					cellDict.Frame = new CGRect(0, 0, 350, 50);
+					cellDict.BackgroundColor = UIColor.LightGray;
+					//cellDict.ImageView.Frame = new CGRect(0, 0, 20, 50);
+					//cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
+					cellDict.ContentView.Add(PlaySavedDictationButton);
+					cellDict.ContentView.Add(statusLabel);
+					cellDict.ContentView.Add(DeleteSavedDictationButton);
+
+					sec.Add(cellDict);
+
+					PlaySavedDictationButton.TouchUpInside += delegate
+					{
+						OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel, PlaySavedDictationButton, sec);
+					};
+				}
+
+				var popHeight = sec.Elements.Count > 8 ? 500 : sec.Elements.Count * 50 + 100;
+
+				var roo = new RootElement("Dictation");
+				roo.Add(sec);
+
+				var dia = new DialogViewController(roo);
+				dia.ModalInPopover = true;
+				dia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+				dia.PreferredContentSize = new CGSize(350, popHeight);
+
+				var vie = new UIView();
+
+				var con = new UIViewController();
+
+				con.Add(vie);
+
+				NavigationController.PreferredContentSize = new CGSize(350, popHeight);
+				NavigationController.PresentViewController(dia, true, null);
+
+				pop = new UIPopoverController(dia);
+				pop.PopoverContentSize = new CGSize(350, popHeight);
+				pop.ShouldDismiss = (popoverController) => false;
+				pop.DidDismiss += delegate
+				{
+					//AVAudioSession.SharedInstance().Dispose();
+					session.Dispose();
+					session = null;
+
+					observer.Dispose();
+					observer = null;
+					//recorder.Dispose();
+					stopwatch = null;
+					recorder = null;
+					player = null;
+					pop.Dispose();
+					pop = null;
+					audioFilePath = null;
+				};
+
+				//segDict.ValueChanged += (s, e) =>
+				//{
+				//	if (segDict.SelectedSegment == 0)
+				//	{
+				//		pop.Dismiss(true);
+				//	}
+				//};
+
+				SaveRecordedSound.TouchUpInside += delegate
+				{
+					OnSaveRecordedSound(sectionId, sec, pop);
+				};
+
+				CancelRecording.TouchUpInside += delegate
+				{ 
+					//pop.Dismiss(true); 
+					NavigationController.DismissViewController(true, null); 
+				};
+
+				headclosebtn.TouchUpInside += delegate
+				{ 
+					//pop.Dismiss(true); 
+					NavigationController.DismissViewController(true, null);
+				};
+
+				//pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItems[0], UIPopoverArrowDirection.Unknown, true);
+			});
+
+			return navdic;
+		}
+
 
 		void Chk_Tapped(SectionQuestion cQuestion, QuestionOption cOption, bool selected, string sectionId)
 		{
@@ -1075,7 +1406,7 @@ namespace DynaPad
 						}
 						else
 						{
-							var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView;
+							var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView.Subviews[0];
 
 							if (headerLabel != null)
 							{
@@ -1096,7 +1427,7 @@ namespace DynaPad
 								{
 									//PlaceholderEnabledUITextView pelement = (PlaceholderEnabledUITextView)element as PlaceholderEnabledUITextView;
 									UIViewElement pelement = element;
-									PlaceholderEnabledUITextView peui = (PlaceholderEnabledUITextView)pelement.ContainerView.Subviews[0];
+									var peui = (PlaceholderEnabledUITextView)pelement.ContainerView.Subviews[0];
 									peui.Enabled = triggered;
 									peui.UserInteractionEnabled = triggered;
 								}
@@ -1124,9 +1455,23 @@ namespace DynaPad
 		}
 
 
-		void DeleteSavedDictation(string text, bool isDoctorForm, string[] dictation)
+		void DeleteSavedDictation(string password, string formId, string sectionId, string[] dictation)
 		{
-			throw new NotImplementedException();
+			bool isValid = password == Constants.Password;
+			if (isValid)
+			{
+				var dds = new DynaPadService.DynaPadService();
+				var deletedDictation = dds.DeleteDicatation(dictation[3], formId, sectionId, SelectedAppointment.SelectedQForm.DoctorId);
+				NavigationController.DismissViewController(true, null);
+			}
+			else
+			{
+				messageLabel.Text = "Wrong password";
+				var FailAlert = UIAlertController.Create("Error", "Wrong password", UIAlertControllerStyle.Alert);
+				FailAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Cancel, null));
+				// Present Alert
+				PresentViewController(FailAlert, true, null);
+			}
 		}
 
 
@@ -1309,7 +1654,7 @@ namespace DynaPad
 				//	player.Stop();
 				//};
 
-				StopRecordingButton.TouchUpInside += StopRecordingPlayback; 
+				StopRecordingButton.TouchUpInside += StopRecordingPlayback;
 
 				RecordingStatusLabel.Text = "Playing";
 
@@ -1357,9 +1702,9 @@ namespace DynaPad
 					statusLabel.Text = duration;
 					//cd.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
 					//PlaySavedDictationButton.TouchUpInside += delegate
-				 //  {
+					//  {
 					//   OnPlaySavedDictation(title, dictationBytes, pplayer, statusLabel, cd);
-				 //  };
+					//  };
 				};
 
 				//PlaySavedDictationButton.TouchUpInside += (sender, e) => 
@@ -1457,7 +1802,7 @@ namespace DynaPad
 				//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 
 
-				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, "Roy_" + DateTime.Now.ToShortTimeString(), dictationArray);
+				string dictationPath = dds.SaveDictation(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, sectionId + "_" + DateTime.Now.ToShortTimeString(), dictationArray);
 				System.Console.WriteLine("Saving Recording {0}", audioFilePath);
 
 				//var dps = new DynaPadService.DynaPadService();
@@ -1501,7 +1846,8 @@ namespace DynaPad
 
 				loadingOverlay.Hide();
 
-				pop.Dismiss(true);
+				//pop.Dismiss(true);
+				NavigationController.DismissViewController(true, null);
 			}
 			catch (Exception ex)
 			{

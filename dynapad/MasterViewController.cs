@@ -59,15 +59,21 @@ namespace DynaPad
 			// TODO pull to refresh: (problem scrolling with it..)
 			//DetailViewController.RefreshRequested += delegate
 			//{
+			//	DetailViewController.NavigationController.NavigationBar.Translucent = false;
+			//	DetailViewController.ReloadData();
 			//	DetailViewController.ReloadComplete();
 			//};
+			//RefreshRequested += delegate { ReloadComplete(); };
+
+			//var refresh = new UIRefreshControl();
+			//DetailViewController.Add(refresh);
 
 			var dds = new DynaPadService.DynaPadService();
 
 			//var menu = dds.BuildDynaMenu("123");
 			//var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
 
-			myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+			myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("1"));
 			DetailViewController.DynaMenu = myDynaMenu;
 
 			var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
@@ -98,6 +104,7 @@ namespace DynaPad
 				rootMenu.MenuAction = mItem.MenuItemAction;
 				rootMenu.MenuValue = mItem.MenuItemValue;
 				rootMenu.PatientID = mItem.PatientId;
+				rootMenu.PatientName = mItem.PatientName;
 				rootMenu.DoctorID = mItem.DoctorId;
 				rootMenu.LocationID = mItem.LocationId;
 				rootMenu.ApptID = mItem.ApptId;
@@ -122,8 +129,11 @@ namespace DynaPad
 						//DetailViewController.Root.Caption = mItem.MenuItemValue;
 						//DetailViewController.ReloadData();
 						break;
+					case "GetSummary":
+						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadSummaryView(mItem.MenuItemValue, "Summary", rootMenu); }));
+						break;
 				}
-				if (mItem.MenuItemAction != "GetReport")
+				if (mItem.MenuItemAction != "GetReport" && mItem.MenuItemAction != "GetSummary")
 				{
 					sectionMenu.Add(rootMenu);
 				}
@@ -154,6 +164,7 @@ namespace DynaPad
 			SelectedAppointment.ApptFormId = dfElemet.FormID;
 			SelectedAppointment.ApptFormName = dfElemet.FormName;
 			SelectedAppointment.ApptPatientId = dfElemet.PatientID;
+			SelectedAppointment.ApptPatientName = dfElemet.PatientName;
 			SelectedAppointment.ApptDoctorId = dfElemet.DoctorID;
 			SelectedAppointment.ApptLocationId = dfElemet.LocationID;
 			SelectedAppointment.ApptId = dfElemet.ApptID;
@@ -208,6 +219,78 @@ namespace DynaPad
 		}
 
 
+		//public UIViewController GetMRService(RootElement rElement)
+		//{
+		//	var bounds = base.TableView.Frame;
+		//	// show the loading overlay on the UI thread using the correct orientation sizing
+		//	loadingOverlay = new LoadingOverlay(bounds);
+		//	SplitViewController.Add(loadingOverlay);
+
+		//	var dds = new DynaPadService.DynaPadService();
+		//	var dfElemet = (DynaFormRootElement)rElement;
+
+		//	string origJson = dds.GetMRFolders(dfElemet.PatientID, dfElemet.DoctorID, dfElemet.LocationID, SelectedAppointment.ApptId);
+		//	JsonHandler.OriginalFormJsonString = origJson;
+		//	SelectedAppointment.MedicalRecords = JsonConvert.DeserializeObject<QForm>(origJson);
+
+		//	DetailViewController.Root.Caption = "Medical Records:" + SelectedAppointment.SelectedQForm.PatientName;
+		//	DetailViewController.ReloadData();
+
+		//	var mrGroup = new RadioGroup("mrs", -1);
+		//	var rootMR = new RootElement("Medical Records", mrGroup);
+
+		//	var mrSections = new Section();
+
+		//	foreach (MRFolder mrf in SelectedAppointment.MedicalRecord)
+		//	{
+		//		var mrfolder = new SectionStringElement(mrf.FolderName, delegate
+		//		{
+		//			LoadFolderView(mrf.FolderId, mrf.FolderName, mrf.FolderURL, mrf, mrSections);
+		//			foreach (Element d in mrSections.Elements)
+		//			{
+		//				var t = d.GetType();
+		//				if (t == typeof(SectionStringElement))
+		//				{
+		//					var di = (SectionStringElement)d;
+		//					di.selected = false;
+		//				}
+		//			}
+
+		//			mrSections.GetContainerTableView().ReloadData();
+		//		});
+
+		//		mrSections.Add(mrfolder);
+		//	}
+
+		//	rootMR.Add(mrSections);
+
+		//	var formDVC = new DynaDialogViewController(rootMR, true);
+
+		//	// TODO pull to refresh: (problamatic scrolling with it)
+		//	//formDVC.RefreshRequested += delegate 
+		//	//{ 
+		//	//	formDVC.ReloadComplete(); 
+		//	//};
+
+		//formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+		//  	{
+		//		  //DetailViewController.Title = "Welcome to DynaPad";
+		//		  DetailViewController.QuestionsView = null; //.Clear();
+		//		  DetailViewController.NavigationItem.RightBarButtonItem = null;
+		//		  DetailViewController.Root.Clear();
+		//		  DetailViewController.Root.Add(new Section("Logged in"));
+		//		  DetailViewController.Root.Caption = "Welcome to DynaPad";
+		//		  DetailViewController.ReloadData();
+
+		//		  NavigationController.PopViewController(true);
+		//  	});
+
+		//	loadingOverlay.Hide();
+
+		//	return formDVC;
+		//}
+
+
 		public UIViewController GetFormService(RootElement rElement)
 		{
 			//if (DetailViewController.QuestionsView != null)
@@ -224,7 +307,7 @@ namespace DynaPad
 			SplitViewController.Add(loadingOverlay);
 			var dds = new DynaPadService.DynaPadService();
 			var dfElemet = (DynaFormRootElement)rElement;
-			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.PatientID, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
+			string origJson = dds.GetFormQuestions(dfElemet.FormID, dfElemet.DoctorID, dfElemet.LocationID, dfElemet.PatientID, dfElemet.PatientName, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
 			JsonHandler.OriginalFormJsonString = origJson;
 			SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 
@@ -383,7 +466,7 @@ namespace DynaPad
 				  });
 
 				  BackPrompt.Add(messageLabel);
-				  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text)));
+				  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text, IsDoctorForm)));
 				  BackPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 
 				  //Present Alert
@@ -483,18 +566,56 @@ namespace DynaPad
 		}
 
 
-		void PopBack(string password)
+		void PopBack(string password, bool IsDoctorForm)
 		{
 			bool isValid = password == Constants.Password;
 			if (isValid)
 			{
 				//if (DetailViewController.QuestionsView != null)
 				//{
+					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+					var directoryname = Path.Combine(documents, "DynaRestore");
+					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+
+					string sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+					if (File.Exists(filename))
+					{
+						var restoreFile = File.ReadAllText(filename);
+						JObject sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+						JObject targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+						if (!JToken.DeepEquals(sourceJObject, targetJObject))
+						{
+							// Serialize object
+							//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+							//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+							// Save to file
+							//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+							//var directoryname = Path.Combine(documents, "DynaRestore");
+							Directory.CreateDirectory(directoryname);
+							//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+							File.WriteAllText(filename, sourceJson);
+						}
+
+					}
+					else
+					{
+						Directory.CreateDirectory(directoryname);
+						File.WriteAllText(filename, sourceJson);
+					}
+
 					//DetailViewController.Title = "Welcome to DynaPad";
 					DetailViewController.QuestionsView = null; //.Clear();
 					DetailViewController.Root.Clear();
 					DetailViewController.Root.Add(new Section("Logged in"));
 					DetailViewController.Root.Caption = "Welcome to DynaPad";
+					//DetailViewController.NavigationItem.SetLeftBarButtonItem(null, true);
+					//DetailViewController.NavigationItem.SetRightBarButtonItems(null, true);
+					DetailViewController.NavigationItem.LeftBarButtonItem = null;
+					DetailViewController.NavigationItem.RightBarButtonItems = null;
+
 					DetailViewController.ReloadData();
 				//}
 
@@ -692,7 +813,7 @@ namespace DynaPad
 		{
 			ReloadData();
 			GlassButton btnNextSection = null;
-			if (sectionName != "Report" || sectionName != "Finalize")
+			if (sectionName != "Report" || sectionName != "Finalize" || sectionName != "Photos")
 			{
 				btnNextSection = new GlassButton(new RectangleF(0, 0, (float)DetailViewController.View.Frame.Width, 50));
 				//btnNextSection.Font = UIFont.BoldSystemFontOfSize(17);
@@ -800,6 +921,22 @@ namespace DynaPad
 				NavigationController.PopViewController(true);
 			});
  			DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false, null); 		}
+
+		void LoadSummaryView(string fileName, string sectionName, RootElement rt)
+		{
+			NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+			{
+				DetailViewController.NavigationItem.RightBarButtonItem = null;
+				DetailViewController.Root.Clear();
+				DetailViewController.Root.Add(new Section("Logged in"));
+				DetailViewController.Root.Caption = "Welcome to DynaPad";
+				DetailViewController.ReloadData();
+
+				NavigationController.PopViewController(true);
+			});
+
+			DetailViewController.SetDetailItem(new Section(sectionName), "Summary", fileName, "", false, null, true, fileName);
+		}
 
 
 		public override void DidReceiveMemoryWarning()

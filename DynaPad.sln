@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynaPad", "DynaPad\DynaPad.csproj", "{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynaDoxServiceDummy", "DynaDoxServiceDummy\DynaDoxServiceDummy.csproj", "{43FE3134-395B-4027-9575-12D5F1059376}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
 		Release|iPhone = Release|iPhone
 		Release|iPhoneSimulator = Release|iPhoneSimulator
 		Debug|iPhone = Debug|iPhone
+		Ad-Hoc|iPhone = Ad-Hoc|iPhone
+		AppStore|iPhone = AppStore|iPhone
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
@@ -21,13 +21,9 @@ Global
 		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.Debug|iPhone.ActiveCfg = Debug|iPhone
 		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.Debug|iPhone.Build.0 = Debug|iPhone
-		{43FE3134-395B-4027-9575-12D5F1059376}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Release|iPhone.Build.0 = Release|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{43FE3134-395B-4027-9575-12D5F1059376}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.Ad-Hoc|iPhone.ActiveCfg = Release|iPhone
+		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.Ad-Hoc|iPhone.Build.0 = Release|iPhone
+		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.AppStore|iPhone.ActiveCfg = Release|iPhone
+		{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}.AppStore|iPhone.Build.0 = Release|iPhone
 	EndGlobalSection
 EndGlobal

@@ -35,6 +35,7 @@ public class MenuItem
 	public string MenuItemAction { get; set; }
 	public string MenuItemCaption { get; set; }
 	public string PatientId { get; set; }
+	public string PatientName { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
 	public string ApptId { get; set; }
@@ -48,6 +49,7 @@ public class Menu
 	public string MenuAction { get; set; }
 	public string MenuCaption { get; set; }
 	public string PatientId { get; set; }
+	public string PatientName { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
 	public string ApptId { get; set; }
@@ -64,6 +66,7 @@ public static class SelectedAppointment
 	public static string ApptFormName { get; set; }
 	public static string ApptId { get; set; }
 	public static string ApptPatientId { get; set; }
+	public static string ApptPatientName { get; set; }
 	public static string ApptDoctorId { get; set; }
 	public static string ApptLocationId { get; set; }
 	public static List<Report> ApptReports { get; set; }
@@ -96,6 +99,7 @@ public class QuestionOption
 	public string ParentQuestionId { get; set; }
 	public string OptionId { get; set; }
 	public string OptionText { get; set; }
+	public string InputType { get; set; }
 	public bool Chosen { get; set; }
 	public List<string> ConditionTriggerIds { get; set; }
 }
@@ -109,12 +113,17 @@ public class SectionQuestion
 	public string QuestionType { get; set; }
 	public string QuestionText { get; set; }
 	public string QuestionKeyboardType { get; set; }
+	public string QuestionKeyboardTypeId { get; set; }
 	public string ParentConditionTriggerId { get; set; }
 	public string AnswerId { get; set; }
 	public string AnswerText { get; set; }
 	public string AnswerOptionIndex { get; set; }
 	public string MinValue { get; set; }
 	public string MaxValue { get; set; }
+	public string Increment { get; set; }
+	public string DefaultValue { get; set; }
+	public string Subtitle { get; set; }
+	public string Mask { get; set; }
 	public bool IsConditional { get; set; }
 	public bool IsAnswered { get; set; }
 	public bool IsEnabled { get; set; }
@@ -138,11 +147,13 @@ public class QForm
 	public string FormId { get; set; }
 	public string FormName { get; set; }
 	public string PatientId { get; set; }
+	public string PatientName { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
 	public string ApptId { get; set; }
 	public string DateCompleted { get; set; }
 	public string DateUpdated { get; set; }
+	public bool IsDoctorForm { get; set; }
 	public int FormSelectedTemplateId { get; set; }
 	public List<FormSection> FormSections { get; set; }
 	public QForm() { FormSelectedTemplateId = 0; }

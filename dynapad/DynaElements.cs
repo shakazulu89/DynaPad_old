@@ -34,6 +34,70 @@ namespace DynaPad
 
 
 
+	public class CanvasContainerView : UIView
+	{
+		UIView canvasView;
+
+		UIView documentView;
+		public UIView DocumentView
+		{
+			get
+			{
+				return documentView;
+			}
+			set
+			{
+				var previousView = documentView;
+				if (previousView != null)
+					previousView.RemoveFromSuperview();
+
+				documentView = value;
+				if (documentView != null)
+				{
+					documentView.Frame = canvasView.Bounds;
+					canvasView.AddSubview(documentView);
+				}
+			}
+		}
+
+		CanvasContainerView(CGRect frame, UIView canvasView)
+			: base(frame)
+		{
+			this.canvasView = canvasView;
+
+			BackgroundColor = UIColor.LightGray;
+			AddSubview(canvasView);
+		}
+
+		public static CanvasContainerView FromCanvasSize(CGSize canvasSize)
+		{
+			var screenBounds = UIScreen.MainScreen.Bounds;
+			//var screenBounds = new CGRect(0, 0, 800, 800);
+			//var minDimension = NMath.Min(screenBounds.Width, screenBounds.Height);
+			var minDimension = NMath.Min(screenBounds.Width, screenBounds.Height);
+			var baseInset = 44f;
+			//var size = canvasSize.Add(baseInset * 2);
+			var size = canvasSize;
+			size.Width = NMath.Max(minDimension, size.Width);
+			size.Height = NMath.Max(minDimension, size.Height);
+
+			var frame = new CGRect(CGPoint.Empty, size);
+
+			var canvasOrigin = new CGPoint((frame.Width - canvasSize.Width) / 2, (frame.Height - canvasSize.Height) / 2);
+			var canvasFrame = new CGRect(canvasOrigin, canvasSize);
+			var canvasView = new UIView(canvasFrame);
+			canvasView.BackgroundColor = UIColor.White;
+			canvasView.Layer.ShadowOffset = new CGSize(0, 3);
+			canvasView.Layer.ShadowRadius = 4;
+			canvasView.Layer.ShadowColor = UIColor.DarkGray.CGColor;
+			canvasView.Layer.ShadowOpacity = 1f;
+
+			return new CanvasContainerView(frame, canvasView);
+		}
+	}
+
+
+
 
 	public class CredentialsProvider : ICredentialsProvider
 	{
@@ -350,6 +414,9 @@ namespace DynaPad
 
 			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
 
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			cell.TextLabel.Lines = 0;
+
 			if (selected)
 			{
 				cell.BackgroundColor = UIColor.FromRGB(239, 246, 223);
@@ -425,6 +492,7 @@ namespace DynaPad
 
 
 
+
 	public class PaddedUIView<T> : UIView where T : UIView, new()
 	{
 		nfloat _padding;
@@ -456,6 +524,9 @@ namespace DynaPad
 
 		public void setStyle()
 		{
+			(_nestedView as UILabel).LineBreakMode = UILineBreakMode.WordWrap;
+			(_nestedView as UILabel).Lines = 0;
+
 			switch (Type)
 			{
 				case "Question":
@@ -466,6 +537,20 @@ namespace DynaPad
 					if (Enabled)
 					{
 						BackgroundColor = UIColor.FromRGB(230, 230, 250);
+					}
+					else
+					{
+						BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+					}
+					break;
+				case "Subtitle":
+					//_nestedView.Frame = new CGRect(_padding + 5, _padding, Frame.Width - 2 * _padding, Frame.Height - 2 * _padding);
+
+					(_nestedView as UILabel).TextColor = UIColor.Black;
+					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(10);
+					if (Enabled)
+					{
+						BackgroundColor = UIColor.FromRGB(250, 250, 229);
 					}
 					else
 					{
@@ -494,7 +579,6 @@ namespace DynaPad
 
 		public T NestedView
 		{
-			
 			get { return _nestedView; }
 		}
 
@@ -744,6 +828,7 @@ namespace DynaPad
 		public string MenuValue { get; set; }
 		public string MenuAction { get; set; }
 		public string PatientID { get; set; }
+		public string PatientName { get; set; }
 		public string DoctorID { get; set; }
 		public string LocationID { get; set; }
 		public string ApptID { get; set; }
@@ -944,20 +1029,23 @@ namespace DynaPad
 				TextColor = this.PlaceholderColor
 			};
 
-			if (this.Text == null)
+			BackgroundColor = UIColor.White;
+
+			if (string.IsNullOrEmpty(this.Text))
 			{
 				this.placeholderLabel.Text = this.Placeholder;
 			}
 
 			if (!Enabled)
 			{
-				if (this.Text == null)
+				if (string.IsNullOrEmpty(this.Text))
 				{
 					placeholderLabel.Text = "Not applicable";
 				}
 				placeholderLabel.TextColor = UIColor.LightGray;
 				placeholderLabel.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 				TextColor = UIColor.LightGray;
+				BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
 			this.Add(this.placeholderLabel);
@@ -965,7 +1053,7 @@ namespace DynaPad
 
 		private void CommonInit()
 		{
-			this.PlaceholderColor = UIColor.Gray;
+			this.PlaceholderColor = UIColor.Clear;
 			this.PlaceholderFont = UIFont.SystemFontOfSize(17);
 			this.TextColor = UIColor.Black;
 			this.Font = UIFont.SystemFontOfSize(17);
@@ -982,6 +1070,8 @@ namespace DynaPad
 
 		private void OnEnded(object sender, EventArgs e)
 		{
+			//AnswerText = Text;
+
 			if (this.AllowWhiteSpace)
 			{
 				this.placeholderLabel.Hidden = !string.IsNullOrEmpty(this.Text);
@@ -992,6 +1082,19 @@ namespace DynaPad
 			}
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1016,8 +1119,12 @@ namespace DynaPad
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
 		//static NSString MyCellId = new NSString("MyCellId");
-		private UITextField EntryTextField { get; set; }
- 		protected override UITextField CreateTextField(CGRect frame) 		{ 			var tf = base.CreateTextField(frame); 			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left; 			//tf.TextAlignment = UITextAlignment.Left; 			EntryTextField = tf; 			return tf; 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);
+		public UITextField EntryTextField { get; set; }
+
+		//public EventHandler EntryEnded { get; set; }
+ 		protected override UITextField CreateTextField(CGRect frame) 		{ 			var tf = base.CreateTextField(frame);
+			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left; 			//tf.TextAlignment = UITextAlignment.Left; 			EntryTextField = tf;
+			return tf; 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);
 
 			cell.ContentView.AutosizesSubviews = false;
 			//cell.ContentView.Frame = new CGRect(48, 0, 310, 44);
@@ -1029,6 +1136,9 @@ namespace DynaPad
 			cell.BackgroundColor = UIColor.White;
 			EntryTextField.TextColor = UIColor.Black;
 			//EntryTextField.Placeholder = "Enter your answer here";
+
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			cell.TextLabel.Lines = 0;
 
 			//var offset = (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone) ? 20 : 90;
 			var offset = 20;
@@ -1231,6 +1341,9 @@ namespace DynaPad
 			cell.BackgroundColor = UIColor.White;
 			cell.TextLabel.TextColor = UIColor.Black;
 
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			cell.TextLabel.Lines = 0;
+
 			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
 
 			if (Value)
@@ -1402,6 +1515,9 @@ namespace DynaPad
 			//cell.ApplyStyle(this);
 			//this.GetContainerTableView().CellLayoutMarginsFollowReadableWidth = false;
 			cell.TextLabel.Text = Caption;
+
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			cell.TextLabel.Lines = 0;
 
 			if (!string.IsNullOrEmpty(_subtitle))
 			{
@@ -1579,6 +1695,7 @@ namespace DynaPad
 		{
 			DateValue = date;
 			Value = FormatDate(date);
+			AnswerText = Value;
 		}
 
 		/// <summary>
@@ -1691,6 +1808,7 @@ namespace DynaPad
 					_inline_date_element.DateSelected += (DateTime? date) =>
 					{
 						DateValue = date;
+						AnswerText = FormatDate(date);
 						cell.DetailTextLabel.Text = FormatDate(date);
 						Value = cell.DetailTextLabel.Text;
 						if (DateSelected != null)       // Fire our changed event.
@@ -1701,6 +1819,7 @@ namespace DynaPad
 					{
 						DateTime? null_date = null;
 						DateValue = null_date;
+						AnswerText = "";
 						cell.DetailTextLabel.Text = " ";
 						Value = cell.DetailTextLabel.Text;
 						cell.DetailTextLabel.TextColor = UIColor.Black;
@@ -1894,25 +2013,30 @@ namespace DynaPad
 		public bool ShowCaption;
 		public float Value;
 		public float MinValue, MaxValue;
-		static NSString skey = new NSString("FloatElement");
+		public float Increment;
+		static NSString skey = new NSString("DynaSlider");
 		//UIImage Left, Right;
 		UISlider slider;
 
-		public DynaSlider(float value, SectionQuestion sQuestion) : this(null, null, value, sQuestion)
+		private Action<int> _valueChangedCallback;
+
+		public DynaSlider(float value, SectionQuestion sQuestion, Action<int> valueChanged = null) : this(null, null, value, sQuestion)
 		{
 			Value = value;
 			SQuestion = sQuestion;
+			_valueChangedCallback = valueChanged;
 		}
 
-		public DynaSlider(UIImage left, UIImage right, float value, SectionQuestion sQuestion) : base(null)
+		public DynaSlider(UIImage left, UIImage right, float value, SectionQuestion sQuestion, Action<int> valueChanged = null) : base(null)
 		{
 			//Left = left;
 			//Right = right;
 			MinValue = 0;
-			MaxValue = 1;
+			MaxValue = 10;
+			Increment = 1;
 			Value = value;
 			SQuestion = sQuestion;
-				
+			_valueChangedCallback = valueChanged;
 		}
 
 		protected override NSString CellKey
@@ -1922,6 +2046,9 @@ namespace DynaPad
 				return skey;
 			}
 		}
+
+		public Func<object> ValueChanged { get; internal set; }
+
 		public override UITableViewCell GetCell(UITableView tv)
 		{
 			var cell = tv.DequeueReusableCell(CellKey);
@@ -1948,13 +2075,19 @@ namespace DynaPad
 					BackgroundColor = UIColor.Clear,
 					MinValue = MinValue,
 					MaxValue = MaxValue,
-					Continuous = true,
+					Continuous = false,
 					Value = Value,
 					Tag = 1,
 					AutoresizingMask = UIViewAutoresizing.FlexibleWidth
 				};
 				slider.ValueChanged += delegate
 				{
+					// Get the closet "step" 
+					float nextStep = (float)Math.Round(slider.Value / Increment);
+
+					// Convert that step to a value used by the slider
+					slider.Value = (nextStep * Increment);
+
 					Value = (int)slider.Value;
 					SQuestion.AnswerText = Value.ToString();
 					AnswerText = Value.ToString();
@@ -1963,6 +2096,8 @@ namespace DynaPad
 					captionSize.Width += 10; // Spacing
 					cell.TextLabel.Text = Caption;
 					slider.Frame = new CGRect(10f + captionSize.Width, UIDevice.CurrentDevice.CheckSystemVersion(7, 0) ? 18f : 12f, cell.ContentView.Bounds.Width - 20 - captionSize.Width, 7f);
+					if (_valueChangedCallback != null)
+						_valueChangedCallback((int)Value);
 				};
 			}
 			else {
@@ -2064,6 +2199,359 @@ namespace DynaPad
 			);
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+	/// <summary>
+	/// An element that can be used to enter text.
+	/// </summary>
+	/// <remarks>
+	/// This element can be used to enter text both regular and password protected entries. 
+	///     
+	/// The Text fields in a given section are aligned with each other.
+	/// </remarks>
+	public partial class dEntryElement : Element
+	{
+		/// <summary>
+		///   The value of the EntryElement
+		/// </summary>
+		public string Value
+		{
+			get
+			{
+				if (entry == null)
+					return val;
+				var newValue = entry.Text;
+				if (newValue == val)
+					return val;
+				val = newValue;
+
+				if (Changed != null)
+					Changed(this, EventArgs.Empty);
+				return val;
+			}
+			set
+			{
+				val = value;
+				if (entry != null)
+					entry.Text = value;
+			}
+		}
+		protected string val;
+
+		/// <summary>
+		/// The key used for reusable UITableViewCells.
+		/// </summary>
+		static NSString entryKey = new NSString("dEntryElement");
+		protected virtual NSString EntryKey
+		{
+			get
+			{
+				return entryKey;
+			}
+		}
+
+		public bool AlignEntryWithAllSections { get; set; }
+
+		public bool NotifyChangedOnKeyStroke { get; set; }
+
+		UITextAlignment textalignment = UITextAlignment.Left;
+		UIKeyboardType keyboardType = UIKeyboardType.Default;
+		UIReturnKeyType? returnKeyType = null;
+		bool enablesReturnKeyAutomatically = false;
+		UITextAutocapitalizationType autocapitalizationType = UITextAutocapitalizationType.Sentences;
+		UITextAutocorrectionType autocorrectionType = UITextAutocorrectionType.Default;
+		UITextFieldViewMode clearButtonMode = UITextFieldViewMode.Never;
+		bool isPassword, becomeResponder;
+		UITextField entry;
+		string placeholder;
+		static UIFont font = UIFont.BoldSystemFontOfSize(17);
+
+		public event EventHandler Changed;
+		public event Func<bool> ShouldReturn;
+		public EventHandler EntryStarted { get; set; }
+		public EventHandler EntryEnded { get; set; }
+		/// <summary>
+		/// Constructs an EntryElement with the given caption, placeholder and initial value.
+		/// </summary>
+		/// <param name="caption">
+		/// The caption to use
+		/// </param>
+		/// <param name="placeholder">
+		/// Placeholder to display when no value is set.
+		/// </param>
+		/// <param name="value">
+		/// Initial value.
+		/// </param>
+		public dEntryElement(string caption, string placeholder, string value) : base(caption)
+		{
+			Value = value;
+			this.placeholder = placeholder;
+		}
+
+		/// <summary>
+		/// Constructs an EntryElement for password entry with the given caption, placeholder and initial value.
+		/// </summary>
+		/// <param name="caption">
+		/// The caption to use.
+		/// </param>
+		/// <param name="placeholder">
+		/// Placeholder to display when no value is set.
+		/// </param>
+		/// <param name="value">
+		/// Initial value.
+		/// </param>
+		/// <param name="isPassword">
+		/// True if this should be used to enter a password.
+		/// </param>
+		public dEntryElement(string caption, string placeholder, string value, bool isPassword) : base(caption)
+		{
+			Value = value;
+			this.isPassword = isPassword;
+			this.placeholder = placeholder;
+		}
+
+		public override string Summary()
+		{
+			return Value;
+		}
+
+		protected virtual UITextField CreateTextField(CGRect frame)
+		{
+			return new UITextField(frame)
+			{
+				AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleLeftMargin,
+				Placeholder = placeholder ?? "",
+				SecureTextEntry = isPassword,
+				Text = Value ?? "",
+				Tag = 1,
+				TextAlignment = textalignment
+			};
+		}
+
+		static readonly NSString passwordKey = new NSString("dEntryElement+Password");
+		static readonly NSString cellkey = new NSString("dEntryElement");
+
+		protected override NSString CellKey
+		{
+			get
+			{
+				return isPassword ? passwordKey : cellkey;
+			}
+		}
+
+		UITableViewCell cell;
+		public override UITableViewCell GetCell(UITableView tv)
+		{
+			if (cell == null)
+			{
+				cell = new UITableViewCell(UITableViewCellStyle.Default, CellKey);
+				cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+				cell.TextLabel.Font = font;
+
+			}
+			cell.TextLabel.Text = Caption;
+
+			var offset = (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone) ? 20 : 90;
+			cell.Frame = new CGRect(cell.Frame.X, cell.Frame.Y, tv.Frame.Width - offset, cell.Frame.Height);
+			CGSize size = cell.Frame.Size;
+			nfloat yOffset = (cell.ContentView.Bounds.Height - size.Height) / 2 - 1;
+			nfloat width = cell.ContentView.Bounds.Width - size.Width;
+			if (textalignment == UITextAlignment.Right)
+			{
+				// Add padding if right aligned
+				width -= 10;
+			}
+#if __TVOS__
+			var entryFrame = new CGRect (size.Width, yOffset, width, size.Height + 20 /* FIXME: figure out something better than adding a magic number */);
+#else
+			var entryFrame = new CGRect(size.Width, yOffset, width, size.Height);
+#endif
+
+			if (entry == null)
+			{
+				entry = CreateTextField(entryFrame);
+				entry.EditingChanged += delegate
+				{
+					if (NotifyChangedOnKeyStroke)
+					{
+						FetchValue();
+					}
+				};
+				entry.ValueChanged += delegate
+				{
+					FetchValue();
+				};
+				entry.Ended += delegate
+				{
+					FetchValue();
+					if (EntryEnded != null)
+					{
+						EntryEnded(this, null);
+					}
+				};
+				//entry.ShouldReturn += delegate
+				//{
+
+				//	if (ShouldReturn != null)
+				//		return ShouldReturn();
+
+				//	DynaRootElement root = (DynaPad.DynaRootElement)GetImmediateRootElement();
+				//	dEntryElement focus = null;
+
+				//	if (root == null)
+				//		return true;
+
+				//	foreach (var s in root.Sections)
+				//	{
+				//		foreach (var e in s.Elements)
+				//		{
+				//			if (e == this)
+				//			{
+				//				focus = this;
+				//			}
+				//			else if (focus != null && e is dEntryElement)
+				//			{
+				//				focus = e as dEntryElement;
+				//				break;
+				//			}
+				//		}
+
+				//		if (focus != null && focus != this)
+				//			break;
+				//	}
+
+				//	if (focus != this)
+				//		focus.BecomeFirstResponder(true);
+				//	else
+				//		focus.ResignFirstResponder(true);
+
+				//	return true;
+				//};
+				entry.Started += delegate
+				{
+					dEntryElement self = null;
+
+					if (EntryStarted != null)
+					{
+						EntryStarted(this, null);
+					}
+
+					if (!returnKeyType.HasValue)
+					{
+						var returnType = UIReturnKeyType.Default;
+
+						foreach (var e in (Parent as Section).Elements)
+						{
+							if (e == this)
+								self = this;
+							else if (self != null && e is dEntryElement)
+								returnType = UIReturnKeyType.Next;
+						}
+						entry.ReturnKeyType = returnType;
+					}
+					else
+						entry.ReturnKeyType = returnKeyType.Value;
+
+					tv.ScrollToRow(IndexPath, UITableViewScrollPosition.Middle, true);
+				};
+				cell.ContentView.AddSubview(entry);
+			}
+			else
+				entry.Frame = entryFrame;
+
+			if (becomeResponder)
+			{
+				entry.BecomeFirstResponder();
+				becomeResponder = false;
+			}
+
+			return cell;
+		}
+
+		/// <summary>
+		///  Copies the value from the UITextField in the EntryElement to the
+		//   Value property and raises the Changed event if necessary.
+		/// </summary>
+		public void FetchValue()
+		{
+			if (entry == null)
+				return;
+
+			var newValue = entry.Text;
+			if (newValue == Value)
+				return;
+
+			Value = newValue;
+
+			if (Changed != null)
+				Changed(this, EventArgs.Empty);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (entry != null)
+				{
+					entry.Dispose();
+					entry = null;
+				}
+			}
+		}
+
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		{
+			BecomeFirstResponder(true);
+			tableView.DeselectRow(indexPath, true);
+		}
+
+		public override bool Matches(string text)
+		{
+			return (Value != null ? Value.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1 : false) || base.Matches(text);
+		}
+
+		/// <summary>
+		/// Makes this cell the first responder (get the focus)
+		/// </summary>
+		/// <param name="animated">
+		/// Whether scrolling to the location of this cell should be animated
+		/// </param>
+		public virtual void BecomeFirstResponder(bool animated)
+		{
+			becomeResponder = true;
+			var tv = GetContainerTableView();
+			if (tv == null)
+				return;
+			tv.ScrollToRow(IndexPath, UITableViewScrollPosition.Middle, animated);
+			if (entry != null)
+			{
+				entry.BecomeFirstResponder();
+				becomeResponder = false;
+			}
+		}
+
+		public virtual void ResignFirstResponder(bool animated)
+		{
+			becomeResponder = false;
+			var tv = GetContainerTableView();
+			if (tv == null)
+				return;
+			tv.ScrollToRow(IndexPath, UITableViewScrollPosition.Middle, animated);
+			if (entry != null)
+				entry.ResignFirstResponder();
+		}
+	}
+
+
+
 
 
 

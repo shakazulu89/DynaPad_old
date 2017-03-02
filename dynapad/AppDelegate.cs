@@ -31,6 +31,9 @@ namespace DynaPad
 			//Now apply the theme
 			//FitpulseTheme.Apply();
 
+			//WritePadAPI.recoInit();
+			//WritePadAPI.initializeFlags();
+
 			// Override point for customization after application launch.
 			var splitViewController = (UISplitViewController)Window.RootViewController;
 			var navigationController = (UINavigationController)splitViewController.ViewControllers[1];
