@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using LoginScreen;
+using System.Text.RegularExpressions;
 
 namespace DynaPad
 {
@@ -729,6 +730,14 @@ namespace DynaPad
 
 		public PresetRadioElement GetPreset(string presetId, string presetName, string presetJson, int fs, string sectionId, RadioGroup presetGroup, FormSection sectionQuestions, Section presetSection, string origS, Section sectionFormSections, bool IsDoctorForm)
 		{
+			var PatientId = SelectedAppointment.SelectedQForm.PatientId;
+			var PatientName = SelectedAppointment.SelectedQForm.PatientName;
+			var DoctorId = SelectedAppointment.SelectedQForm.DoctorId;
+			var LocationId = SelectedAppointment.SelectedQForm.LocationId;
+			var ApptId = SelectedAppointment.SelectedQForm.ApptId;
+			var DateCompleted = SelectedAppointment.SelectedQForm.DateCompleted;
+			var DateUpdated = SelectedAppointment.SelectedQForm.DateUpdated;
+
 			var mre = new PresetRadioElement(presetName, "FormPresetAnswers");
 			mre.PresetID = presetId;
 			mre.PresetName = presetName;
@@ -736,6 +745,15 @@ namespace DynaPad
 			mre.OnSelected += delegate (object sender, EventArgs e)
 			{
 				SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(presetJson);
+
+				SelectedAppointment.SelectedQForm.PatientId = PatientId;
+				SelectedAppointment.SelectedQForm.PatientName = PatientName;
+				SelectedAppointment.SelectedQForm.DoctorId = DoctorId;
+				SelectedAppointment.SelectedQForm.LocationId = LocationId;
+				SelectedAppointment.SelectedQForm.ApptId = ApptId;
+				SelectedAppointment.SelectedQForm.DateCompleted = DateCompleted;
+				SelectedAppointment.SelectedQForm.DateUpdated = DateUpdated;
+
 				//var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
 				//if (selectedSection != null)
 				//{
@@ -806,6 +824,49 @@ namespace DynaPad
 
 
 
+		public bool ValidateSection(FormSection OrigSection)
+		{
+			var valid = true;
+
+			foreach (SectionQuestion question in OrigSection.SectionQuestions)
+			{
+				switch (question.QuestionType)
+				{
+					case "BodyParts":
+					case "Check":
+						
+						break;
+
+					case "Radio":
+					case "Bool":
+					case "YesNo":
+						
+						break;
+
+					case "TextView":
+						
+						break;
+
+					case "TextInput":
+
+						break;
+
+					case "Date":
+
+						break;
+
+					case "Height":
+					case "Weight":
+					case "Amount":
+					case "Numeric":
+					case "Slider":
+
+						break;
+				}
+			}
+
+			return valid;
+		}
 
 
 
@@ -823,79 +884,83 @@ namespace DynaPad
 				btnNextSection.SetTitle("Next Section", UIControlState.Normal);
 				btnNextSection.TouchUpInside += (sender, e) =>
 				{
-					var nextSectionIndex = new int();
+					//if (ValidateSection(OrigSection))
+					//{
+						var nextSectionIndex = new int();
 
-					foreach (Element d in sections.Elements)
-					{
-						var t = d.GetType();
-						if (t == typeof(SectionStringElement))
+						foreach (Element d in sections.Elements)
 						{
-							var di = (SectionStringElement)d;
-							if (di.selected == true)
+							var t = d.GetType();
+							if (t == typeof(SectionStringElement))
 							{
-								nextSectionIndex = sections.Elements.IndexOf(di) + 1;
+								var di = (SectionStringElement)d;
+								if (di.selected == true)
+								{
+									nextSectionIndex = sections.Elements.IndexOf(di) + 1;
+								}
+								di.selected = false;
 							}
-							di.selected = false;
 						}
-					}
 
-					var q = (SectionStringElement)sections.Elements[nextSectionIndex];
-					q.selected = true;
+						var q = (SectionStringElement)sections.Elements[nextSectionIndex];
+						q.selected = true;
 
-					sections.GetContainerTableView().SelectRow(sections.Elements[nextSectionIndex].IndexPath, true, UITableViewScrollPosition.Top);
-					//var shhh = sections.GetContainerTableView();
-					sections.GetContainerTableView().ReloadData();
+						sections.GetContainerTableView().SelectRow(sections.Elements[nextSectionIndex].IndexPath, true, UITableViewScrollPosition.Top);
+						//var shhh = sections.GetContainerTableView();
+						sections.GetContainerTableView().ReloadData();
 
-					if (IsDoctorForm)
-					{
-						nextSectionIndex = nextSectionIndex - 1;
-					}
-
-					if (q.Caption == "Finalize")
-					{
-						btnNextSection.SetTitle("Finalize", UIControlState.Normal);
-						LoadSectionView("", "Finalize", null, IsDoctorForm);
-					}
-					else
-					{
-						var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[nextSectionIndex];
-						string nextSectionJson = JsonConvert.SerializeObject(nextSectionQuestions);
-						LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
-					}
-
-					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-					var directoryname = Path.Combine(documents, "DynaRestore");
-					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
-
-					string sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-
-					if (File.Exists(filename))
-					{
-						var restoreFile = File.ReadAllText(filename);
-						JObject sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-						JObject targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
-
-						if (!JToken.DeepEquals(sourceJObject, targetJObject))
+						if (IsDoctorForm)
 						{
-							// Serialize object
-							//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-							//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-							// Save to file
-							//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-							//var directoryname = Path.Combine(documents, "DynaRestore");
+							nextSectionIndex = nextSectionIndex - 1;
+						}
+
+						if (q.Caption == "Finalize")
+						{
+							btnNextSection.SetTitle("Finalize", UIControlState.Normal);
+							LoadSectionView("", "Finalize", null, IsDoctorForm);
+						}
+						else
+						{
+							var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[nextSectionIndex];
+							string nextSectionJson = JsonConvert.SerializeObject(nextSectionQuestions);
+							LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
+						}
+
+						string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+						var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+						var directoryname = Path.Combine(documents, "DynaRestore");
+						var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+
+						string sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+						if (File.Exists(filename))
+						{
+							var restoreFile = File.ReadAllText(filename);
+							JObject sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+							JObject targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+							if (!JToken.DeepEquals(sourceJObject, targetJObject))
+							{
+								// Serialize object
+								//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+								//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+								// Save to file
+								//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+								//var directoryname = Path.Combine(documents, "DynaRestore");
+								Directory.CreateDirectory(directoryname);
+								//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+								File.WriteAllText(filename, sourceJson);
+							}
+
+						}
+						else
+						{
 							Directory.CreateDirectory(directoryname);
-							//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
 							File.WriteAllText(filename, sourceJson);
 						}
-
-					}
-					else
-					{
-						Directory.CreateDirectory(directoryname);
-						File.WriteAllText(filename, sourceJson);
-					}
+					//}
 				};
+
 			}
 
 			string origSectionJson = JsonConvert.SerializeObject(OrigSection);

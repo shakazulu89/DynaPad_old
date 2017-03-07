@@ -527,13 +527,21 @@ namespace DynaPad
 			(_nestedView as UILabel).LineBreakMode = UILineBreakMode.WordWrap;
 			(_nestedView as UILabel).Lines = 0;
 
+			var stringAttributes = new UIStringAttributes
+			{
+				ParagraphStyle = new NSMutableParagraphStyle() { LineSpacing = 5.0f }
+			};
+			var AttributedText = new NSMutableAttributedString((_nestedView as UILabel).Text);
+			AttributedText.AddAttributes(stringAttributes, new NSRange(0, (_nestedView as UILabel).Text.Length));
+
+			(_nestedView as UILabel).AttributedText = AttributedText;
+
 			switch (Type)
 			{
 				case "Question":
-					//_nestedView.Frame = new CGRect(_padding + 5, _padding, Frame.Width - 2 * _padding, Frame.Height - 2 * _padding);
-
 					(_nestedView as UILabel).TextColor = UIColor.DarkGray;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
+
 					if (Enabled)
 					{
 						BackgroundColor = UIColor.FromRGB(230, 230, 250);
@@ -544,8 +552,6 @@ namespace DynaPad
 					}
 					break;
 				case "Subtitle":
-					//_nestedView.Frame = new CGRect(_padding + 5, _padding, Frame.Width - 2 * _padding, Frame.Height - 2 * _padding);
-
 					(_nestedView as UILabel).TextColor = UIColor.Black;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(10);
 					if (Enabled)
@@ -563,8 +569,6 @@ namespace DynaPad
 					BackgroundColor = UIColor.FromRGB(216,219,226);
 					break;
 				case "Section":
-					//_nestedView.Frame = new CGRect(_padding + 5, _padding, Frame.Width - 2 * _padding, Frame.Height - 2 * _padding);
-
 					(_nestedView as UILabel).TextColor = UIColor.Black;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(17);
 					BackgroundColor = UIColor.FromRGB(169, 188, 208);
@@ -694,6 +698,7 @@ namespace DynaPad
 			//cell.PrepareForReuse();
 			cell.ContentView.AutosizesSubviews = false;
 			cell.UserInteractionEnabled = Enabled;
+
 			return cell;
 		}
 	}
@@ -956,6 +961,8 @@ namespace DynaPad
 		public string AnswerText { get; set; }
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
 
 		private UILabel placeholderLabel;
 
@@ -1009,54 +1016,92 @@ namespace DynaPad
 
 			UserInteractionEnabled = Enabled;
 
-			var inset = this.TextContainerInset;
-			var leftInset = inset.Left + this.TextContainer.LineFragmentPadding;
-			var rightInset = inset.Left + this.TextContainer.LineFragmentPadding;
-			var maxSize = new CGSize()
-			{
-				Width = this.Frame.Width - (leftInset + rightInset),
-				Height = this.Frame.Height - (inset.Top + inset.Bottom)
-			};
-			var size = new NSString(this.Placeholder).StringSize(this.PlaceholderFont, maxSize, UILineBreakMode.WordWrap);
-			var frame = new CGRect(new CGPoint(leftInset, inset.Top), size);
+			//this.placeholderLabel = new UILabel(frame)
+			//{
+			//	BackgroundColor = UIColor.Clear,
+			//	Font = this.PlaceholderFont,
+			//	LineBreakMode = UILineBreakMode.WordWrap,
+			//	Lines = 0,
+			//	TextColor = this.PlaceholderColor
+			//};
 
-			this.placeholderLabel = new UILabel(frame)
-			{
-				BackgroundColor = UIColor.Clear,
-				Font = this.PlaceholderFont,
-				LineBreakMode = UILineBreakMode.WordWrap,
-				Lines = 0,
-				TextColor = this.PlaceholderColor
-			};
+			((UILabel)this.Subviews[1]).BackgroundColor = UIColor.Clear;
+			((UILabel)this.Subviews[1]).Font = this.PlaceholderFont;
+			((UILabel)this.Subviews[1]).LineBreakMode = UILineBreakMode.WordWrap;
+			((UILabel)this.Subviews[1]).Lines = 0;
+			((UILabel)this.Subviews[1]).TextColor = this.PlaceholderColor;
 
-			BackgroundColor = UIColor.White;
+			//BackgroundColor = UIColor.White;
 
 			if (string.IsNullOrEmpty(this.Text))
 			{
-				this.placeholderLabel.Text = this.Placeholder;
-			}
+				this.placeholderLabel.Text = this.Placeholder; 
+				((UILabel)this.Subviews[1]).Text = this.Placeholder;
 
-			if (!Enabled)
+			}
+			else
 			{
-				if (string.IsNullOrEmpty(this.Text))
-				{
-					placeholderLabel.Text = "Not applicable";
-				}
-				placeholderLabel.TextColor = UIColor.LightGray;
-				placeholderLabel.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
-				TextColor = UIColor.LightGray;
-				BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				this.placeholderLabel.Hidden = true;
+				((UILabel)this.Subviews[1]).Hidden = true;
 			}
 
-			this.Add(this.placeholderLabel);
+			//if (!Enabled)
+			//{
+			//	//if (string.IsNullOrEmpty(this.Text))
+			//	//{
+			//	//	placeholderLabel.Text = "Not applicable";
+			//	//}
+			//	//else
+			//	//{
+			//	//	placeholderLabel.Text = this.Text;
+			//	//}
+			//	placeholderLabel.TextColor = UIColor.LightGray;
+			//	//placeholderLabel.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+			//	TextColor = UIColor.LightGray;
+			//	BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+			//}
+			//else
+			//{
+			//	//if (string.IsNullOrEmpty(this.Text))
+			//	//{
+			//	//	this.placeholderLabel.Text = this.Placeholder;
+			//	//}
+			//	//else
+			//	//{
+			//	//	this.placeholderLabel.Hidden = true;
+			//	//}
+			//	//placeholderLabel.Hidden = true;
+			//	placeholderLabel.BackgroundColor = UIColor.Clear;
+			//	placeholderLabel.TextColor = this.PlaceholderColor;
+			//	BackgroundColor = UIColor.White;
+			//	TextColor = UIColor.Black;
+			//}
+
+			//this.Add(this.placeholderLabel);
 		}
 
 		private void CommonInit()
 		{
-			this.PlaceholderColor = UIColor.Clear;
-			this.PlaceholderFont = UIFont.SystemFontOfSize(17);
-			this.TextColor = UIColor.Black;
-			this.Font = UIFont.SystemFontOfSize(17);
+			//this.PlaceholderColor = UIColor.Clear;
+			this.PlaceholderFont = UIFont.SystemFontOfSize(17, UIFontWeight.Light);
+			this.Placeholder = "Placeholder";
+			//this.TextColor = UIColor.Black;
+			//this.Font = UIFont.SystemFontOfSize(17);
+
+			var inset = this.TextContainerInset;
+			var leftInset = inset.Left + this.TextContainer.LineFragmentPadding + 13;
+			var rightInset = inset.Left + this.TextContainer.LineFragmentPadding;
+			var maxSize = new CGSize()
+			{
+				Width = this.Frame.Width - (leftInset + rightInset),
+				Height = this.Frame.Height
+				//Height = this.Frame.Height - (inset.Top + inset.Bottom)
+			};
+			var size = new NSString(this.Placeholder).StringSize(this.PlaceholderFont, maxSize, UILineBreakMode.WordWrap);
+			size.Width = maxSize.Width;
+			var frame = new CGRect(new CGPoint(leftInset, inset.Top), size);
+			this.placeholderLabel = new UILabel(frame);
+			this.Add(this.placeholderLabel);
 
 			this.Started += this.OnStarted;
 
@@ -1118,6 +1163,8 @@ namespace DynaPad
 		public string AnswerText { get; set; }
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
 		//static NSString MyCellId = new NSString("MyCellId");
 		public UITextField EntryTextField { get; set; }
 
@@ -1135,7 +1182,7 @@ namespace DynaPad
 			//cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
 			cell.BackgroundColor = UIColor.White;
 			EntryTextField.TextColor = UIColor.Black;
-			//EntryTextField.Placeholder = "Enter your answer here";
+			EntryTextField.Placeholder = "Enter your answer here";
 
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			cell.TextLabel.Lines = 0;
@@ -1304,6 +1351,8 @@ namespace DynaPad
 		public string ConditionTriggerId { get; set; }
 		public bool Chosen { get; set; }
 		public string QuestionId { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
 
 		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
@@ -1479,6 +1528,8 @@ namespace DynaPad
 		public string ConditionTriggerId { get; set; }
 		public bool Chosen { get; set; }
 		public string QuestionId { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
 
 		public event Action<DynaMultiRadioElement> OnDeselected;
 		public event Action<DynaMultiRadioElement> ElementSelected;
@@ -1679,6 +1730,8 @@ namespace DynaPad
 		public string AnswerText { get; set; }
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
 
 		static NSString skey = new NSString("NullableDateTimeElementInline");
 		public DateTime? DateValue;
@@ -2008,6 +2061,8 @@ namespace DynaPad
 		public string AnswerText { get; set; }
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
 
 		public SectionQuestion SQuestion;
 		public bool ShowCaption;

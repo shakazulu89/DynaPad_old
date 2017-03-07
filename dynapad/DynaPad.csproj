@@ -406,6 +406,7 @@
     <Compile Include="Web References\DynaPadService\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
+    <Compile Include="TextToSpeech.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Circled Play-20.png" />

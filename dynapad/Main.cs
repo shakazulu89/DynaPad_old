@@ -127,6 +127,8 @@ public class SectionQuestion
 	public bool IsConditional { get; set; }
 	public bool IsAnswered { get; set; }
 	public bool IsEnabled { get; set; }
+	public bool IsRequired { get; set; }
+	public bool IsInvalid { get; set; }
 	public List<string> ActiveTriggerIds { get; set; }
 	public List<QuestionOption> QuestionOptions { get; set; }
 }

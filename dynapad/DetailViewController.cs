@@ -12,6 +12,7 @@ using System.IO;
 using Xamarin.Media;
 using System.Threading.Tasks;
 using Plugin.TextToSpeech;
+using System.Text.RegularExpressions;
 
 namespace DynaPad
 {
@@ -418,18 +419,23 @@ namespace DynaPad
 					var qSection = new DynaSection(question.QuestionText);
 					qSection.QuestionId = question.QuestionId;
 					qSection.Enabled = enabled;
-					//question.IsEnabled = enabled;
 
 					nfloat qWidth = !IsDoctorForm ? View.Frame.Width - 50 : View.Frame.Width;
 
-					//var cellStyle = !string.IsNullOrEmpty(question.Subtitle) ? UITableViewCellStyle.Subtitle : UITableViewCellStyle.Default;
-					var cellHeight = !string.IsNullOrEmpty(question.Subtitle) ? 50 : 30;
+					var ww = (decimal)question.QuestionText.Length / 100;
+					var wlines = (int)Math.Ceiling(ww);
+					var wheight = 30 * wlines;
+					//var cellHeight = !string.IsNullOrEmpty(question.Subtitle) ? 50 : 30;
+					//var cellAdjSize = question.QuestionText.StringSize(UIFont.SystemFontOfSize(13), new CGSize(qWidth, 300), UILineBreakMode.WordWrap);
+					var cellHeight = wheight;
+					var cellHeaderHeight = wheight;
 
-					qSection.HeaderView = new UIView(new CGRect(0, 0, View.Frame.Width, cellHeight));
+					if (!string.IsNullOrEmpty(question.Subtitle))
+					{
+						cellHeaderHeight = cellHeaderHeight + 20;
+					}
 
-					//var cellQ = new UITableViewCell(cellStyle, null);
-					//cellQ.Frame = new CGRect(0, 0, View.Frame.Width, cellHeight);
-					//cellQ.SelectionStyle = UITableViewCellSelectionStyle.None;
+					qSection.HeaderView = new UIView(new CGRect(0, 0, View.Frame.Width, cellHeaderHeight));
 
 					if (!string.IsNullOrEmpty(question.Subtitle))
 					{
@@ -441,17 +447,16 @@ namespace DynaPad
 						qsPaddedView.Type = "Subtitle";
 						qsPaddedView.setStyle();
 
-						//cellQ.Add(qsPaddedView);
-
 						qSection.HeaderView.Add(qsPaddedView);
 					}
 
 					var qPaddedView = new PaddedUIView<UILabel>();
 					qPaddedView.Enabled = enabled;
-					qPaddedView.Frame = new CGRect(0, 0, qWidth, 30);
+					qPaddedView.Frame = new CGRect(0, 0, qWidth, cellHeight);
 					qPaddedView.Padding = 5f;
 					qPaddedView.NestedView.Text = question.QuestionText.ToUpper();
 					qPaddedView.Type = "Question";
+
 					qPaddedView.setStyle();
 
 					if (!IsDoctorForm)
@@ -467,7 +472,7 @@ namespace DynaPad
 						{
 							qDictationButton.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 						}
-						//qDictationButton.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+
 						if (question.QuestionText.Length < 250)
 						{
 							var que = question.QuestionText;
@@ -485,27 +490,16 @@ namespace DynaPad
 
 							qDictationButton.TouchUpInside += (sender, e) =>
 							{
-								CrossTextToSpeech.Current.Speak(question.QuestionText + opts, false);
-								//CrossTextToSpeech.Current.Speak(opts);
-								CrossTextToSpeech.Current.Dispose();
+								ExecuteSpeechCommand(question.QuestionText + opts);
 							};
 						}
-
-						//cellQ.ContentView.Add(qPaddedView);
-						//cellQ.ContentView.Add(qDictationButton);
-						//cellQ.AccessoryView = qDictationButton;
-
 						qSection.HeaderView.Add(qPaddedView);
 						qSection.HeaderView.Add(qDictationButton);
 					}
 					else
 					{
-						//cellQ.ContentView.Add(qPaddedView);
-
 						qSection.HeaderView.Add(qPaddedView);
 					}
-
-					//qSection.HeaderView = cellQ;
 
 					qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 					qSection.FooterView.Hidden = true;
@@ -519,6 +513,8 @@ namespace DynaPad
 							{
 								var chk = new DynaCheckBoxElement(opt.OptionText, false, opt.OptionId);
 								chk.Enabled = enabled;
+								chk.Required = question.IsRequired;
+								chk.Invalid = question.IsInvalid;
 								chk.ConditionTriggerId = question.ParentConditionTriggerId;
 								chk.Value = opt.Chosen;
 								chk.Tapped += delegate
@@ -547,6 +543,8 @@ namespace DynaPad
 								var radio = new DynaMultiRadioElement(opt.OptionText, question.QuestionId);
 								radio.Enabled = enabled;
 								radio.Chosen = opt.Chosen;
+								radio.Required = question.IsRequired;
+								radio.Invalid = question.IsInvalid;
 								radio.ConditionTriggerId = question.ParentConditionTriggerId;
 								radio.ElementSelected += delegate
 								{
@@ -581,97 +579,106 @@ namespace DynaPad
 
 							break;
 
-						case "TextInput":
+						case "TextView":
 
-							var dval = question.AnswerText;
+							var tvdval = question.AnswerText;
 							if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
 							{
-								dval = question.DefaultValue;
+								tvdval = question.DefaultValue;
 							}
 
-							if (IsDoctorForm)
+							var viewEntryElement = new PlaceholderEnabledUITextView(new CGRect(0, 0, View.Frame.Width, 100));
+							viewEntryElement.AutocorrectionType = UITextAutocorrectionType.No;
+							viewEntryElement.SpellCheckingType = UITextSpellCheckingType.No;
+							viewEntryElement.EnablesReturnKeyAutomatically = false;
+							viewEntryElement.Placeholder = "Enter your answer here";
+							viewEntryElement.Text = tvdval;
+							viewEntryElement.Required = question.IsRequired;
+							viewEntryElement.Invalid = question.IsInvalid;
+							viewEntryElement.PlaceholderColor = UIColor.LightGray;
+							viewEntryElement.Editable = true;
+							viewEntryElement.Enabled = enabled;
+							viewEntryElement.QuestionId = question.QuestionId;
+							viewEntryElement.ConditionTriggerId = question.ParentConditionTriggerId;
+							viewEntryElement.AllowWhiteSpace = true;
+							viewEntryElement.Ended += (sender, e) =>
 							{
-								var entryElement = new PlaceholderEnabledUITextView(new CGRect(0, 0, View.Frame.Width, 100));
-								entryElement.AutocorrectionType = UITextAutocorrectionType.No;
-								entryElement.SpellCheckingType = UITextSpellCheckingType.No;
-								entryElement.EnablesReturnKeyAutomatically = false;
-								entryElement.Placeholder = "Enter answer here";
-								entryElement.Text = dval;
+								question.AnswerText = viewEntryElement.Text;
+							};
 
-								entryElement.Editable = true;
-								entryElement.Enabled = enabled;
-								entryElement.QuestionId = question.QuestionId;
-								entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
-								entryElement.AllowWhiteSpace = true;
-								entryElement.Ended += (sender, e) =>
-								{
-									question.AnswerText = entryElement.Text;
-								};
+							//entryElement.PlaceholderColor = UIColor.LightGray;
 
-								if (!enabled)
-								{
-									entryElement.PlaceholderColor = UIColor.GroupTableViewBackgroundColor;
-									entryElement.TextColor = UIColor.LightGray;
-								}
-								else
-								{
-									entryElement.TextColor = UIColor.Black;
-									entryElement.BackgroundColor = UIColor.White;
-								}
-
-								entryElement.PlaceholderColor = UIColor.LightGray;
-
-								qSection.Add(entryElement);
-
-								QuestionsView.Add(qSection);
+							if (!enabled)
+							{
+								//entryElement.PlaceholderColor = UIColor.GroupTableViewBackgroundColor;
+								viewEntryElement.TextColor = UIColor.LightGray;
+								viewEntryElement.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+								viewEntryElement.Placeholder = "Not applicable";
 							}
 							else
 							{
-								var ass = new UITextField();
-
-								var entryElement = new DynaEntryElement("", "Enter your answer here", dval);
-
-								entryElement.EntryEnded += (sender, e) =>
-								{
-									question.AnswerText = entryElement.Value;
-								};
-
-								switch (question.QuestionKeyboardTypeId)
-								{
-									case "1"://"Email":
-										entryElement.KeyboardType = UIKeyboardType.EmailAddress;
-										break;
-									case "2"://"Normal":
-										entryElement.KeyboardType = UIKeyboardType.Default;
-										break;
-									case "3"://"Numeric":
-										entryElement.KeyboardType = UIKeyboardType.NumberPad;
-										break;
-									case "4"://"Decimal":
-										entryElement.KeyboardType = UIKeyboardType.DecimalPad;
-										break;
-									case "5"://"NumericPunctuation":
-										entryElement.KeyboardType = UIKeyboardType.NumbersAndPunctuation;
-										break;
-									case "6"://"Phone":
-										entryElement.KeyboardType = UIKeyboardType.PhonePad;
-										break;
-									default:
-										entryElement.KeyboardType = UIKeyboardType.Default;
-										break;
-								}
-
-								entryElement.AutocorrectionType = UITextAutocorrectionType.No;
-								entryElement.EnablesReturnKeyAutomatically = false;
-								entryElement.ClearButtonMode = UITextFieldViewMode.Always;
-								entryElement.Enabled = enabled;
-								entryElement.QuestionId = question.QuestionId;
-								entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
-
-								qSection.Add(entryElement);
-
-								QuestionsView.Add(qSection);
+								viewEntryElement.TextColor = UIColor.Black;
+								viewEntryElement.BackgroundColor = UIColor.White;
 							}
+
+							qSection.Add(viewEntryElement);
+
+							QuestionsView.Add(qSection);
+
+							break;
+
+						case "TextInput":
+
+							var tidval = question.AnswerText;
+							if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
+							{
+								tidval = question.DefaultValue;
+							}
+
+							var entryElement = new DynaEntryElement("", "Enter your answer here", tidval);
+
+							entryElement.EntryEnded += (sender, e) =>
+							{
+								question.AnswerText = entryElement.Value;
+							};
+
+							switch (question.QuestionKeyboardTypeId)
+							{
+								case "1"://"Email":
+									entryElement.KeyboardType = UIKeyboardType.EmailAddress;
+									break;
+								case "2"://"Normal":
+									entryElement.KeyboardType = UIKeyboardType.Default;
+									break;
+								case "3"://"Numeric":
+									entryElement.KeyboardType = UIKeyboardType.NumberPad;
+									break;
+								case "4"://"Decimal":
+									entryElement.KeyboardType = UIKeyboardType.DecimalPad;
+									break;
+								case "5"://"NumericPunctuation":
+									entryElement.KeyboardType = UIKeyboardType.NumbersAndPunctuation;
+									break;
+								case "6"://"Phone":
+									entryElement.KeyboardType = UIKeyboardType.PhonePad;
+									break;
+								default:
+									entryElement.KeyboardType = UIKeyboardType.Default;
+									break;
+							}
+
+							entryElement.Required = question.IsRequired;
+							entryElement.Invalid = question.IsInvalid;
+							entryElement.AutocorrectionType = UITextAutocorrectionType.No;
+							entryElement.EnablesReturnKeyAutomatically = false;
+							entryElement.ClearButtonMode = UITextFieldViewMode.Always;
+							entryElement.Enabled = enabled;
+							entryElement.QuestionId = question.QuestionId;
+							entryElement.ConditionTriggerId = question.ParentConditionTriggerId;
+
+							qSection.Add(entryElement);
+
+							QuestionsView.Add(qSection);
 
 							break;
 
@@ -689,6 +696,8 @@ namespace DynaPad
 							}
 
 							dateElement.Caption = "Tap to select date";
+							dateElement.Required = question.IsRequired;
+							dateElement.Invalid = question.IsInvalid;
 							dateElement.Enabled = enabled;
 							dateElement.Alignment = UITextAlignment.Left;
 							dateElement.QuestionId = question.QuestionId;
@@ -701,7 +710,7 @@ namespace DynaPad
 
 							qSection.Add(dateElement);
 
-							QuestionsView.UnevenRows = true;
+							//QuestionsView.UnevenRows = true;
 
 							QuestionsView.Add(qSection);
 
@@ -771,13 +780,15 @@ namespace DynaPad
 							sliderElement.ShowCaption = true;
 							sliderElement.Caption = qanswer.ToString();
 							sliderElement.Enabled = enabled;
+							sliderElement.Required = question.IsRequired;
+							sliderElement.Invalid = question.IsInvalid;
 							sliderElement.QuestionId = question.QuestionId;
 							sliderElement.ConditionTriggerId = question.ParentConditionTriggerId;
 
 
 							qSection.Add(sliderElement);
 
-							QuestionsView.UnevenRows = true;
+							//QuestionsView.UnevenRows = true;
 
 							QuestionsView.Add(qSection);
 
@@ -790,6 +801,8 @@ namespace DynaPad
 				qNext.FooterView = new UIView(new CGRect(0, 0, 0, 10));
 				qNext.Add(nextbtn);
 
+				QuestionsView.UnevenRows = true;
+
 				QuestionsView.Add(qNext);
 
 				Root = QuestionsView;
@@ -798,6 +811,33 @@ namespace DynaPad
 				Root.TableView.ScrollRectToVisible(new CGRect(0, 0, 1, 1), true);
 			}
 		}
+
+		//public interface ITextToSpeech
+		//{
+		//	bool IsSpeaking { get; }
+		//	void Speak(string text);
+		//	void StopSpeach();
+		//	event EventHandler<EventArgs> SpeechStopped;
+		//}
+
+		public TextToSpeech tts;
+
+		private void ExecuteSpeechCommand(string speechText)
+		{
+			if (tts != null && tts.IsSpeaking)
+			{
+				tts.StopSpeach();
+				Title = "Start speech";
+			}
+			else
+			{
+				tts = new TextToSpeech();
+				Title = "Stop Speech";
+				tts.Speak(speechText);
+			}
+		}
+
+
 
 		//object SliderValueChanged(int val, SectionQuestion question)
 		//{
@@ -1384,7 +1424,12 @@ namespace DynaPad
 						{
 							var headcell = (UITableViewCell)sec.HeaderView;
 							var headerLabel = (PaddedUIView<UILabel>)headcell.ContentView.Subviews[0];
-							var headerDic = (UIButton)headcell.ContentView.Subviews[1];
+							UIButton headerDic = null;
+							if (headcell.ContentView.Subviews[1] != null)
+							{
+								headerDic = (UIButton)headcell.ContentView.Subviews[1];
+							}
+
 							if (headerLabel != null)
 							{
 								headerLabel.Enabled = triggered;
@@ -1408,10 +1453,29 @@ namespace DynaPad
 						{
 							var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView.Subviews[0];
 
+							UIButton headerDic = null;
+							if (sec.HeaderView.Subviews.Length > 1)
+							{
+								headerDic = (UIButton)sec.HeaderView.Subviews[1];
+							}
+
 							if (headerLabel != null)
 							{
 								headerLabel.Enabled = triggered;
 								headerLabel.setStyle();
+
+								if (headerDic != null)
+								{
+									headerDic.Enabled = triggered;
+									if (headerDic.Enabled)
+									{
+										headerDic.BackgroundColor = UIColor.FromRGB(230, 230, 250);
+									}
+									else
+									{
+										headerDic.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+									}
+								}
 							}
 						}
 
@@ -1430,6 +1494,21 @@ namespace DynaPad
 									var peui = (PlaceholderEnabledUITextView)pelement.ContainerView.Subviews[0];
 									peui.Enabled = triggered;
 									peui.UserInteractionEnabled = triggered;
+									//peui.Draw(peui.Frame);
+									if (!triggered)
+									{
+										//peui.PlaceholderColor = UIColor.GroupTableViewBackgroundColor;
+										peui.TextColor = UIColor.LightGray;
+										peui.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+										peui.Placeholder = "Not applicable";
+									}
+									else
+									{
+										//peui.PlaceholderColor = UIColor.Clear;
+										peui.Placeholder = "Enter your answer here";
+										peui.TextColor = UIColor.Black;
+										peui.BackgroundColor = UIColor.White;
+									}
 								}
 
 								if (element.GetContainerTableView() != null)
