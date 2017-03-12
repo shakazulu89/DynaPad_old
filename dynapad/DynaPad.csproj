@@ -178,6 +178,12 @@
     <Reference Include="Plugin.TextToSpeech">
       <HintPath>..\packages\Xam.Plugins.TextToSpeech.2.0.0\lib\Xamarin.iOS10\Plugin.TextToSpeech.dll</HintPath>
     </Reference>
+    <Reference Include="Connectivity.Plugin.Abstractions">
+      <HintPath>..\packages\Xam.Plugin.Connectivity.1.0.3\lib\Xamarin.iOS10\Connectivity.Plugin.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Connectivity.Plugin">
+      <HintPath>..\packages\Xam.Plugin.Connectivity.1.0.3\lib\Xamarin.iOS10\Connectivity.Plugin.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -373,6 +379,7 @@
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+    <None Include="PluginsHelp\ConnectivityReadme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -403,10 +410,10 @@
     <Compile Include="StrokeModel\StrokeSegment.cs" />
     <Compile Include="CanvasMainViewController.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="TextToSpeech.cs" />
     <Compile Include="Web References\DynaPadService\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
-    <Compile Include="TextToSpeech.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Circled Play-20.png" />
@@ -450,6 +457,10 @@
     </XamarinComponentReference>
     <XamarinComponentReference Include="MediaPlugin">
       <Version>1.0.1</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="ConnectivityPlugin">
+      <Version>1.0.3</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>
   </ItemGroup>

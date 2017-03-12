@@ -256,7 +256,7 @@ namespace DynaPad
 		//public bool selected = false;
 		public bool selected;
 
-		public SectionStringElement(string caption) : base(caption) { }
+		public SectionStringElement(string caption) : base(caption) {}
 
 		public SectionStringElement(string caption, string value) : base(caption)
 		{
@@ -499,6 +499,7 @@ namespace DynaPad
 		private T _nestedView;
 		public bool Enabled;
 		public string Type;
+		public bool Required;
 
 		public PaddedUIView()
 		{
@@ -527,29 +528,39 @@ namespace DynaPad
 			(_nestedView as UILabel).LineBreakMode = UILineBreakMode.WordWrap;
 			(_nestedView as UILabel).Lines = 0;
 
-			var stringAttributes = new UIStringAttributes
-			{
-				ParagraphStyle = new NSMutableParagraphStyle() { LineSpacing = 5.0f }
-			};
-			var AttributedText = new NSMutableAttributedString((_nestedView as UILabel).Text);
-			AttributedText.AddAttributes(stringAttributes, new NSRange(0, (_nestedView as UILabel).Text.Length));
-
-			(_nestedView as UILabel).AttributedText = AttributedText;
-
 			switch (Type)
 			{
 				case "Question":
 					(_nestedView as UILabel).TextColor = UIColor.DarkGray;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
 
-					if (Enabled)
+					BackgroundColor = Enabled ? UIColor.FromRGB(230, 230, 250) : UIColor.GroupTableViewBackgroundColor;
+
+					NSMutableAttributedString AttributedText;
+
+					var reqStringAttributes = new UIStringAttributes();
+					reqStringAttributes.ForegroundColor = Enabled ? UIColor.Red : UIColor.LightGray;
+
+					var stringAttributes = new UIStringAttributes();
+					stringAttributes.ForegroundColor = Enabled ? UIColor.DarkGray : UIColor.LightGray;
+
+					var textstring = (_nestedView as UILabel).Text;
+
+					if (Required)
 					{
-						BackgroundColor = UIColor.FromRGB(230, 230, 250);
+						textstring = textstring + " *";
+
+						AttributedText = new NSMutableAttributedString(textstring);
+						AttributedText.SetAttributes(stringAttributes, new NSRange(0, textstring.Length - 1));
+						AttributedText.SetAttributes(reqStringAttributes.Dictionary, new NSRange(textstring.Length - 1, 1));
 					}
 					else
 					{
-						BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+						AttributedText = new NSMutableAttributedString(textstring);
+						AttributedText.SetAttributes(stringAttributes.Dictionary, new NSRange(0, textstring.Length));
 					}
+
+					(_nestedView as UILabel).AttributedText = AttributedText;
 					break;
 				case "Subtitle":
 					(_nestedView as UILabel).TextColor = UIColor.Black;
@@ -656,10 +667,13 @@ namespace DynaPad
 		public string AnswerText { get; set; }
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
+		public bool IsRequired { get; set; }
+		public bool IsInvalid { get; set; }
 		public Group thisGroup { get; set; }
 
 		public DynaSection(string caption) : base(caption)
 		{
+			
 		}
 
 		public override string Summary()
@@ -963,6 +977,7 @@ namespace DynaPad
 		public bool IsConditional { get; set; }
 		public bool Required { get; set; }
 		public bool Invalid { get; set; }
+		public DynaSection parentSec { get; set; }
 
 		private UILabel placeholderLabel;
 
@@ -1043,6 +1058,21 @@ namespace DynaPad
 			{
 				this.placeholderLabel.Hidden = true;
 				((UILabel)this.Subviews[1]).Hidden = true;
+			}
+
+			//if (Invalid)
+			//{
+			//	this.Layer.BorderWidth = 1;
+			//	this.Layer.BorderColor = UIColor.Red.CGColor;
+			//}
+
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Black.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
 			}
 
 			//if (!Enabled)
@@ -1211,6 +1241,22 @@ namespace DynaPad
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 				EntryTextField.TextColor = UIColor.LightGray;
 				EntryTextField.Placeholder = "Not applicable";
+			}
+
+			//if (Invalid)
+			//{
+			//	cell.Layer.BorderWidth = 1;
+			//	cell.Layer.BorderColor = UIColor.Red.CGColor;
+			//}
+
+			var parentSec = (DynaSection)base.Parent;
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Clear.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
 			}
  			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			}
  			s.EntryAlignment = new SizeF(20 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
@@ -1409,6 +1455,16 @@ namespace DynaPad
 				//{
 					cell.Accessory = UITableViewCellAccessory.None;
 				//}
+			}
+
+			var parentSec = (DynaSection)base.Parent;
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Clear.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
 			}
 
 			return cell;
@@ -1614,6 +1670,16 @@ namespace DynaPad
 				{
 					cell.Accessory = UITableViewCellAccessory.None;
 				}
+			}
+
+			var parentSec = (DynaSection)base.Parent;
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Clear.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
 			}
 
 			return cell;
@@ -1933,7 +1999,17 @@ namespace DynaPad
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 			}
 
-				return cell;
+			var parentSec = (DynaSection)base.Parent;
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Clear.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
+			}
+
+			return cell;
 		}
 
 		/// <summary>
@@ -2153,6 +2229,15 @@ namespace DynaPad
 					slider.Frame = new CGRect(10f + captionSize.Width, UIDevice.CurrentDevice.CheckSystemVersion(7, 0) ? 18f : 12f, cell.ContentView.Bounds.Width - 20 - captionSize.Width, 7f);
 					if (_valueChangedCallback != null)
 						_valueChangedCallback((int)Value);
+
+					if (Required && Enabled)
+					{
+						if (string.IsNullOrEmpty(AnswerText))
+						{
+							Invalid = true;
+						}
+						else Invalid = false;
+					}
 				};
 			}
 			else {
@@ -2170,6 +2255,16 @@ namespace DynaPad
 			{
 				cell.TextLabel.TextColor = UIColor.LightGray;
 				cell.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+			}
+
+			var parentSec = (DynaSection)base.Parent;
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Clear.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
 			}
 
 			return cell;

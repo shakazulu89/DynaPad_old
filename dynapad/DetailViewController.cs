@@ -78,10 +78,12 @@ namespace DynaPad
 		}
 
 
-		void SubmitForm(string password, bool isDoctorForm)
+		void SubmitForm(string password, bool isDoctorForm, SignaturePad.SignaturePadView sig)
 		{
 			bool isValid = password == Constants.Password;
-			if (isValid)
+			bool isSigned = !sig.IsBlank;
+
+			if (isValid && isSigned)
 			{
 				string finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 				//var dt = (DataTable)JsonConvert.DeserializeObject(finalJson, (typeof(DataTable)));
@@ -93,8 +95,13 @@ namespace DynaPad
 			}
 			else
 			{
-				messageLabel.Text = "Login failed";
-				var FailAlert = UIAlertController.Create("Error", "Wrong password", UIAlertControllerStyle.Alert);
+				messageLabel.Text = "Submit failed";
+				var failPass = "";
+				var failSign = "";
+				if (!isValid) failPass = "Wrong password. ";
+				if (!isSigned) failSign = "Form was not signed!";
+
+				var FailAlert = UIAlertController.Create("Error", failPass + failSign, UIAlertControllerStyle.Alert);
 				FailAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Cancel, null));
 				// Present Alert
 				PresentViewController(FailAlert, true, null);
@@ -187,7 +194,7 @@ namespace DynaPad
 
 						break;
 					case "Finalize":
-						var rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName);
+						var rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
 
 						var rootPaddedView = new PaddedUIView<UILabel>();
 						rootPaddedView.Enabled = true;
@@ -205,7 +212,7 @@ namespace DynaPad
 						rootSection.FooterView.Hidden = true;
 
 						var sigPad = new SignaturePad.SignaturePadView(new CGRect(0, 0, View.Frame.Width, 600));
-						sigPad.CaptionText = "Sign here:";
+						sigPad.CaptionText = "Signature here:";
 						sigPad.BackgroundColor = UIColor.White;
 
 						messageLabel = new UILabel();
@@ -225,7 +232,7 @@ namespace DynaPad
 								field.Placeholder = "Password";
 							});
 							SubmitPrompt.Add(messageLabel);
-							SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm)));
+							SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm, sigPad)));
 							SubmitPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 							//Present Alert
 							PresentViewController(SubmitPrompt, true, null);
@@ -335,10 +342,10 @@ namespace DynaPad
 					presetPaddedView.Type = "Preset";
 					presetPaddedView.Frame = new CGRect(0, 0, 0, 30);
 					presetPaddedView.Padding = 5f;
-					presetPaddedView.NestedView.Text = "Preset Answers";
+					presetPaddedView.NestedView.Text = "Section Presets";
 					presetPaddedView.setStyle();
 
-					var presetSection = new DynaSection("Preset Answers");
+					var presetSection = new DynaSection("Section Presets");
 					presetSection.Enabled = true;
 					presetSection.HeaderView = presetPaddedView;
 					presetSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
@@ -350,7 +357,7 @@ namespace DynaPad
 					var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
 
 					var presetGroup = new RadioGroup("PresetAnswers", sectionQuestions.SectionSelectedTemplateId);
-					var presetsRoot = new DynaRootElement("Preset Answers", presetGroup);
+					var presetsRoot = new DynaRootElement("Section Presets", presetGroup);
 					presetsRoot.IsPreset = true;
 
 					var noPresetRadio = new PresetRadioElement("No Preset", "PresetAnswers");
@@ -410,7 +417,7 @@ namespace DynaPad
 					NavigationItem.SetRightBarButtonItem(null, false);
 				}
 
-				QuestionsView = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName);
+				QuestionsView = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
 				QuestionsView.Add(headSection);
 
 				foreach (SectionQuestion question in sectionQuestions.SectionQuestions)
@@ -419,8 +426,16 @@ namespace DynaPad
 					var qSection = new DynaSection(question.QuestionText);
 					qSection.QuestionId = question.QuestionId;
 					qSection.Enabled = enabled;
+					qSection.IsInvalid = question.IsInvalid;
+
+					//question.IsRequired = true;
+
 
 					nfloat qWidth = !IsDoctorForm ? View.Frame.Width - 50 : View.Frame.Width;
+					//if (question.IsRequired)
+					//{
+					//	qWidth = qWidth - 5;
+					//}
 
 					var ww = (decimal)question.QuestionText.Length / 100;
 					var wlines = (int)Math.Ceiling(ww);
@@ -456,6 +471,7 @@ namespace DynaPad
 					qPaddedView.Padding = 5f;
 					qPaddedView.NestedView.Text = question.QuestionText.ToUpper();
 					qPaddedView.Type = "Question";
+					qPaddedView.Required = question.IsRequired;
 
 					qPaddedView.setStyle();
 
@@ -493,12 +509,34 @@ namespace DynaPad
 								ExecuteSpeechCommand(question.QuestionText + opts);
 							};
 						}
+
 						qSection.HeaderView.Add(qPaddedView);
+
+						//if (question.IsRequired)
+						//{
+						//	var reqLbl = new UILabel(new CGRect(qWidth, 0, 5, cellHeight));
+						//	reqLbl.Text = "*";
+						//	reqLbl.TextColor = UIColor.Red;
+						//	reqLbl.BackgroundColor = UIColor.Clear;
+
+						//	qSection.Add(reqLbl);
+						//}
+
 						qSection.HeaderView.Add(qDictationButton);
 					}
 					else
 					{
 						qSection.HeaderView.Add(qPaddedView);
+
+						//if (question.IsRequired)
+						//{
+						//	var reqLbl = new UILabel(new CGRect(qWidth, 0, 5, cellHeight));
+						//	reqLbl.Text = "*";
+						//	reqLbl.TextColor = UIColor.Red;
+						//	reqLbl.BackgroundColor = UIColor.Clear;
+
+						//	qSection.Add(reqLbl);
+						//}
 					}
 
 					qSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
@@ -520,6 +558,8 @@ namespace DynaPad
 								chk.Tapped += delegate
 								{
 									Chk_Tapped(question, opt, chk.Value, sectionId);
+									chk.Invalid = ValidateQuestion(question);
+									qSection.GetContainerTableView().ReloadData();
 								};
 
 								if (opt.Chosen && opt.ConditionTriggerIds != null && opt.ConditionTriggerIds.Count > 0)
@@ -529,6 +569,8 @@ namespace DynaPad
 
 								qSection.Add(chk);
 							}
+
+							qSection.HeaderView.Layer.BorderWidth = 5;
 
 							QuestionsView.Add(qSection);
 
@@ -550,11 +592,15 @@ namespace DynaPad
 								{
 									Radio_Tapped(question, opt);
 									NavigationController.PopViewController(true);
+									radio.Invalid = ValidateQuestion(question);
+									qSection.GetContainerTableView().ReloadData();
 								};
 								radio.OnDeselected += delegate
 								{
 									Radio_UnTapped(question, opt);
 									NavigationController.PopViewController(true);
+									radio.Invalid = ValidateQuestion(question);
+									qSection.GetContainerTableView().ReloadData();
 								};
 
 								qSection.Add(radio);
@@ -604,7 +650,10 @@ namespace DynaPad
 							viewEntryElement.Ended += (sender, e) =>
 							{
 								question.AnswerText = viewEntryElement.Text;
+								viewEntryElement.Invalid = ValidateQuestion(question);
+								qSection.GetContainerTableView().ReloadData();
 							};
+							viewEntryElement.parentSec = qSection;
 
 							//entryElement.PlaceholderColor = UIColor.LightGray;
 
@@ -640,15 +689,19 @@ namespace DynaPad
 							entryElement.EntryEnded += (sender, e) =>
 							{
 								question.AnswerText = entryElement.Value;
+								entryElement.Invalid = ValidateQuestion(question);
+								//ReloadData();
+								qSection.GetContainerTableView().ReloadData();
+								//this.TableView.ReloadData();
 							};
 
 							switch (question.QuestionKeyboardTypeId)
 							{
-								case "1"://"Email":
-									entryElement.KeyboardType = UIKeyboardType.EmailAddress;
-									break;
-								case "2"://"Normal":
+								case "1"://"Normal":
 									entryElement.KeyboardType = UIKeyboardType.Default;
+									break;
+								case "2"://"Email":
+									entryElement.KeyboardType = UIKeyboardType.EmailAddress;
 									break;
 								case "3"://"Numeric":
 									entryElement.KeyboardType = UIKeyboardType.NumberPad;
@@ -706,6 +759,8 @@ namespace DynaPad
 							dateElement.DateSelected += delegate
 							{
 								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();
+								dateElement.Invalid = ValidateQuestion(question);
+								qSection.GetContainerTableView().ReloadData();
 							};
 
 							qSection.Add(dateElement);
@@ -827,14 +882,95 @@ namespace DynaPad
 			if (tts != null && tts.IsSpeaking)
 			{
 				tts.StopSpeach();
-				Title = "Start speech";
+				//Title = "Start speech";
 			}
 			else
 			{
 				tts = new TextToSpeech();
-				Title = "Stop Speech";
+				//Title = "Stop Speech";
 				tts.Speak(speechText);
 			}
+		}
+
+
+
+		public bool ValidateQuestion(SectionQuestion question)
+		{
+			var valid = true;
+
+			if (question.IsRequired && question.IsEnabled)
+			{
+				switch (question.QuestionType)
+				{
+					case "BodyParts":
+					case "Check":
+						foreach (QuestionOption opt in question.QuestionOptions)
+						{
+							if (opt.Chosen)
+							{
+								question.IsInvalid = false;
+								break;
+							}
+							question.IsInvalid = true;
+						}
+						//if (question.IsInvalid) valid = false;
+						valid &= !question.IsInvalid;
+						break;
+					case "Radio":
+					case "Bool":
+					case "YesNo":
+						foreach (QuestionOption opt in question.QuestionOptions)
+						{
+							if (opt.Chosen)
+							{
+								question.IsInvalid = false;
+								break;
+							}
+							question.IsInvalid = true;
+						}
+						//if (question.IsInvalid) valid = false;
+						valid &= !question.IsInvalid;
+						break;
+					case "TextView":
+						if (string.IsNullOrEmpty(question.AnswerText))
+						{
+							valid = false;
+							question.IsInvalid = true;
+						}
+						else question.IsInvalid = false;
+						break;
+					case "TextInput":
+						if (string.IsNullOrEmpty(question.AnswerText))
+						{
+							valid = false;
+							question.IsInvalid = true;
+						}
+						else question.IsInvalid = false;
+						break;
+					case "Date":
+						if (string.IsNullOrEmpty(question.AnswerText))
+						{
+							valid = false;
+							question.IsInvalid = true;
+						}
+						else question.IsInvalid = false;
+						break;
+					case "Height":
+					case "Weight":
+					case "Amount":
+					case "Numeric":
+					case "Slider":
+						if (string.IsNullOrEmpty(question.AnswerText))
+						{
+							valid = false;
+							question.IsInvalid = true;
+						}
+						else question.IsInvalid = false;
+						break;
+				}
+			}
+
+			return !valid;
 		}
 
 
@@ -913,10 +1049,21 @@ namespace DynaPad
 					Directory.CreateDirectory(directoryname);
 				}
 
+
+
+				var adocuments = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomain.User)[0].Path;
+				var tmp = Path.Combine(adocuments, "../", "tmp");
+				var trytmp = System.IO.Path.GetTempPath();
+
+				var rdocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				var ret = Path.Combine(rdocuments, "..", "tmp");
+
+
+
 				var picker = new MediaPicker();
 				MediaPickerController controller = picker.GetTakePhotoUI(new StoreCameraMediaOptions
 				{
-					Name = "test.jpg",
+					Name = patientName.Replace(" ", "_") + "_" + sectionName + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg",
 					Directory = "MediaPickerSample"
 				});
 
@@ -1424,6 +1571,7 @@ namespace DynaPad
 						{
 							var headcell = (UITableViewCell)sec.HeaderView;
 							var headerLabel = (PaddedUIView<UILabel>)headcell.ContentView.Subviews[0];
+							headerLabel.NestedView.Text = tQuestion.QuestionText.ToUpper();
 							UIButton headerDic = null;
 							if (headcell.ContentView.Subviews[1] != null)
 							{
@@ -1452,7 +1600,7 @@ namespace DynaPad
 						else
 						{
 							var headerLabel = (PaddedUIView<UILabel>)sec.HeaderView.Subviews[0];
-
+							headerLabel.NestedView.Text = tQuestion.QuestionText.ToUpper();
 							UIButton headerDic = null;
 							if (sec.HeaderView.Subviews.Length > 1)
 							{

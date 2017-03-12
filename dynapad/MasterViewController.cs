@@ -312,7 +312,7 @@ namespace DynaPad
 			JsonHandler.OriginalFormJsonString = origJson;
 			SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 
-			DetailViewController.Root.Caption = SelectedAppointment.SelectedQForm.FormName;
+			DetailViewController.Root.Caption = SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName;
 			DetailViewController.ReloadData();
 
 			bool IsDoctorForm = dfElemet.IsDoctorForm;
@@ -331,10 +331,10 @@ namespace DynaPad
 				*/
 
 				var FormPresetNames = dds.GetAnswerPresets(SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
-				var formPresetSection = new DynaSection("Form Preset Answers");
+				var formPresetSection = new DynaSection("Form Presets");
 				formPresetSection.Enabled = true;
 				var formPresetGroup = new RadioGroup("FormPresetAnswers", SelectedAppointment.SelectedQForm.FormSelectedTemplateId);
-				var formPresetsRoot = new DynaRootElement("Preset Answers", formPresetGroup);
+				var formPresetsRoot = new DynaRootElement("Form Presets", formPresetGroup);
 				formPresetsRoot.IsPreset = true;//background color
 
 				//var noPresetRadio = new MyRadioElement("No Preset", "FormPresetAnswers");
@@ -345,7 +345,7 @@ namespace DynaPad
 					JsonHandler.OriginalFormJsonString = origJson;
 					SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 
-					LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+					LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
 				};
 
 				formPresetSection.Add(noPresetRadio);
@@ -427,7 +427,7 @@ namespace DynaPad
 
 			var finalizeSection = new SectionStringElement("Finalize", delegate
 			{
-				LoadSectionView("", "Finalize", null, IsDoctorForm);
+				LoadSectionView("", "Finalize", null, IsDoctorForm, sectionFormSections);
 
 				foreach (Element d in sectionFormSections.Elements)
 				{
@@ -524,7 +524,7 @@ namespace DynaPad
 						  });
 
 						  RestorePrompt.Add(messageLabel);
-						  RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject)));
+						  RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject, sectionFormSections)));
 						  RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 
 						  //Present Alert
@@ -539,7 +539,7 @@ namespace DynaPad
 		}
 
 
-		void RestoreForm(string password, string restoreFile, bool IsDoctorForm, JObject sourceJObject, JObject targetJObject)
+		void RestoreForm(string password, string restoreFile, bool IsDoctorForm, JObject sourceJObject, JObject targetJObject, Section sections)
 		{
 			bool isValid = password == Constants.Password;
 			if (isValid)
@@ -553,7 +553,7 @@ namespace DynaPad
 				{
 					JsonHandler.OriginalFormJsonString = restoreFile;
 					SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(restoreFile);
-					LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+					LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sections);
 				}
 			}
 			else
@@ -700,7 +700,7 @@ namespace DynaPad
 			//QuestionsView.TableView.ReloadData();
 			//SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput, nextbtn);
 
-			LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+			LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
 
 			NavigationController.PopViewController(true);
 		}
@@ -791,7 +791,7 @@ namespace DynaPad
 				//dfElement.GetImmediateRootElement().RadioSelected = 0;
 				//dfElement.GetImmediateRootElement().Reload(dfElement, UITableViewRowAnimation.Fade);
 				//presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
-				LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+				LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
 			};
 			mre.editPresetBtn.TouchUpInside += (sender, e) =>
 			{
@@ -823,154 +823,292 @@ namespace DynaPad
 		}
 
 
+		public class InvalidQuestion
+		{
+			public string QuestionID { get; set; }
+			public string QuestionText { get; set; }
+		}
 
+		//public List<InvalidQuestion> ValidateSection(FormSection OrigSection)
 		public bool ValidateSection(FormSection OrigSection)
 		{
 			var valid = true;
+			var invalidQuestions = new List<InvalidQuestion>();
 
 			foreach (SectionQuestion question in OrigSection.SectionQuestions)
 			{
-				switch (question.QuestionType)
+				if (question.IsRequired && question.IsEnabled)
 				{
-					case "BodyParts":
-					case "Check":
-						
-						break;
+					switch (question.QuestionType)
+					{
+						case "BodyParts":
+						case "Check":
+							foreach (QuestionOption opt in question.QuestionOptions)
+							{
+								if (opt.Chosen)
+								{
+									question.IsInvalid = false;
+									break;
+								}
+								question.IsInvalid = true;
+							}
+							//if (question.IsInvalid) valid = false;
+							valid &= !question.IsInvalid;
+							break;
+						case "Radio":
+						case "Bool":
+						case "YesNo":
+							foreach (QuestionOption opt in question.QuestionOptions)
+							{
+								if (opt.Chosen)
+								{
+									question.IsInvalid = false;
+									break;
+								}
+								question.IsInvalid = true;
+							}
+							//if (question.IsInvalid) valid = false;
+							valid &= !question.IsInvalid;
+							break;
+						case "TextView":
+							if (string.IsNullOrEmpty(question.AnswerText))
+							{
+								valid = false;
+								question.IsInvalid = true;
+							}
+							else question.IsInvalid = false;
+							break;
+						case "TextInput":
+							if (string.IsNullOrEmpty(question.AnswerText))
+							{
+								valid = false;
+								question.IsInvalid = true;
+							}
+							else question.IsInvalid = false;
+							break;
+						case "Date":
+							if (string.IsNullOrEmpty(question.AnswerText))
+							{
+								valid = false;
+								question.IsInvalid = true;
+							}
+							else question.IsInvalid = false;
+							break;
+						case "Height":
+						case "Weight":
+						case "Amount":
+						case "Numeric":
+						case "Slider":
+							if (string.IsNullOrEmpty(question.AnswerText))
+							{
+								valid = false;
+								question.IsInvalid = true;
+							}
+							else question.IsInvalid = false;
+							break;
+					}
 
-					case "Radio":
-					case "Bool":
-					case "YesNo":
-						
-						break;
-
-					case "TextView":
-						
-						break;
-
-					case "TextInput":
-
-						break;
-
-					case "Date":
-
-						break;
-
-					case "Height":
-					case "Weight":
-					case "Amount":
-					case "Numeric":
-					case "Slider":
-
-						break;
+					if (question.IsInvalid)
+					{
+						invalidQuestions.Add(new InvalidQuestion() { QuestionID = question.QuestionId, QuestionText = question.QuestionText });
+					}
 				}
 			}
 
+			//return invalidQuestions;
 			return valid;
 		}
 
 
 
-		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null)
-		{
-			ReloadData();
-			GlassButton btnNextSection = null;
-			if (sectionName != "Report" || sectionName != "Finalize" || sectionName != "Photos")
+		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null) 		{ 			ReloadData(); 			var btnNextSection = GetNextBtn(sections, IsDoctorForm);
+ 			//if (sectionName != "Report" || sectionName != "Finalize" || sectionName != "Photos")
+			if (sectionName != "Report" && sectionName != "Finalize" && sectionName != "Photos") 			{
+				var origSectionJson = JsonConvert.SerializeObject(OrigSection);
+				if (DetailViewController.NavigationController != null) DetailViewController.NavigationController.PopViewController(true);
+				DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm, btnNextSection); 			}
+			else if (sectionName == "Finalize")
 			{
-				btnNextSection = new GlassButton(new RectangleF(0, 0, (float)DetailViewController.View.Frame.Width, 50));
-				//btnNextSection.Font = UIFont.BoldSystemFontOfSize(17);
-				btnNextSection.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
-				btnNextSection.SetTitleColor(UIColor.Black, UIControlState.Normal);
-				btnNextSection.NormalColor = UIColor.FromRGB(224, 238, 240);
-				btnNextSection.SetTitle("Next Section", UIControlState.Normal);
-				btnNextSection.TouchUpInside += (sender, e) =>
+				var CanContinue = true;
+				object[,] vsecs = new object[SelectedAppointment.SelectedQForm.FormSections.Count, 2];
+				for (int x = 0; x < SelectedAppointment.SelectedQForm.FormSections.Count; x++)
 				{
-					//if (ValidateSection(OrigSection))
+					var vsec = SelectedAppointment.SelectedQForm.FormSections[x];
+					vsecs[x, 0] = vsec;
+					//if (ValidateSection(vsec).Count == 0)
+					if (ValidateSection(vsec))
+					{
+						vsecs[x, 1] = (object)true;
+					}
+					else
+					{
+						vsecs[x, 1] = (object)false;
+						CanContinue = false;
+					}
+				}
+
+				if (CanContinue)
+				{
+					var origSectionJson = JsonConvert.SerializeObject(OrigSection);
+					if (DetailViewController.NavigationController != null) DetailViewController.NavigationController.PopViewController(true);
+					DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm, btnNextSection);
+				}
+				else
+				{
+					FormSection qSection = null;
+					int firstinvalid = 0;
+					for (int i = 0; i < SelectedAppointment.SelectedQForm.FormSections.Count; i++)
+					{
+						var test = vsecs[i, 1];
+						if (Equals(test, false))
+						{
+							qSection = vsecs[i, 0] as FormSection;
+							firstinvalid = i;
+							break;
+						}
+					}
+
+					if (qSection == null)
+					{
+						return;
+					}
+
+					//foreach (Element d in sections.Elements)
 					//{
-						var nextSectionIndex = new int();
-
-						foreach (Element d in sections.Elements)
-						{
-							var t = d.GetType();
-							if (t == typeof(SectionStringElement))
-							{
-								var di = (SectionStringElement)d;
-								if (di.selected == true)
-								{
-									nextSectionIndex = sections.Elements.IndexOf(di) + 1;
-								}
-								di.selected = false;
-							}
-						}
-
-						var q = (SectionStringElement)sections.Elements[nextSectionIndex];
-						q.selected = true;
-
-						sections.GetContainerTableView().SelectRow(sections.Elements[nextSectionIndex].IndexPath, true, UITableViewScrollPosition.Top);
-						//var shhh = sections.GetContainerTableView();
-						sections.GetContainerTableView().ReloadData();
-
-						if (IsDoctorForm)
-						{
-							nextSectionIndex = nextSectionIndex - 1;
-						}
-
-						if (q.Caption == "Finalize")
-						{
-							btnNextSection.SetTitle("Finalize", UIControlState.Normal);
-							LoadSectionView("", "Finalize", null, IsDoctorForm);
-						}
-						else
-						{
-							var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[nextSectionIndex];
-							string nextSectionJson = JsonConvert.SerializeObject(nextSectionQuestions);
-							LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
-						}
-
-						string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-						var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-						var directoryname = Path.Combine(documents, "DynaRestore");
-						var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
-
-						string sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-
-						if (File.Exists(filename))
-						{
-							var restoreFile = File.ReadAllText(filename);
-							JObject sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-							JObject targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
-
-							if (!JToken.DeepEquals(sourceJObject, targetJObject))
-							{
-								// Serialize object
-								//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-								//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-								// Save to file
-								//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-								//var directoryname = Path.Combine(documents, "DynaRestore");
-								Directory.CreateDirectory(directoryname);
-								//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
-								File.WriteAllText(filename, sourceJson);
-							}
-
-						}
-						else
-						{
-							Directory.CreateDirectory(directoryname);
-							File.WriteAllText(filename, sourceJson);
-						}
+					//	var t = d.GetType();
+					//	if (t == typeof(SectionStringElement))
+					//	{
+					//		var di = (SectionStringElement)d;
+					//		di.selected = false;
+					//	}
 					//}
-				};
 
-			}
+					//if (IsDoctorForm) { firstinvalid = firstinvalid + 1; }
 
-			string origSectionJson = JsonConvert.SerializeObject(OrigSection);
+					//var q = (SectionStringElement)sections.Elements[firstinvalid];
+					//q.selected = true;
 
-			if (DetailViewController.NavigationController != null)
+			  //      sections.GetContainerTableView().SelectRow(sections.Elements[firstinvalid].IndexPath, true, UITableViewScrollPosition.Top);
+					//sections.GetContainerTableView().ReloadData();
+
+					var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[SelectedAppointment.SelectedQForm.FormSections.IndexOf(qSection)];
+
+					//LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
+
+					messageLabel.Text = "Validation failed";
+					var FailAlert = UIAlertController.Create("Validation Error", "Please provide the required information (marked with a red asterisk)", UIAlertControllerStyle.Alert);
+					FailAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => ReValidate(nextSectionQuestions, IsDoctorForm, sections, firstinvalid)));
+					//FailAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Cancel, null));
+					// Present Alert
+					PresentViewController(FailAlert, true, null);
+				}
+			} 			else
+			{ 				var origSectionJson = JsonConvert.SerializeObject(OrigSection); 				if (DetailViewController.NavigationController != null) DetailViewController.NavigationController.PopViewController(true); 				DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm, btnNextSection);
+			} 		}
+
+		void ReValidate(FormSection nextSectionQuestions, bool IsDoctorForm, Section sections, int firstinvalid)
+		{
+			foreach (Element d in sections.Elements)
 			{
-				DetailViewController.NavigationController.PopViewController(true);
+				var t = d.GetType();
+				if (t == typeof(SectionStringElement))
+				{
+					var di = (SectionStringElement)d;
+					di.selected = false;
+				}
 			}
 
-			DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm, btnNextSection);
+			if (IsDoctorForm) { firstinvalid = firstinvalid + 1; }
+
+			var q = (SectionStringElement)sections.Elements[firstinvalid];
+			q.selected = true;
+
+			sections.GetContainerTableView().SelectRow(sections.Elements[firstinvalid].IndexPath, true, UITableViewScrollPosition.Top);
+			sections.GetContainerTableView().ReloadData();
+
+			LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
+		}
+
+		public GlassButton GetNextBtn(Section sections, bool IsDoctorForm)
+		{
+			var btnNextSection = new GlassButton(new RectangleF(0, 0, (float)DetailViewController.View.Frame.Width, 50));
+			//btnNextSection.Font = UIFont.BoldSystemFontOfSize(17);
+			btnNextSection.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+			btnNextSection.SetTitleColor(UIColor.Black, UIControlState.Normal);
+			btnNextSection.NormalColor = UIColor.FromRGB(224, 238, 240);
+			btnNextSection.SetTitle("Continue", UIControlState.Normal);
+			btnNextSection.TouchUpInside += (sender, e) =>
+			{
+				var nextSectionIndex = new int();
+
+				foreach (Element d in sections.Elements)
+				{
+					var t = d.GetType();
+					if (t == typeof(SectionStringElement))
+					{
+						var di = (SectionStringElement)d;
+						if (di.selected == true)
+						{
+							nextSectionIndex = sections.Elements.IndexOf(di) + 1;
+						}
+						di.selected = false;
+					}
+				}
+				if (nextSectionIndex == -1 || nextSectionIndex >= sections.Elements.Count)
+				{
+					return;
+				}
+
+				var q = (SectionStringElement)sections.Elements[nextSectionIndex];
+				q.selected = true;
+
+				sections.GetContainerTableView().SelectRow(sections.Elements[nextSectionIndex].IndexPath, true, UITableViewScrollPosition.Top);
+				//var shhh = sections.GetContainerTableView();
+				sections.GetContainerTableView().ReloadData();
+
+				if (IsDoctorForm)
+				{
+					nextSectionIndex = nextSectionIndex - 1;
+				}
+
+				if (q.Caption == "Finalize")
+				{
+					btnNextSection.SetTitle("Finalize", UIControlState.Normal);
+					LoadSectionView("", "Finalize", null, IsDoctorForm, sections);
+				}
+				else
+				{
+					var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[nextSectionIndex];
+					var nextSectionJson = JsonConvert.SerializeObject(nextSectionQuestions);
+					LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
+				}
+
+				string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+				var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				var directoryname = Path.Combine(documents, "DynaRestore");
+				var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+				var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+				if (File.Exists(filename))
+				{
+					var restoreFile = File.ReadAllText(filename);
+					var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+					var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+					if (!JToken.DeepEquals(sourceJObject, targetJObject))
+					{
+						Directory.CreateDirectory(directoryname);
+						File.WriteAllText(filename, sourceJson);
+					}
+				}
+				else
+				{
+					Directory.CreateDirectory(directoryname);
+					File.WriteAllText(filename, sourceJson);
+				}
+			};
+
+			return btnNextSection;
 		}
 
 

@@ -25,10 +25,11 @@ namespace DynaPad
 		public void Speak(string text)
 		{
 			_isSpeaking = true;
-			var speechRate = UIDevice.CurrentDevice.CheckSystemVersion(8, 0) ? 8 : 4;
+			//var speechRate = UIDevice.CurrentDevice.CheckSystemVersion(8, 0) ? 8 : 4;
 			var speechUtterance = new AVSpeechUtterance(text)
 			{
-				Rate = AVSpeechUtterance.MaximumSpeechRate / speechRate,
+				//Rate = AVSpeechUtterance.MaximumSpeechRate / speechRate,
+				Rate = AVSpeechUtterance.DefaultSpeechRate,
 				Voice = AVSpeechSynthesisVoice.FromLanguage("en-US"),
 				Volume = 0.5f,
 				PitchMultiplier = 1.0f
@@ -69,6 +70,7 @@ namespace DynaPad
 		{
 			_isSpeaking = true;
 			var speechRate = UIDevice.CurrentDevice.CheckSystemVersion(8, 0) ? 8 : 4;
+
 			var speechUtterance = new AVSpeechUtterance(text)
 			{
 				Rate = AVSpeechUtterance.MaximumSpeechRate / speechRate,
