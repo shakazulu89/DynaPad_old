@@ -28,13 +28,13 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback BuildDynaMenuOperationCompleted;
         
+        private System.Threading.SendOrPostCallback SaveFileOperationCompleted;
+        
         private System.Threading.SendOrPostCallback GetAnswerPresetsOperationCompleted;
         
         private System.Threading.SendOrPostCallback SaveAnswerPresetOperationCompleted;
         
         private System.Threading.SendOrPostCallback DeleteAnswerPresetOperationCompleted;
-        
-        private System.Threading.SendOrPostCallback SaveFileOperationCompleted;
         
         private System.Threading.SendOrPostCallback SaveDictationOperationCompleted;
         
@@ -56,6 +56,8 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback CreateDynaReportOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GenerateReportSpireOperationCompleted;
+        
         private System.Threading.SendOrPostCallback GenerateReportOperationCompleted;
         
         /// CodeRemarks
@@ -74,6 +76,9 @@ namespace DynaPad.DynaPadService {
         public event BuildDynaMenuCompletedEventHandler BuildDynaMenuCompleted;
         
         /// CodeRemarks
+        public event SaveFileCompletedEventHandler SaveFileCompleted;
+        
+        /// CodeRemarks
         public event GetAnswerPresetsCompletedEventHandler GetAnswerPresetsCompleted;
         
         /// CodeRemarks
@@ -81,9 +86,6 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         public event DeleteAnswerPresetCompletedEventHandler DeleteAnswerPresetCompleted;
-        
-        /// CodeRemarks
-        public event SaveFileCompletedEventHandler SaveFileCompleted;
         
         /// CodeRemarks
         public event SaveDictationCompletedEventHandler SaveDictationCompleted;
@@ -114,6 +116,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         public event CreateDynaReportCompletedEventHandler CreateDynaReportCompleted;
+        
+        /// CodeRemarks
+        public event GenerateReportSpireCompletedEventHandler GenerateReportSpireCompleted;
         
         /// CodeRemarks
         public event GenerateReportCompletedEventHandler GenerateReportCompleted;
@@ -171,6 +176,51 @@ namespace DynaPad.DynaPadService {
             if ((this.BuildDynaMenuCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.BuildDynaMenuCompleted(this, new BuildDynaMenuCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveFile", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string SaveFile(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrFile, bool isDoctorForm, bool isSignature) {
+            object[] results = this.Invoke("SaveFile", new object[] {
+                        apptId,
+                        patientId,
+                        doctorId,
+                        locationId,
+                        fileName,
+                        folderName,
+                        arrFile,
+                        isDoctorForm,
+                        isSignature});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile, bool isDoctorForm, bool isSignature) {
+            this.SaveFileAsync(apptId, patientId, doctorId, locationId, fileName, folderName, arrFile, isDoctorForm, isSignature, null);
+        }
+        
+        /// CodeRemarks
+        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile, bool isDoctorForm, bool isSignature, object userState) {
+            if ((this.SaveFileOperationCompleted == null)) {
+                this.SaveFileOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveFileOperationCompleted);
+            }
+            this.InvokeAsync("SaveFile", new object[] {
+                        apptId,
+                        patientId,
+                        doctorId,
+                        locationId,
+                        fileName,
+                        folderName,
+                        arrFile,
+                        isDoctorForm,
+                        isSignature}, this.SaveFileOperationCompleted, userState);
+        }
+        
+        private void OnSaveFileOperationCompleted(object arg) {
+            if ((this.SaveFileCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SaveFileCompleted(this, new SaveFileCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -287,47 +337,6 @@ namespace DynaPad.DynaPadService {
             if ((this.DeleteAnswerPresetCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.DeleteAnswerPresetCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveFile", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string SaveFile(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrFile) {
-            object[] results = this.Invoke("SaveFile", new object[] {
-                        apptId,
-                        patientId,
-                        doctorId,
-                        locationId,
-                        fileName,
-                        folderName,
-                        arrFile});
-            return ((string)(results[0]));
-        }
-        
-        /// CodeRemarks
-        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile) {
-            this.SaveFileAsync(apptId, patientId, doctorId, locationId, fileName, folderName, arrFile, null);
-        }
-        
-        /// CodeRemarks
-        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile, object userState) {
-            if ((this.SaveFileOperationCompleted == null)) {
-                this.SaveFileOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveFileOperationCompleted);
-            }
-            this.InvokeAsync("SaveFile", new object[] {
-                        apptId,
-                        patientId,
-                        doctorId,
-                        locationId,
-                        fileName,
-                        folderName,
-                        arrFile}, this.SaveFileOperationCompleted, userState);
-        }
-        
-        private void OnSaveFileOperationCompleted(object arg) {
-            if ((this.SaveFileCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.SaveFileCompleted(this, new SaveFileCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -670,9 +679,9 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GenerateReport(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
-            object[] results = this.Invoke("GenerateReport", new object[] {
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReportSpire", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GenerateReportSpire(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
+            object[] results = this.Invoke("GenerateReportSpire", new object[] {
                         apptId,
                         qFormId,
                         dateCompleted,
@@ -682,12 +691,49 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
-            this.GenerateReportAsync(apptId, qFormId, dateCompleted, fileName, sFormId, null);
+        public void GenerateReportSpireAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
+            this.GenerateReportSpireAsync(apptId, qFormId, dateCompleted, fileName, sFormId, null);
         }
         
         /// CodeRemarks
-        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId, object userState) {
+        public void GenerateReportSpireAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId, object userState) {
+            if ((this.GenerateReportSpireOperationCompleted == null)) {
+                this.GenerateReportSpireOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGenerateReportSpireOperationCompleted);
+            }
+            this.InvokeAsync("GenerateReportSpire", new object[] {
+                        apptId,
+                        qFormId,
+                        dateCompleted,
+                        fileName,
+                        sFormId}, this.GenerateReportSpireOperationCompleted, userState);
+        }
+        
+        private void OnGenerateReportSpireOperationCompleted(object arg) {
+            if ((this.GenerateReportSpireCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GenerateReportSpireCompleted(this, new GenerateReportSpireCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GenerateReport(string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
+            object[] results = this.Invoke("GenerateReport", new object[] {
+                        apptId,
+                        qFormId,
+                        dateCompleted,
+                        fileName,
+                        reportId});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
+            this.GenerateReportAsync(apptId, qFormId, dateCompleted, fileName, reportId, null);
+        }
+        
+        /// CodeRemarks
+        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string reportId, object userState) {
             if ((this.GenerateReportOperationCompleted == null)) {
                 this.GenerateReportOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGenerateReportOperationCompleted);
             }
@@ -696,7 +742,7 @@ namespace DynaPad.DynaPadService {
                         qFormId,
                         dateCompleted,
                         fileName,
-                        sFormId}, this.GenerateReportOperationCompleted, userState);
+                        reportId}, this.GenerateReportOperationCompleted, userState);
         }
         
         private void OnGenerateReportOperationCompleted(object arg) {
@@ -766,6 +812,32 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void SaveFileCompletedEventHandler(object sender, SaveFileCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class SaveFileCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal SaveFileCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     public delegate void GetAnswerPresetsCompletedEventHandler(object sender, GetAnswerPresetsCompletedEventArgs e);
     
     /// CodeRemarks
@@ -819,32 +891,6 @@ namespace DynaPad.DynaPadService {
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     public delegate void DeleteAnswerPresetCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
-    
-    /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void SaveFileCompletedEventHandler(object sender, SaveFileCompletedEventArgs e);
-    
-    /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class SaveFileCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal SaveFileCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// CodeRemarks
-        public string Result {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[0]));
-            }
-        }
-    }
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
@@ -1093,6 +1139,32 @@ namespace DynaPad.DynaPadService {
         private object[] results;
         
         internal CreateDynaReportCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void GenerateReportSpireCompletedEventHandler(object sender, GenerateReportSpireCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GenerateReportSpireCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GenerateReportSpireCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }

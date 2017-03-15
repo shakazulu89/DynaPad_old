@@ -374,12 +374,12 @@
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
     <None Include="app.config" />
+    <None Include="PluginsHelp\ConnectivityReadme.txt" />
     <None Include="Web References\DynaPadService\dynapadservice.wsdl" />
     <None Include="Web References\DynaPadService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <None Include="PluginsHelp\ConnectivityReadme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

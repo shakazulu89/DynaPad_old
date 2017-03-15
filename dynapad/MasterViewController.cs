@@ -24,10 +24,11 @@ namespace DynaPad
 		protected MasterViewController(IntPtr handle) : base(handle)
 		{
 			// Note: this .ctor should not contain any initialization logic.
-			Title = "";
+			//Title = "";
 		}
 
 		bool needLogin = true;
+		public string DocLocID { get; set; }
 
 		public override void ViewDidAppear(bool animated)
 		{
@@ -35,6 +36,7 @@ namespace DynaPad
 
 			if (needLogin)
 			{
+				//var ass = new CredentialsProvider();
 				LoginScreenControl<CredentialsProvider, DefaultLoginScreenMessages>.Activate(this);
 				needLogin = false;
 			}
@@ -44,37 +46,64 @@ namespace DynaPad
 				DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 				DetailViewController.Root.Clear();
 				DetailViewController.Root.Add(new Section("Logged in"));
+
+				DynaStart();
 			}
 		}
+
 
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
-			Title = NSBundle.MainBundle.LocalizedString("Login", "Form Sections");
+			//DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+			//DetailViewController.Style = UITableViewStyle.Plain;
+			//// TODO pull to refresh: (problem scrolling with it..)
+			////DetailViewController.RefreshRequested += delegate
+			////{
+			////	DetailViewController.NavigationController.NavigationBar.Translucent = false;
+			////	DetailViewController.ReloadData();
+			////	DetailViewController.ReloadComplete();
+			////};
 
-			ClearsSelectionOnViewWillAppear &= UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad;
+			////var refresh = new UIRefreshControl();
+			////this.RefreshControl = refresh;
+			////RefreshRequested += delegate { ReloadComplete(); };
 
+
+			//var dds = new DynaPadService.DynaPadService();
+
+			////var menu = dds.BuildDynaMenu("123");
+			////var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+
+			//myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("1"));
+			//DetailViewController.DynaMenu = myDynaMenu;
+
+			//var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
+			//rootMainMenu.UnevenRows = true;
+			//rootMainMenu.Enabled = true;
+
+			//var sectionMainMenu = new Section();
+			//sectionMainMenu.HeaderView = null;
+			//BuildMenu(myDynaMenu, sectionMainMenu);
+			//rootMainMenu.Add(sectionMainMenu);
+
+			//Root = rootMainMenu;
+
+			//DynaStart();
 			DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			DetailViewController.Style = UITableViewStyle.Plain;
-			// TODO pull to refresh: (problem scrolling with it..)
-			//DetailViewController.RefreshRequested += delegate
-			//{
-			//	DetailViewController.NavigationController.NavigationBar.Translucent = false;
-			//	DetailViewController.ReloadData();
-			//	DetailViewController.ReloadComplete();
-			//};
-			//RefreshRequested += delegate { ReloadComplete(); };
+		}
 
-			//var refresh = new UIRefreshControl();
-			//DetailViewController.Add(refresh);
+
+		public void DynaStart()
+		{
+			//DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+			//DetailViewController.Style = UITableViewStyle.Plain;
 
 			var dds = new DynaPadService.DynaPadService();
-
-			//var menu = dds.BuildDynaMenu("123");
-			//var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
-
-			myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("1"));
+			var ass = string.IsNullOrEmpty(Constants.DocLocID) ? "1" : Constants.DocLocID;
+			myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu(ass));
 			DetailViewController.DynaMenu = myDynaMenu;
 
 			var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
@@ -90,7 +119,7 @@ namespace DynaPad
 		}
 
 
-		private RootElement BuildMenu(Menu myMenu, Section sectionMenu)
+		public RootElement BuildMenu(Menu myMenu, Section sectionMenu)
 		{
 			if (myMenu.MenuItems == null) return null;
 			foreach (MenuItem mItem in myMenu.MenuItems)
@@ -119,6 +148,9 @@ namespace DynaPad
 						break;
 					case "GetAppt":
 						rootMenu.createOnSelected = GetApptService;
+						break;
+					case "GetApptForm":
+						rootMenu.createOnSelected = GetApptFormService;
 						break;
 					case "GetReport":
 						sectionMenu.Add(new StringElement(mItem.MenuItemCaption, delegate { LoadReportView(mItem.MenuItemValue, "Report", rootMenu); }));
@@ -162,15 +194,36 @@ namespace DynaPad
 			//}
 
 			var dfElemet = (DynaFormRootElement)rElement;
-			SelectedAppointment.ApptFormId = dfElemet.FormID;
-			SelectedAppointment.ApptFormName = dfElemet.FormName;
+			//SelectedAppointment.ApptFormId = dfElemet.FormID;
+			//SelectedAppointment.ApptFormName = dfElemet.FormName;
 			SelectedAppointment.ApptPatientId = dfElemet.PatientID;
 			SelectedAppointment.ApptPatientName = dfElemet.PatientName;
 			SelectedAppointment.ApptDoctorId = dfElemet.DoctorID;
 			SelectedAppointment.ApptLocationId = dfElemet.LocationID;
 			SelectedAppointment.ApptId = dfElemet.ApptID;
 
-			return new DynaDialogViewController(rElement, true);
+			var formDVC = new DynaDialogViewController(rElement, true);
+			return formDVC;
+
+			//return new DynaDialogViewController(rElement, true);
+		}
+
+
+		public UIViewController GetApptFormService(RootElement rElement)
+		{
+			//if (DetailViewController.QuestionsView != null)
+			//{
+			//	DetailViewController.Title = "";
+			//	DetailViewController.QuestionsView = null; //.Clear();
+			//}
+
+			var dfElemet = (DynaFormRootElement)rElement;
+			SelectedAppointment.ApptFormId = dfElemet.FormID;
+			SelectedAppointment.ApptFormName = dfElemet.FormName;
+
+			var formDVC = new DynaDialogViewController(rElement, true);
+			return formDVC;
+			//return new DynaDialogViewController(rElement, true);
 		}
 
 
@@ -447,7 +500,10 @@ namespace DynaPad
 
 			rootFormSections.Add(sectionFormSections);
 
-			var formDVC = new DynaDialogViewController(rootFormSections, true);
+			var formDVC = new DynaDialogViewController(rootFormSections, true, false);
+			//formDVC.IsForm = true;
+			//formDVC.RefreshRequested += null;
+			//formDVC.ReloadData();
 
 			// TODO pull to refresh: (problamatic scrolling with it)
 			//formDVC.RefreshRequested += delegate 
@@ -532,6 +588,17 @@ namespace DynaPad
 				  	});
 				}
 			}
+
+			var firstid = 0;
+			if (IsDoctorForm) { firstid = 1; }
+			var q = (SectionStringElement)sectionFormSections[firstid];
+			q.selected = true;
+			//q.GetContainerTableView().ReloadData();
+			//sectionFormSections.GetContainerTableView().SelectRow(sectionFormSections.Elements[1].IndexPath, true, UITableViewScrollPosition.Top);
+			//var shhh = sections.GetContainerTableView();
+			//sectionFormSections.GetContainerTableView().ReloadData();
+			//ReValidate(SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections, 0);
+			LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
 
 			loadingOverlay.Hide();
 

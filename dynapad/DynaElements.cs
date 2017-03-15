@@ -101,6 +101,8 @@ namespace DynaPad
 
 	public class CredentialsProvider : ICredentialsProvider
 	{
+		public string locid;
+
 		// Constructor without parameters is required
 
 		public bool NeedLoginAfterRegistration
@@ -118,7 +120,22 @@ namespace DynaPad
 		public void Login(string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
 		{
 			// Do some operations to login user
-			bool isValid = (userName == Constants.Username && password == Constants.Password);
+			//bool isValid = (userName == Constants.Username && password == Constants.Password);
+			bool isValid = false;
+
+			for (int i = 0; i < Constants.Logins.GetLength(0); i++)
+			{
+				if (userName == Constants.Logins[i, 0])
+				{
+					if (password == Constants.Logins[i, 1])
+					{
+						isValid = true;
+						locid = Constants.Logins[i, 2];
+						Constants.DocLocID = Constants.Logins[i, 2];
+					}
+				}
+			}
+
 			if (isValid)
 			{
 				// If login was successfully completed
@@ -203,6 +220,7 @@ namespace DynaPad
 
 	public class DynaDialogViewController : DialogViewController
 	{
+		public bool IsForm = false;
 
 		public DynaDialogViewController(IntPtr handle) : base(handle)
 		{
@@ -213,12 +231,94 @@ namespace DynaPad
 		{
 			Style = UITableViewStyle.Plain;
 			Title = root.Caption;
+
+			if (!IsForm)
+			{
+				this.RefreshRequested += delegate
+				{
+					// Wait 3 seconds, to simulate some network activity
+					NSTimer.CreateScheduledTimer(1, delegate
+					{
+					//root[0].Add(new StringElement("Added " + (++i)));
+					//this.ViewDidLoad();
+					//this.ReloadData();
+					//this.TriggerRefresh();
+					//this.NavigationController.View.ReloadInputViews();
+					//this.NavigationController.View.SetNeedsDisplay();
+					//this.NavigationController.PopViewController(true);
+					//Root.TableView.ReloadData();
+
+					//this.TableView.SetNeedsDisplay();
+					//NavigationController.PopToRootViewController(true);
+					//NavigationController.ViewControllers[0].ViewDidLoad();
+					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+						MasterViewController.DynaStart();
+					//MasterViewController.TableView.SelectRow(null, true, UITableViewScrollPosition.Top);
+					//MasterViewController.TableView.SetNeedsDisplay();
+					NavigationController.PopToRootViewController(true);
+						MasterViewController.ReloadData();
+					//MasterViewController.NavigationController.PopToRootViewController(true);
+
+					// Notify the dialog view controller that we are done
+					// this will hide the progress info
+					this.ReloadComplete();
+					});
+				};
+			}
 		}
 
 		public DynaDialogViewController(RootElement root, bool pushing) : base(root, pushing)
 		{
 			Style = UITableViewStyle.Plain;
 			Title = root.Caption;
+
+			if (!IsForm)
+			{
+				this.RefreshRequested += delegate
+				{
+				// Wait 3 seconds, to simulate some network activity
+				NSTimer.CreateScheduledTimer(1, delegate
+					{
+						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+						MasterViewController.DynaStart();
+						NavigationController.PopToRootViewController(true);
+					//MasterViewController.TableView.SetNeedsDisplay();
+					MasterViewController.ReloadData();
+					//MasterViewController.NavigationController.PopToRootViewController(true);
+
+					// Notify the dialog view controller that we are done
+					// this will hide the progress info
+					this.ReloadComplete();
+					});
+				};
+			}
+		}
+
+		public DynaDialogViewController(RootElement root, bool pushing, bool pull) : base(root, pushing)
+		{
+			Style = UITableViewStyle.Plain;
+			Title = root.Caption;
+
+			if (pull)
+			{
+				this.RefreshRequested += delegate
+				{
+					// Wait 3 seconds, to simulate some network activity
+					NSTimer.CreateScheduledTimer(1, delegate
+						{
+							var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+							MasterViewController.DynaStart();
+							NavigationController.PopToRootViewController(true);
+						//MasterViewController.TableView.SetNeedsDisplay();
+						MasterViewController.ReloadData();
+						//MasterViewController.NavigationController.PopToRootViewController(true);
+
+						// Notify the dialog view controller that we are done
+						// this will hide the progress info
+						this.ReloadComplete();
+						});
+				};
+			}
 		}
 
 		public override void LoadView()
@@ -1195,6 +1295,7 @@ namespace DynaPad
 		public bool IsConditional { get; set; }
 		public bool Required { get; set; }
 		public bool Invalid { get; set; }
+		public int MaxChars { get; set; }
 		//static NSString MyCellId = new NSString("MyCellId");
 		public UITextField EntryTextField { get; set; }
 
@@ -1257,6 +1358,16 @@ namespace DynaPad
 			{
 				parentSec.HeaderView.Layer.BorderWidth = 1;
 				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
+			}
+
+			if (QuestionKeyboardType == "4")
+			{
+				EntryTextField.ShouldChangeCharacters = (textField, range, replacement) =>
+				{
+					var newContent = new NSString(textField.Text).Replace(range, new NSString(replacement)).ToString();
+					int number;
+					return newContent.Length <= MaxChars && (replacement.Length == 0 || int.TryParse(replacement, out number));
+				};
 			}
  			return cell; 		}  		SizeF GetEntryPosition(UIFont font) 		{ 			var s = Parent as Section;  			var max = new SizeF(-15, 17);  			foreach (var e in s.Elements) 			{ 				var ee = e as DynaEntryElement; 				if (ee == null) 					continue;  				if (ee.Caption != null) 				{ 					// var size = tv.StringSize (ee.Caption, font); 					var size = new NSString(ee.Caption).StringSize(font); 					if (size.Width > max.Width) 						max = (SizeF)size; 				} 			}
  			s.EntryAlignment = new SizeF(20 + Math.Min(max.Width, 160), max.Height);  			return (SizeF)s.EntryAlignment; 		}
@@ -1946,6 +2057,11 @@ namespace DynaPad
 						_picker_present = false;
 						if (PickerClosed != null)
 							PickerClosed();
+
+						if (Required)
+						{
+							Invalid = true;
+						}
 					};
 
 					section.Insert(index + 1, UITableViewRowAnimation.Bottom, _inline_date_element);

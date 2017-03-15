@@ -91,6 +91,11 @@ namespace DynaPad
 				var dds = new DynaPadService.DynaPadService();
 				dds.SubmitFormAnswers(finalJson, true, isDoctorForm);
 
+				var filename = SelectedAppointment.ApptPatientName.Replace(" ", "_") + "_" + isDoctorForm + "_sig_" + DateTime.Now.ToString("s").Replace(":", "_") + ".gif";
+				var file = sig.GetImage(new CGSize(600, 400), true, true).AsPNG().ToArray();
+
+				dds.SaveFile(SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, filename, "DynaPad", file, isDoctorForm, true);
+
 				SetDetailItem(new Section("Summary"), "Summary", "", null, false);
 			}
 			else
@@ -215,6 +220,7 @@ namespace DynaPad
 						sigPad.CaptionText = "Signature here:";
 						sigPad.BackgroundColor = UIColor.White;
 
+
 						messageLabel = new UILabel();
 
 						var btnSubmit = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
@@ -330,7 +336,7 @@ namespace DynaPad
 					UIBarButtonItem drawNavBtn = GetDrawNavBtn(sectionId);
 					UIBarButtonItem dicNavBtn = GetDicNavBtn(sectionId, IsDoctorForm);
 
-					UIBarButtonItem picNavBtn = GetPhotoNavBtn(sectionId, context, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+					UIBarButtonItem picNavBtn = GetPhotoNavBtn(sectionId, context, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, IsDoctorForm);
 
 					NavigationItem.SetLeftBarButtonItem(picNavBtn, true);
 
@@ -428,7 +434,7 @@ namespace DynaPad
 					qSection.Enabled = enabled;
 					qSection.IsInvalid = question.IsInvalid;
 
-					//question.IsRequired = true;
+					//question.IsRequired = false;
 
 
 					nfloat qWidth = !IsDoctorForm ? View.Frame.Width - 50 : View.Frame.Width;
@@ -559,6 +565,10 @@ namespace DynaPad
 								{
 									Chk_Tapped(question, opt, chk.Value, sectionId);
 									chk.Invalid = ValidateQuestion(question);
+									foreach (Element elm in qSection.Elements)
+									{
+										if (elm is DynaCheckBoxElement) ((DynaCheckBoxElement)elm).Invalid = chk.Invalid;
+									}
 									qSection.GetContainerTableView().ReloadData();
 								};
 
@@ -593,6 +603,10 @@ namespace DynaPad
 									Radio_Tapped(question, opt);
 									NavigationController.PopViewController(true);
 									radio.Invalid = ValidateQuestion(question);
+									foreach (Element elm in qSection.Elements)
+									{
+										if (elm is DynaMultiRadioElement) ((DynaMultiRadioElement)elm).Invalid = radio.Invalid;
+									}
 									qSection.GetContainerTableView().ReloadData();
 								};
 								radio.OnDeselected += delegate
@@ -600,6 +614,10 @@ namespace DynaPad
 									Radio_UnTapped(question, opt);
 									NavigationController.PopViewController(true);
 									radio.Invalid = ValidateQuestion(question);
+									foreach (Element elm in qSection.Elements)
+									{
+										if (elm is DynaMultiRadioElement) ((DynaMultiRadioElement)elm).Invalid = radio.Invalid;
+									}
 									qSection.GetContainerTableView().ReloadData();
 								};
 
@@ -695,6 +713,9 @@ namespace DynaPad
 								//this.TableView.ReloadData();
 							};
 
+							entryElement.QuestionKeyboardType = question.QuestionKeyboardTypeId;
+							entryElement.MaxChars = string.IsNullOrEmpty(question.MaxValue) ? 99 : Convert.ToInt16(question.MaxValue);
+
 							switch (question.QuestionKeyboardTypeId)
 							{
 								case "1"://"Normal":
@@ -723,7 +744,12 @@ namespace DynaPad
 							entryElement.Required = question.IsRequired;
 							entryElement.Invalid = question.IsInvalid;
 							entryElement.AutocorrectionType = UITextAutocorrectionType.No;
-							entryElement.EnablesReturnKeyAutomatically = false;
+							//entryElement.EnablesReturnKeyAutomatically = false;
+							entryElement.ShouldReturn += delegate
+							{
+								entryElement.ResignFirstResponder(true);
+								return false;
+							};
 							entryElement.ClearButtonMode = UITextFieldViewMode.Always;
 							entryElement.Enabled = enabled;
 							entryElement.QuestionId = question.QuestionId;
@@ -737,11 +763,22 @@ namespace DynaPad
 
 						case "Date":
 
-							var dt = new DateTime();
-							dt = !string.IsNullOrEmpty(question.AnswerText) ? Convert.ToDateTime(question.AnswerText) : DateTime.Today;
+							//var dt = new DateTime();
+							//dt = !string.IsNullOrEmpty(question.AnswerText) ? Convert.ToDateTime(question.AnswerText) : DateTime.Today;
 							//dt.ToUniversalTime();
-
-							var dateElement = new NullableDateElementInline("", dt);
+							DateTime dt;
+							NullableDateElementInline dateElement;
+							if (!string.IsNullOrEmpty(question.AnswerText))
+							{
+								dt = Convert.ToDateTime(question.AnswerText);
+								dateElement = new NullableDateElementInline("", dt);
+							}
+							else
+							{
+								dateElement = new NullableDateElementInline("", null);
+							}
+							            
+							//var dateElement = new NullableDateElementInline("", dt);
 
 							if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
 							{
@@ -756,9 +793,13 @@ namespace DynaPad
 							dateElement.QuestionId = question.QuestionId;
 							dateElement.ConditionTriggerId = question.ParentConditionTriggerId;
 
-							dateElement.DateSelected += delegate
-							{
+							dateElement.DateSelected += delegate {
 								question.AnswerText = dateElement.DateValue.Value.ToShortDateString();
+								//dateElement.Invalid = ValidateQuestion(question);
+								//qSection.GetContainerTableView().ReloadData();
+								//dateElement.ClosePickerIfOpen(this);
+							};
+							dateElement.PickerClosed += delegate {
 								dateElement.Invalid = ValidateQuestion(question);
 								qSection.GetContainerTableView().ReloadData();
 							};
@@ -889,6 +930,21 @@ namespace DynaPad
 				tts = new TextToSpeech();
 				//Title = "Stop Speech";
 				tts.Speak(speechText);
+			}
+		}
+
+
+
+		void OnTextChanged(object sender, EventArgs e)
+		{
+			DynaEntryElement entry = sender as DynaEntryElement;
+			String val = entry.Value; //Get Current Text
+			int restrictCount = 5;
+
+			if (val.Length > restrictCount)//If it is more than your character restriction
+			{
+				val = val.Remove(val.Length - 1);// Remove Last character 
+				entry.Value = val; //Set the Old value
 			}
 		}
 
@@ -1036,7 +1092,7 @@ namespace DynaPad
 
 		//UIButton cameraButton;
 
-		public UIBarButtonItem GetPhotoNavBtn(string sectionId, string sectionName, string patientName, string apptId, string patientId, string doctorId, string locationId)
+		public UIBarButtonItem GetPhotoNavBtn(string sectionId, string sectionName, string patientName, string apptId, string patientId, string doctorId, string locationId, bool IsDoctorForm)
 		{
 			var cameraButton = new UIBarButtonItem(UIBarButtonSystemItem.Camera, (sender, args) => 
 			{
@@ -1084,7 +1140,7 @@ namespace DynaPad
 							var filename = patientName.Replace(" ", "_") + "_" + sectionName + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
 							 
 							var dps = new DynaPadService.DynaPadService();
-							var savefile = dps.SaveFile(apptId, patientId, doctorId, locationId, filename, "DynaPad", testByte);
+							var savefile = dps.SaveFile(apptId, patientId, doctorId, locationId, filename, "DynaPad", testByte, IsDoctorForm, false);
 						}
 					});
 
@@ -1437,11 +1493,8 @@ namespace DynaPad
 			List<string> newTriggerIds = rOption.ConditionTriggerIds;
 			rQuestion.QuestionOptions.ForEach((obj) => obj.Chosen = false);
 			rOption.Chosen = true;
-
 			ConditionalCheck(rQuestion.ActiveTriggerIds, newTriggerIds, rQuestion.SectionId);
-
 			rQuestion.ActiveTriggerIds = newTriggerIds;
-
 			QuestionsView.TableView.ReloadData();
 		}
 		void Radio_UnTapped(SectionQuestion rQuestion, QuestionOption rOption)
@@ -1450,11 +1503,8 @@ namespace DynaPad
 			List<string> newTriggerIds = new List<string>();
 			rQuestion.QuestionOptions.ForEach((obj) => obj.Chosen = false);
 			rOption.Chosen = false;
-
 			ConditionalCheck(rQuestion.ActiveTriggerIds, newTriggerIds, rQuestion.SectionId);
-
 			rQuestion.ActiveTriggerIds = newTriggerIds;
-
 			QuestionsView.TableView.ReloadData();
 		}
 

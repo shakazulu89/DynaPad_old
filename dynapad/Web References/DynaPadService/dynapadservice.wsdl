@@ -26,6 +26,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="SaveFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="folderName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="arrFile" type="s:base64Binary" />
+            <s:element minOccurs="1" maxOccurs="1" name="isDoctorForm" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="isSignature" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SaveFileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SaveFileResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetAnswerPresets">
         <s:complexType>
           <s:sequence>
@@ -87,26 +109,6 @@
       </s:element>
       <s:element name="DeleteAnswerPresetResponse">
         <s:complexType />
-      </s:element>
-      <s:element name="SaveFile">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="folderName" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="arrFile" type="s:base64Binary" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="SaveFileResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="SaveFileResult" type="s:string" />
-          </s:sequence>
-        </s:complexType>
       </s:element>
       <s:element name="SaveDictation">
         <s:complexType>
@@ -271,7 +273,7 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GenerateReport">
+      <s:element name="GenerateReportSpire">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
@@ -279,6 +281,24 @@
             <s:element minOccurs="0" maxOccurs="1" name="dateCompleted" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sFormId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateReportSpireResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateReportSpireResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateReport">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="qFormId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="dateCompleted" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="reportId" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -303,6 +323,12 @@
   <wsdl:message name="BuildDynaMenuSoapOut">
     <wsdl:part name="parameters" element="tns:BuildDynaMenuResponse" />
   </wsdl:message>
+  <wsdl:message name="SaveFileSoapIn">
+    <wsdl:part name="parameters" element="tns:SaveFile" />
+  </wsdl:message>
+  <wsdl:message name="SaveFileSoapOut">
+    <wsdl:part name="parameters" element="tns:SaveFileResponse" />
+  </wsdl:message>
   <wsdl:message name="GetAnswerPresetsSoapIn">
     <wsdl:part name="parameters" element="tns:GetAnswerPresets" />
   </wsdl:message>
@@ -320,12 +346,6 @@
   </wsdl:message>
   <wsdl:message name="DeleteAnswerPresetSoapOut">
     <wsdl:part name="parameters" element="tns:DeleteAnswerPresetResponse" />
-  </wsdl:message>
-  <wsdl:message name="SaveFileSoapIn">
-    <wsdl:part name="parameters" element="tns:SaveFile" />
-  </wsdl:message>
-  <wsdl:message name="SaveFileSoapOut">
-    <wsdl:part name="parameters" element="tns:SaveFileResponse" />
   </wsdl:message>
   <wsdl:message name="SaveDictationSoapIn">
     <wsdl:part name="parameters" element="tns:SaveDictation" />
@@ -387,6 +407,12 @@
   <wsdl:message name="CreateDynaReportSoapOut">
     <wsdl:part name="parameters" element="tns:CreateDynaReportResponse" />
   </wsdl:message>
+  <wsdl:message name="GenerateReportSpireSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateReportSpire" />
+  </wsdl:message>
+  <wsdl:message name="GenerateReportSpireSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateReportSpireResponse" />
+  </wsdl:message>
   <wsdl:message name="GenerateReportSoapIn">
     <wsdl:part name="parameters" element="tns:GenerateReport" />
   </wsdl:message>
@@ -402,6 +428,10 @@
       <wsdl:input message="tns:BuildDynaMenuSoapIn" />
       <wsdl:output message="tns:BuildDynaMenuSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="SaveFile">
+      <wsdl:input message="tns:SaveFileSoapIn" />
+      <wsdl:output message="tns:SaveFileSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetAnswerPresets">
       <wsdl:input message="tns:GetAnswerPresetsSoapIn" />
       <wsdl:output message="tns:GetAnswerPresetsSoapOut" />
@@ -413,10 +443,6 @@
     <wsdl:operation name="DeleteAnswerPreset">
       <wsdl:input message="tns:DeleteAnswerPresetSoapIn" />
       <wsdl:output message="tns:DeleteAnswerPresetSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="SaveFile">
-      <wsdl:input message="tns:SaveFileSoapIn" />
-      <wsdl:output message="tns:SaveFileSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="SaveDictation">
       <wsdl:input message="tns:SaveDictationSoapIn" />
@@ -458,6 +484,10 @@
       <wsdl:input message="tns:CreateDynaReportSoapIn" />
       <wsdl:output message="tns:CreateDynaReportSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GenerateReportSpire">
+      <wsdl:input message="tns:GenerateReportSpireSoapIn" />
+      <wsdl:output message="tns:GenerateReportSpireSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateReport">
       <wsdl:input message="tns:GenerateReportSoapIn" />
       <wsdl:output message="tns:GenerateReportSoapOut" />
@@ -476,6 +506,15 @@
     </wsdl:operation>
     <wsdl:operation name="BuildDynaMenu">
       <soap:operation soapAction="http://tempuri.org/BuildDynaMenu" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveFile">
+      <soap:operation soapAction="http://tempuri.org/SaveFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -503,15 +542,6 @@
     </wsdl:operation>
     <wsdl:operation name="DeleteAnswerPreset">
       <soap:operation soapAction="http://tempuri.org/DeleteAnswerPreset" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="SaveFile">
-      <soap:operation soapAction="http://tempuri.org/SaveFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -609,6 +639,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GenerateReportSpire">
+      <soap:operation soapAction="http://tempuri.org/GenerateReportSpire" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateReport">
       <soap:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
       <wsdl:input>
@@ -639,6 +678,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="SaveFile">
+      <soap12:operation soapAction="http://tempuri.org/SaveFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetAnswerPresets">
       <soap12:operation soapAction="http://tempuri.org/GetAnswerPresets" style="document" />
       <wsdl:input>
@@ -659,15 +707,6 @@
     </wsdl:operation>
     <wsdl:operation name="DeleteAnswerPreset">
       <soap12:operation soapAction="http://tempuri.org/DeleteAnswerPreset" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="SaveFile">
-      <soap12:operation soapAction="http://tempuri.org/SaveFile" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -758,6 +797,15 @@
     </wsdl:operation>
     <wsdl:operation name="CreateDynaReport">
       <soap12:operation soapAction="http://tempuri.org/CreateDynaReport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateReportSpire">
+      <soap12:operation soapAction="http://tempuri.org/GenerateReportSpire" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
