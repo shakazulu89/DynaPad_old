@@ -28,11 +28,17 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback BuildDynaMenuOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetFilesOperationCompleted;
+        
         private System.Threading.SendOrPostCallback SaveFileOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetAnswerPresetsOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetAllAnswerPresetsOperationCompleted;
+        
         private System.Threading.SendOrPostCallback SaveAnswerPresetOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback UpdateAnswerPresetJsonOperationCompleted;
         
         private System.Threading.SendOrPostCallback DeleteAnswerPresetOperationCompleted;
         
@@ -42,7 +48,7 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback GetFormDictationsOperationCompleted;
         
-        private System.Threading.SendOrPostCallback ExportToPdfOperationCompleted;
+        private System.Threading.SendOrPostCallback GenerateSummaryOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetAllQuestionnairesOperationCompleted;
         
@@ -56,9 +62,9 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback CreateDynaReportOperationCompleted;
         
-        private System.Threading.SendOrPostCallback GenerateReportSpireOperationCompleted;
-        
         private System.Threading.SendOrPostCallback GenerateReportOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback LoginOperationCompleted;
         
         /// CodeRemarks
         public DynaPadService() {
@@ -76,13 +82,22 @@ namespace DynaPad.DynaPadService {
         public event BuildDynaMenuCompletedEventHandler BuildDynaMenuCompleted;
         
         /// CodeRemarks
+        public event GetFilesCompletedEventHandler GetFilesCompleted;
+        
+        /// CodeRemarks
         public event SaveFileCompletedEventHandler SaveFileCompleted;
         
         /// CodeRemarks
         public event GetAnswerPresetsCompletedEventHandler GetAnswerPresetsCompleted;
         
         /// CodeRemarks
+        public event GetAllAnswerPresetsCompletedEventHandler GetAllAnswerPresetsCompleted;
+        
+        /// CodeRemarks
         public event SaveAnswerPresetCompletedEventHandler SaveAnswerPresetCompleted;
+        
+        /// CodeRemarks
+        public event UpdateAnswerPresetJsonCompletedEventHandler UpdateAnswerPresetJsonCompleted;
         
         /// CodeRemarks
         public event DeleteAnswerPresetCompletedEventHandler DeleteAnswerPresetCompleted;
@@ -97,7 +112,7 @@ namespace DynaPad.DynaPadService {
         public event GetFormDictationsCompletedEventHandler GetFormDictationsCompleted;
         
         /// CodeRemarks
-        public event ExportToPdfCompletedEventHandler ExportToPdfCompleted;
+        public event GenerateSummaryCompletedEventHandler GenerateSummaryCompleted;
         
         /// CodeRemarks
         public event GetAllQuestionnairesCompletedEventHandler GetAllQuestionnairesCompleted;
@@ -118,10 +133,10 @@ namespace DynaPad.DynaPadService {
         public event CreateDynaReportCompletedEventHandler CreateDynaReportCompleted;
         
         /// CodeRemarks
-        public event GenerateReportSpireCompletedEventHandler GenerateReportSpireCompleted;
+        public event GenerateReportCompletedEventHandler GenerateReportCompleted;
         
         /// CodeRemarks
-        public event GenerateReportCompletedEventHandler GenerateReportCompleted;
+        public event LoginCompletedEventHandler LoginCompleted;
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/HelloWorld", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -152,24 +167,28 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/BuildDynaMenu", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string BuildDynaMenu(string locationId) {
+        public string BuildDynaMenu(ConfigurationObjects domainConfig, string locationId, string locationName) {
             object[] results = this.Invoke("BuildDynaMenu", new object[] {
-                        locationId});
+                        domainConfig,
+                        locationId,
+                        locationName});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void BuildDynaMenuAsync(string locationId) {
-            this.BuildDynaMenuAsync(locationId, null);
+        public void BuildDynaMenuAsync(ConfigurationObjects domainConfig, string locationId, string locationName) {
+            this.BuildDynaMenuAsync(domainConfig, locationId, locationName, null);
         }
         
         /// CodeRemarks
-        public void BuildDynaMenuAsync(string locationId, object userState) {
+        public void BuildDynaMenuAsync(ConfigurationObjects domainConfig, string locationId, string locationName, object userState) {
             if ((this.BuildDynaMenuOperationCompleted == null)) {
                 this.BuildDynaMenuOperationCompleted = new System.Threading.SendOrPostCallback(this.OnBuildDynaMenuOperationCompleted);
             }
             this.InvokeAsync("BuildDynaMenu", new object[] {
-                        locationId}, this.BuildDynaMenuOperationCompleted, userState);
+                        domainConfig,
+                        locationId,
+                        locationName}, this.BuildDynaMenuOperationCompleted, userState);
         }
         
         private void OnBuildDynaMenuOperationCompleted(object arg) {
@@ -180,15 +199,57 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFiles", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GetFiles(ConfigurationObjects domainConfig, string apptId, string patientId, string patientName, string doctorId, string locationId) {
+            object[] results = this.Invoke("GetFiles", new object[] {
+                        domainConfig,
+                        apptId,
+                        patientId,
+                        patientName,
+                        doctorId,
+                        locationId});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void GetFilesAsync(ConfigurationObjects domainConfig, string apptId, string patientId, string patientName, string doctorId, string locationId) {
+            this.GetFilesAsync(domainConfig, apptId, patientId, patientName, doctorId, locationId, null);
+        }
+        
+        /// CodeRemarks
+        public void GetFilesAsync(ConfigurationObjects domainConfig, string apptId, string patientId, string patientName, string doctorId, string locationId, object userState) {
+            if ((this.GetFilesOperationCompleted == null)) {
+                this.GetFilesOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetFilesOperationCompleted);
+            }
+            this.InvokeAsync("GetFiles", new object[] {
+                        domainConfig,
+                        apptId,
+                        patientId,
+                        patientName,
+                        doctorId,
+                        locationId}, this.GetFilesOperationCompleted, userState);
+        }
+        
+        private void OnGetFilesOperationCompleted(object arg) {
+            if ((this.GetFilesCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetFilesCompleted(this, new GetFilesCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveFile", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string SaveFile(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrFile, bool isDoctorForm, bool isSignature) {
+        public string SaveFile(ConfigurationObjects domainConfig, string apptId, string patientId, string doctorId, string locationId, string fileName, string fileType, string folderName, string filePath, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrFile, bool isDoctorForm, bool isSignature) {
             object[] results = this.Invoke("SaveFile", new object[] {
+                        domainConfig,
                         apptId,
                         patientId,
                         doctorId,
                         locationId,
                         fileName,
+                        fileType,
                         folderName,
+                        filePath,
                         arrFile,
                         isDoctorForm,
                         isSignature});
@@ -196,22 +257,25 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile, bool isDoctorForm, bool isSignature) {
-            this.SaveFileAsync(apptId, patientId, doctorId, locationId, fileName, folderName, arrFile, isDoctorForm, isSignature, null);
+        public void SaveFileAsync(ConfigurationObjects domainConfig, string apptId, string patientId, string doctorId, string locationId, string fileName, string fileType, string folderName, string filePath, byte[] arrFile, bool isDoctorForm, bool isSignature) {
+            this.SaveFileAsync(domainConfig, apptId, patientId, doctorId, locationId, fileName, fileType, folderName, filePath, arrFile, isDoctorForm, isSignature, null);
         }
         
         /// CodeRemarks
-        public void SaveFileAsync(string apptId, string patientId, string doctorId, string locationId, string fileName, string folderName, byte[] arrFile, bool isDoctorForm, bool isSignature, object userState) {
+        public void SaveFileAsync(ConfigurationObjects domainConfig, string apptId, string patientId, string doctorId, string locationId, string fileName, string fileType, string folderName, string filePath, byte[] arrFile, bool isDoctorForm, bool isSignature, object userState) {
             if ((this.SaveFileOperationCompleted == null)) {
                 this.SaveFileOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveFileOperationCompleted);
             }
             this.InvokeAsync("SaveFile", new object[] {
+                        domainConfig,
                         apptId,
                         patientId,
                         doctorId,
                         locationId,
                         fileName,
+                        fileType,
                         folderName,
+                        filePath,
                         arrFile,
                         isDoctorForm,
                         isSignature}, this.SaveFileOperationCompleted, userState);
@@ -228,8 +292,9 @@ namespace DynaPad.DynaPadService {
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAnswerPresets", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
         [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
-        public string[][] GetAnswerPresets(string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
+        public string[][] GetAnswerPresets(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
             object[] results = this.Invoke("GetAnswerPresets", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -239,16 +304,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GetAnswerPresetsAsync(string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
-            this.GetAnswerPresetsAsync(formId, sectionId, doctorId, isDocInput, locationId, null);
+        public void GetAnswerPresetsAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
+            this.GetAnswerPresetsAsync(domainConfig, formId, sectionId, doctorId, isDocInput, locationId, null);
         }
         
         /// CodeRemarks
-        public void GetAnswerPresetsAsync(string formId, string sectionId, string doctorId, bool isDocInput, string locationId, object userState) {
+        public void GetAnswerPresetsAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId, object userState) {
             if ((this.GetAnswerPresetsOperationCompleted == null)) {
                 this.GetAnswerPresetsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetAnswerPresetsOperationCompleted);
             }
             this.InvokeAsync("GetAnswerPresets", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -264,9 +330,45 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAllAnswerPresets", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
+        [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
+        public string[][] GetAllAnswerPresets(ConfigurationObjects domainConfig, string formId, bool isDocInput) {
+            object[] results = this.Invoke("GetAllAnswerPresets", new object[] {
+                        domainConfig,
+                        formId,
+                        isDocInput});
+            return ((string[][])(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void GetAllAnswerPresetsAsync(ConfigurationObjects domainConfig, string formId, bool isDocInput) {
+            this.GetAllAnswerPresetsAsync(domainConfig, formId, isDocInput, null);
+        }
+        
+        /// CodeRemarks
+        public void GetAllAnswerPresetsAsync(ConfigurationObjects domainConfig, string formId, bool isDocInput, object userState) {
+            if ((this.GetAllAnswerPresetsOperationCompleted == null)) {
+                this.GetAllAnswerPresetsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetAllAnswerPresetsOperationCompleted);
+            }
+            this.InvokeAsync("GetAllAnswerPresets", new object[] {
+                        domainConfig,
+                        formId,
+                        isDocInput}, this.GetAllAnswerPresetsOperationCompleted, userState);
+        }
+        
+        private void OnGetAllAnswerPresetsOperationCompleted(object arg) {
+            if ((this.GetAllAnswerPresetsCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetAllAnswerPresetsCompleted(this, new GetAllAnswerPresetsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveAnswerPreset", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string SaveAnswerPreset(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
+        public string SaveAnswerPreset(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
             object[] results = this.Invoke("SaveAnswerPreset", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -279,16 +381,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void SaveAnswerPresetAsync(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
-            this.SaveAnswerPresetAsync(formId, sectionId, doctorId, isDocInput, presetName, presetJson, locationId, existingPresetId, null);
+        public void SaveAnswerPresetAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
+            this.SaveAnswerPresetAsync(domainConfig, formId, sectionId, doctorId, isDocInput, presetName, presetJson, locationId, existingPresetId, null);
         }
         
         /// CodeRemarks
-        public void SaveAnswerPresetAsync(string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId, object userState) {
+        public void SaveAnswerPresetAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId, object userState) {
             if ((this.SaveAnswerPresetOperationCompleted == null)) {
                 this.SaveAnswerPresetOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveAnswerPresetOperationCompleted);
             }
             this.InvokeAsync("SaveAnswerPreset", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -307,9 +410,49 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/UpdateAnswerPresetJson", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string UpdateAnswerPresetJson(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string presetJson, string existingPresetId) {
+            object[] results = this.Invoke("UpdateAnswerPresetJson", new object[] {
+                        domainConfig,
+                        formId,
+                        sectionId,
+                        doctorId,
+                        presetJson,
+                        existingPresetId});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void UpdateAnswerPresetJsonAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string presetJson, string existingPresetId) {
+            this.UpdateAnswerPresetJsonAsync(domainConfig, formId, sectionId, doctorId, presetJson, existingPresetId, null);
+        }
+        
+        /// CodeRemarks
+        public void UpdateAnswerPresetJsonAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string presetJson, string existingPresetId, object userState) {
+            if ((this.UpdateAnswerPresetJsonOperationCompleted == null)) {
+                this.UpdateAnswerPresetJsonOperationCompleted = new System.Threading.SendOrPostCallback(this.OnUpdateAnswerPresetJsonOperationCompleted);
+            }
+            this.InvokeAsync("UpdateAnswerPresetJson", new object[] {
+                        domainConfig,
+                        formId,
+                        sectionId,
+                        doctorId,
+                        presetJson,
+                        existingPresetId}, this.UpdateAnswerPresetJsonOperationCompleted, userState);
+        }
+        
+        private void OnUpdateAnswerPresetJsonOperationCompleted(object arg) {
+            if ((this.UpdateAnswerPresetJsonCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.UpdateAnswerPresetJsonCompleted(this, new UpdateAnswerPresetJsonCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/DeleteAnswerPreset", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public void DeleteAnswerPreset(string formId, string sectionId, string doctorId, string existingPresetId) {
+        public void DeleteAnswerPreset(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string existingPresetId) {
             this.Invoke("DeleteAnswerPreset", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -317,16 +460,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void DeleteAnswerPresetAsync(string formId, string sectionId, string doctorId, string existingPresetId) {
-            this.DeleteAnswerPresetAsync(formId, sectionId, doctorId, existingPresetId, null);
+        public void DeleteAnswerPresetAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string existingPresetId) {
+            this.DeleteAnswerPresetAsync(domainConfig, formId, sectionId, doctorId, existingPresetId, null);
         }
         
         /// CodeRemarks
-        public void DeleteAnswerPresetAsync(string formId, string sectionId, string doctorId, string existingPresetId, object userState) {
+        public void DeleteAnswerPresetAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string existingPresetId, object userState) {
             if ((this.DeleteAnswerPresetOperationCompleted == null)) {
                 this.DeleteAnswerPresetOperationCompleted = new System.Threading.SendOrPostCallback(this.OnDeleteAnswerPresetOperationCompleted);
             }
             this.InvokeAsync("DeleteAnswerPreset", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -342,8 +486,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveDictation", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string SaveDictation(string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrDictation) {
+        public string SaveDictation(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrDictation) {
             object[] results = this.Invoke("SaveDictation", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -355,16 +500,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void SaveDictationAsync(string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, byte[] arrDictation) {
-            this.SaveDictationAsync(formId, sectionId, doctorId, isDocInput, locationId, dictationTitle, arrDictation, null);
+        public void SaveDictationAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, byte[] arrDictation) {
+            this.SaveDictationAsync(domainConfig, formId, sectionId, doctorId, isDocInput, locationId, dictationTitle, arrDictation, null);
         }
         
         /// CodeRemarks
-        public void SaveDictationAsync(string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, byte[] arrDictation, object userState) {
+        public void SaveDictationAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, byte[] arrDictation, object userState) {
             if ((this.SaveDictationOperationCompleted == null)) {
                 this.SaveDictationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveDictationOperationCompleted);
             }
             this.InvokeAsync("SaveDictation", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -383,8 +529,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/DeleteDicatation", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string DeleteDicatation(string dictationId, string formId, string sectionId, string doctorId) {
+        public string DeleteDicatation(ConfigurationObjects domainConfig, string dictationId, string formId, string sectionId, string doctorId) {
             object[] results = this.Invoke("DeleteDicatation", new object[] {
+                        domainConfig,
                         dictationId,
                         formId,
                         sectionId,
@@ -393,16 +540,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void DeleteDicatationAsync(string dictationId, string formId, string sectionId, string doctorId) {
-            this.DeleteDicatationAsync(dictationId, formId, sectionId, doctorId, null);
+        public void DeleteDicatationAsync(ConfigurationObjects domainConfig, string dictationId, string formId, string sectionId, string doctorId) {
+            this.DeleteDicatationAsync(domainConfig, dictationId, formId, sectionId, doctorId, null);
         }
         
         /// CodeRemarks
-        public void DeleteDicatationAsync(string dictationId, string formId, string sectionId, string doctorId, object userState) {
+        public void DeleteDicatationAsync(ConfigurationObjects domainConfig, string dictationId, string formId, string sectionId, string doctorId, object userState) {
             if ((this.DeleteDicatationOperationCompleted == null)) {
                 this.DeleteDicatationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnDeleteDicatationOperationCompleted);
             }
             this.InvokeAsync("DeleteDicatation", new object[] {
+                        domainConfig,
                         dictationId,
                         formId,
                         sectionId,
@@ -420,8 +568,9 @@ namespace DynaPad.DynaPadService {
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormDictations", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
         [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
-        public string[][] GetFormDictations(string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
+        public string[][] GetFormDictations(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
             object[] results = this.Invoke("GetFormDictations", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -431,16 +580,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GetFormDictationsAsync(string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
-            this.GetFormDictationsAsync(formId, sectionId, doctorId, isDocInput, locationId, null);
+        public void GetFormDictationsAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
+            this.GetFormDictationsAsync(domainConfig, formId, sectionId, doctorId, isDocInput, locationId, null);
         }
         
         /// CodeRemarks
-        public void GetFormDictationsAsync(string formId, string sectionId, string doctorId, bool isDocInput, string locationId, object userState) {
+        public void GetFormDictationsAsync(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId, object userState) {
             if ((this.GetFormDictationsOperationCompleted == null)) {
                 this.GetFormDictationsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetFormDictationsOperationCompleted);
             }
             this.InvokeAsync("GetFormDictations", new object[] {
+                        domainConfig,
                         formId,
                         sectionId,
                         doctorId,
@@ -456,53 +606,57 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ExportToPdf", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string ExportToPdf(string answers) {
-            object[] results = this.Invoke("ExportToPdf", new object[] {
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateSummary", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GenerateSummary(ConfigurationObjects domainConfig, string answers) {
+            object[] results = this.Invoke("GenerateSummary", new object[] {
+                        domainConfig,
                         answers});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void ExportToPdfAsync(string answers) {
-            this.ExportToPdfAsync(answers, null);
+        public void GenerateSummaryAsync(ConfigurationObjects domainConfig, string answers) {
+            this.GenerateSummaryAsync(domainConfig, answers, null);
         }
         
         /// CodeRemarks
-        public void ExportToPdfAsync(string answers, object userState) {
-            if ((this.ExportToPdfOperationCompleted == null)) {
-                this.ExportToPdfOperationCompleted = new System.Threading.SendOrPostCallback(this.OnExportToPdfOperationCompleted);
+        public void GenerateSummaryAsync(ConfigurationObjects domainConfig, string answers, object userState) {
+            if ((this.GenerateSummaryOperationCompleted == null)) {
+                this.GenerateSummaryOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGenerateSummaryOperationCompleted);
             }
-            this.InvokeAsync("ExportToPdf", new object[] {
-                        answers}, this.ExportToPdfOperationCompleted, userState);
+            this.InvokeAsync("GenerateSummary", new object[] {
+                        domainConfig,
+                        answers}, this.GenerateSummaryOperationCompleted, userState);
         }
         
-        private void OnExportToPdfOperationCompleted(object arg) {
-            if ((this.ExportToPdfCompleted != null)) {
+        private void OnGenerateSummaryOperationCompleted(object arg) {
+            if ((this.GenerateSummaryCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.ExportToPdfCompleted(this, new ExportToPdfCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+                this.GenerateSummaryCompleted(this, new GenerateSummaryCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAllQuestionnaires", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetAllQuestionnaires(string userId) {
+        public string GetAllQuestionnaires(ConfigurationObjects domainConfig, string userId) {
             object[] results = this.Invoke("GetAllQuestionnaires", new object[] {
+                        domainConfig,
                         userId});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void GetAllQuestionnairesAsync(string userId) {
-            this.GetAllQuestionnairesAsync(userId, null);
+        public void GetAllQuestionnairesAsync(ConfigurationObjects domainConfig, string userId) {
+            this.GetAllQuestionnairesAsync(domainConfig, userId, null);
         }
         
         /// CodeRemarks
-        public void GetAllQuestionnairesAsync(string userId, object userState) {
+        public void GetAllQuestionnairesAsync(ConfigurationObjects domainConfig, string userId, object userState) {
             if ((this.GetAllQuestionnairesOperationCompleted == null)) {
                 this.GetAllQuestionnairesOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetAllQuestionnairesOperationCompleted);
             }
             this.InvokeAsync("GetAllQuestionnaires", new object[] {
+                        domainConfig,
                         userId}, this.GetAllQuestionnairesOperationCompleted, userState);
         }
         
@@ -515,8 +669,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SubmitFormAnswers", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public bool SubmitFormAnswers(string answers, bool update, bool isDoctorInput) {
+        public bool SubmitFormAnswers(ConfigurationObjects domainConfig, string answers, bool update, bool isDoctorInput) {
             object[] results = this.Invoke("SubmitFormAnswers", new object[] {
+                        domainConfig,
                         answers,
                         update,
                         isDoctorInput});
@@ -524,16 +679,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void SubmitFormAnswersAsync(string answers, bool update, bool isDoctorInput) {
-            this.SubmitFormAnswersAsync(answers, update, isDoctorInput, null);
+        public void SubmitFormAnswersAsync(ConfigurationObjects domainConfig, string answers, bool update, bool isDoctorInput) {
+            this.SubmitFormAnswersAsync(domainConfig, answers, update, isDoctorInput, null);
         }
         
         /// CodeRemarks
-        public void SubmitFormAnswersAsync(string answers, bool update, bool isDoctorInput, object userState) {
+        public void SubmitFormAnswersAsync(ConfigurationObjects domainConfig, string answers, bool update, bool isDoctorInput, object userState) {
             if ((this.SubmitFormAnswersOperationCompleted == null)) {
                 this.SubmitFormAnswersOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSubmitFormAnswersOperationCompleted);
             }
             this.InvokeAsync("SubmitFormAnswers", new object[] {
+                        domainConfig,
                         answers,
                         update,
                         isDoctorInput}, this.SubmitFormAnswersOperationCompleted, userState);
@@ -548,8 +704,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormQuestions", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetFormQuestions(string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput) {
+        public string GetFormQuestions(ConfigurationObjects domainConfig, string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput) {
             object[] results = this.Invoke("GetFormQuestions", new object[] {
+                        domainConfig,
                         formId,
                         doctorId,
                         locationId,
@@ -561,16 +718,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GetFormQuestionsAsync(string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput) {
-            this.GetFormQuestionsAsync(formId, doctorId, locationId, patientId, patientName, apptId, isDocInput, null);
+        public void GetFormQuestionsAsync(ConfigurationObjects domainConfig, string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput) {
+            this.GetFormQuestionsAsync(domainConfig, formId, doctorId, locationId, patientId, patientName, apptId, isDocInput, null);
         }
         
         /// CodeRemarks
-        public void GetFormQuestionsAsync(string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput, object userState) {
+        public void GetFormQuestionsAsync(ConfigurationObjects domainConfig, string formId, string doctorId, string locationId, string patientId, string patientName, string apptId, bool isDocInput, object userState) {
             if ((this.GetFormQuestionsOperationCompleted == null)) {
                 this.GetFormQuestionsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetFormQuestionsOperationCompleted);
             }
             this.InvokeAsync("GetFormQuestions", new object[] {
+                        domainConfig,
                         formId,
                         doctorId,
                         locationId,
@@ -589,23 +747,25 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetDoctorInput", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetDoctorInput(string formId) {
+        public string GetDoctorInput(ConfigurationObjects domainConfig, string formId) {
             object[] results = this.Invoke("GetDoctorInput", new object[] {
+                        domainConfig,
                         formId});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void GetDoctorInputAsync(string formId) {
-            this.GetDoctorInputAsync(formId, null);
+        public void GetDoctorInputAsync(ConfigurationObjects domainConfig, string formId) {
+            this.GetDoctorInputAsync(domainConfig, formId, null);
         }
         
         /// CodeRemarks
-        public void GetDoctorInputAsync(string formId, object userState) {
+        public void GetDoctorInputAsync(ConfigurationObjects domainConfig, string formId, object userState) {
             if ((this.GetDoctorInputOperationCompleted == null)) {
                 this.GetDoctorInputOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetDoctorInputOperationCompleted);
             }
             this.InvokeAsync("GetDoctorInput", new object[] {
+                        domainConfig,
                         formId}, this.GetDoctorInputOperationCompleted, userState);
         }
         
@@ -618,8 +778,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetDynaReports", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetDynaReports(string qFormID, string docId, bool showcase) {
+        public string GetDynaReports(ConfigurationObjects domainConfig, string qFormID, string docId, bool showcase) {
             object[] results = this.Invoke("GetDynaReports", new object[] {
+                        domainConfig,
                         qFormID,
                         docId,
                         showcase});
@@ -627,16 +788,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GetDynaReportsAsync(string qFormID, string docId, bool showcase) {
-            this.GetDynaReportsAsync(qFormID, docId, showcase, null);
+        public void GetDynaReportsAsync(ConfigurationObjects domainConfig, string qFormID, string docId, bool showcase) {
+            this.GetDynaReportsAsync(domainConfig, qFormID, docId, showcase, null);
         }
         
         /// CodeRemarks
-        public void GetDynaReportsAsync(string qFormID, string docId, bool showcase, object userState) {
+        public void GetDynaReportsAsync(ConfigurationObjects domainConfig, string qFormID, string docId, bool showcase, object userState) {
             if ((this.GetDynaReportsOperationCompleted == null)) {
                 this.GetDynaReportsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetDynaReportsOperationCompleted);
             }
             this.InvokeAsync("GetDynaReports", new object[] {
+                        domainConfig,
                         qFormID,
                         docId,
                         showcase}, this.GetDynaReportsOperationCompleted, userState);
@@ -651,23 +813,25 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/CreateDynaReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string CreateDynaReport(string formId) {
+        public string CreateDynaReport(ConfigurationObjects domainConfig, string formId) {
             object[] results = this.Invoke("CreateDynaReport", new object[] {
+                        domainConfig,
                         formId});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void CreateDynaReportAsync(string formId) {
-            this.CreateDynaReportAsync(formId, null);
+        public void CreateDynaReportAsync(ConfigurationObjects domainConfig, string formId) {
+            this.CreateDynaReportAsync(domainConfig, formId, null);
         }
         
         /// CodeRemarks
-        public void CreateDynaReportAsync(string formId, object userState) {
+        public void CreateDynaReportAsync(ConfigurationObjects domainConfig, string formId, object userState) {
             if ((this.CreateDynaReportOperationCompleted == null)) {
                 this.CreateDynaReportOperationCompleted = new System.Threading.SendOrPostCallback(this.OnCreateDynaReportOperationCompleted);
             }
             this.InvokeAsync("CreateDynaReport", new object[] {
+                        domainConfig,
                         formId}, this.CreateDynaReportOperationCompleted, userState);
         }
         
@@ -679,46 +843,10 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReportSpire", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GenerateReportSpire(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
-            object[] results = this.Invoke("GenerateReportSpire", new object[] {
-                        apptId,
-                        qFormId,
-                        dateCompleted,
-                        fileName,
-                        sFormId});
-            return ((string)(results[0]));
-        }
-        
-        /// CodeRemarks
-        public void GenerateReportSpireAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId) {
-            this.GenerateReportSpireAsync(apptId, qFormId, dateCompleted, fileName, sFormId, null);
-        }
-        
-        /// CodeRemarks
-        public void GenerateReportSpireAsync(string apptId, string qFormId, string dateCompleted, string fileName, string sFormId, object userState) {
-            if ((this.GenerateReportSpireOperationCompleted == null)) {
-                this.GenerateReportSpireOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGenerateReportSpireOperationCompleted);
-            }
-            this.InvokeAsync("GenerateReportSpire", new object[] {
-                        apptId,
-                        qFormId,
-                        dateCompleted,
-                        fileName,
-                        sFormId}, this.GenerateReportSpireOperationCompleted, userState);
-        }
-        
-        private void OnGenerateReportSpireOperationCompleted(object arg) {
-            if ((this.GenerateReportSpireCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.GenerateReportSpireCompleted(this, new GenerateReportSpireCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GenerateReport(string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
+        public string GenerateReport(ConfigurationObjects domainConfig, string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
             object[] results = this.Invoke("GenerateReport", new object[] {
+                        domainConfig,
                         apptId,
                         qFormId,
                         dateCompleted,
@@ -728,16 +856,17 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
-            this.GenerateReportAsync(apptId, qFormId, dateCompleted, fileName, reportId, null);
+        public void GenerateReportAsync(ConfigurationObjects domainConfig, string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
+            this.GenerateReportAsync(domainConfig, apptId, qFormId, dateCompleted, fileName, reportId, null);
         }
         
         /// CodeRemarks
-        public void GenerateReportAsync(string apptId, string qFormId, string dateCompleted, string fileName, string reportId, object userState) {
+        public void GenerateReportAsync(ConfigurationObjects domainConfig, string apptId, string qFormId, string dateCompleted, string fileName, string reportId, object userState) {
             if ((this.GenerateReportOperationCompleted == null)) {
                 this.GenerateReportOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGenerateReportOperationCompleted);
             }
             this.InvokeAsync("GenerateReport", new object[] {
+                        domainConfig,
                         apptId,
                         qFormId,
                         dateCompleted,
@@ -753,9 +882,117 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/Login", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string Login(string domain, string username, string password) {
+            object[] results = this.Invoke("Login", new object[] {
+                        domain,
+                        username,
+                        password});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void LoginAsync(string domain, string username, string password) {
+            this.LoginAsync(domain, username, password, null);
+        }
+        
+        /// CodeRemarks
+        public void LoginAsync(string domain, string username, string password, object userState) {
+            if ((this.LoginOperationCompleted == null)) {
+                this.LoginOperationCompleted = new System.Threading.SendOrPostCallback(this.OnLoginOperationCompleted);
+            }
+            this.InvokeAsync("Login", new object[] {
+                        domain,
+                        username,
+                        password}, this.LoginOperationCompleted, userState);
+        }
+        
+        private void OnLoginOperationCompleted(object arg) {
+            if ((this.LoginCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.LoginCompleted(this, new LoginCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    public partial class ConfigurationObjects {
+        
+        /// <remarks/>
+        public string EmailSupport;
+        
+        /// <remarks/>
+        public string EmailPostmaster;
+        
+        /// <remarks/>
+        public string EmailRoy;
+        
+        /// <remarks/>
+        public string EmailSmtp;
+        
+        /// <remarks/>
+        public string EmailUser;
+        
+        /// <remarks/>
+        public string EmailPass;
+        
+        /// <remarks/>
+        public int EmailPort;
+        
+        /// <remarks/>
+        public string ConnectionString;
+        
+        /// <remarks/>
+        public string ConnectionName;
+        
+        /// <remarks/>
+        public string DatabaseName;
+        
+        /// <remarks/>
+        public string DomainHost;
+        
+        /// <remarks/>
+        public string DomainRootPathVirtual;
+        
+        /// <remarks/>
+        public string DomainRootPathPhysical;
+        
+        /// <remarks/>
+        public string DomainClaimantsPathVirtual;
+        
+        /// <remarks/>
+        public string DomainClaimantsPathPhysical;
+        
+        /// <remarks/>
+        public DomainPath[] DomainPaths;
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    public partial class DomainPath {
+        
+        /// <remarks/>
+        public string DomainPathName;
+        
+        /// <remarks/>
+        public string DomainPathPhysical;
+        
+        /// <remarks/>
+        public string DomainPathVirtual;
     }
     
     /// CodeRemarks
@@ -797,6 +1034,32 @@ namespace DynaPad.DynaPadService {
         private object[] results;
         
         internal BuildDynaMenuCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void GetFilesCompletedEventHandler(object sender, GetFilesCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetFilesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetFilesCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -864,6 +1127,32 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void GetAllAnswerPresetsCompletedEventHandler(object sender, GetAllAnswerPresetsCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetAllAnswerPresetsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetAllAnswerPresetsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string[][] Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string[][])(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     public delegate void SaveAnswerPresetCompletedEventHandler(object sender, SaveAnswerPresetCompletedEventArgs e);
     
     /// CodeRemarks
@@ -875,6 +1164,32 @@ namespace DynaPad.DynaPadService {
         private object[] results;
         
         internal SaveAnswerPresetCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    public delegate void UpdateAnswerPresetJsonCompletedEventHandler(object sender, UpdateAnswerPresetJsonCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class UpdateAnswerPresetJsonCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal UpdateAnswerPresetJsonCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -972,17 +1287,17 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void ExportToPdfCompletedEventHandler(object sender, ExportToPdfCompletedEventArgs e);
+    public delegate void GenerateSummaryCompletedEventHandler(object sender, GenerateSummaryCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class ExportToPdfCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+    public partial class GenerateSummaryCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
         
-        internal ExportToPdfCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+        internal GenerateSummaryCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -1154,17 +1469,17 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void GenerateReportSpireCompletedEventHandler(object sender, GenerateReportSpireCompletedEventArgs e);
+    public delegate void GenerateReportCompletedEventHandler(object sender, GenerateReportCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class GenerateReportSpireCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+    public partial class GenerateReportCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
         
-        internal GenerateReportSpireCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+        internal GenerateReportCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -1180,17 +1495,17 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
-    public delegate void GenerateReportCompletedEventHandler(object sender, GenerateReportCompletedEventArgs e);
+    public delegate void LoginCompletedEventHandler(object sender, LoginCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "4.0.0.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class GenerateReportCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+    public partial class LoginCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
         
-        internal GenerateReportCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+        internal LoginCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }

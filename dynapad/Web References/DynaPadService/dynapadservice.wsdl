@@ -15,10 +15,44 @@
       <s:element name="BuildDynaMenu">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationName" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ConfigurationObjects">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="EmailSupport" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EmailPostmaster" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EmailRoy" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EmailSmtp" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EmailUser" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EmailPass" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="EmailPort" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ConnectionString" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ConnectionName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DatabaseName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainHost" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainRootPathVirtual" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainRootPathPhysical" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainClaimantsPathVirtual" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainClaimantsPathPhysical" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainPaths" type="tns:ArrayOfDomainPath" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfDomainPath">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="DomainPath" nillable="true" type="tns:DomainPath" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="DomainPath">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="DomainPathName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainPathPhysical" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DomainPathVirtual" type="s:string" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="BuildDynaMenuResponse">
         <s:complexType>
           <s:sequence>
@@ -26,15 +60,37 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetFiles">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
+            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFilesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetFilesResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="SaveFile">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileType" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="folderName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="filePath" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="arrFile" type="s:base64Binary" />
             <s:element minOccurs="1" maxOccurs="1" name="isDoctorForm" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="isSignature" type="s:boolean" />
@@ -51,6 +107,7 @@
       <s:element name="GetAnswerPresets">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
@@ -76,9 +133,26 @@
           <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
         </s:sequence>
       </s:complexType>
+      <s:element name="GetAllAnswerPresets">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllAnswerPresetsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllAnswerPresetsResult" type="tns:ArrayOfArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="SaveAnswerPreset">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
@@ -97,9 +171,29 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="UpdateAnswerPresetJson">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
+            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="presetJson" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="existingPresetId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateAnswerPresetJsonResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UpdateAnswerPresetJsonResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="DeleteAnswerPreset">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
@@ -113,6 +207,7 @@
       <s:element name="SaveDictation">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
@@ -133,6 +228,7 @@
       <s:element name="DeleteDicatation">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="dictationId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
@@ -150,6 +246,7 @@
       <s:element name="GetFormDictations">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
@@ -165,23 +262,25 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="ExportToPdf">
+      <s:element name="GenerateSummary">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="answers" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="ExportToPdfResponse">
+      <s:element name="GenerateSummaryResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ExportToPdfResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateSummaryResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:element name="GetAllQuestionnaires">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -196,6 +295,7 @@
       <s:element name="SubmitFormAnswers">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="answers" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="update" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="isDoctorInput" type="s:boolean" />
@@ -212,6 +312,7 @@
       <s:element name="GetFormQuestions">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
@@ -232,6 +333,7 @@
       <s:element name="GetDoctorInput">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -246,6 +348,7 @@
       <s:element name="GetDynaReports">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="qFormID" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="docId" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="showcase" type="s:boolean" />
@@ -262,6 +365,7 @@
       <s:element name="CreateDynaReport">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -273,27 +377,10 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GenerateReportSpire">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="qFormId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="dateCompleted" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="sFormId" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GenerateReportSpireResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GenerateReportSpireResult" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="GenerateReport">
         <s:complexType>
           <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
             <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="qFormId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="dateCompleted" type="s:string" />
@@ -306,6 +393,22 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GenerateReportResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Login">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domain" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="username" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LoginResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LoginResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -323,6 +426,12 @@
   <wsdl:message name="BuildDynaMenuSoapOut">
     <wsdl:part name="parameters" element="tns:BuildDynaMenuResponse" />
   </wsdl:message>
+  <wsdl:message name="GetFilesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFiles" />
+  </wsdl:message>
+  <wsdl:message name="GetFilesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFilesResponse" />
+  </wsdl:message>
   <wsdl:message name="SaveFileSoapIn">
     <wsdl:part name="parameters" element="tns:SaveFile" />
   </wsdl:message>
@@ -335,11 +444,23 @@
   <wsdl:message name="GetAnswerPresetsSoapOut">
     <wsdl:part name="parameters" element="tns:GetAnswerPresetsResponse" />
   </wsdl:message>
+  <wsdl:message name="GetAllAnswerPresetsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllAnswerPresets" />
+  </wsdl:message>
+  <wsdl:message name="GetAllAnswerPresetsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllAnswerPresetsResponse" />
+  </wsdl:message>
   <wsdl:message name="SaveAnswerPresetSoapIn">
     <wsdl:part name="parameters" element="tns:SaveAnswerPreset" />
   </wsdl:message>
   <wsdl:message name="SaveAnswerPresetSoapOut">
     <wsdl:part name="parameters" element="tns:SaveAnswerPresetResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateAnswerPresetJsonSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateAnswerPresetJson" />
+  </wsdl:message>
+  <wsdl:message name="UpdateAnswerPresetJsonSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateAnswerPresetJsonResponse" />
   </wsdl:message>
   <wsdl:message name="DeleteAnswerPresetSoapIn">
     <wsdl:part name="parameters" element="tns:DeleteAnswerPreset" />
@@ -365,11 +486,11 @@
   <wsdl:message name="GetFormDictationsSoapOut">
     <wsdl:part name="parameters" element="tns:GetFormDictationsResponse" />
   </wsdl:message>
-  <wsdl:message name="ExportToPdfSoapIn">
-    <wsdl:part name="parameters" element="tns:ExportToPdf" />
+  <wsdl:message name="GenerateSummarySoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateSummary" />
   </wsdl:message>
-  <wsdl:message name="ExportToPdfSoapOut">
-    <wsdl:part name="parameters" element="tns:ExportToPdfResponse" />
+  <wsdl:message name="GenerateSummarySoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateSummaryResponse" />
   </wsdl:message>
   <wsdl:message name="GetAllQuestionnairesSoapIn">
     <wsdl:part name="parameters" element="tns:GetAllQuestionnaires" />
@@ -407,17 +528,17 @@
   <wsdl:message name="CreateDynaReportSoapOut">
     <wsdl:part name="parameters" element="tns:CreateDynaReportResponse" />
   </wsdl:message>
-  <wsdl:message name="GenerateReportSpireSoapIn">
-    <wsdl:part name="parameters" element="tns:GenerateReportSpire" />
-  </wsdl:message>
-  <wsdl:message name="GenerateReportSpireSoapOut">
-    <wsdl:part name="parameters" element="tns:GenerateReportSpireResponse" />
-  </wsdl:message>
   <wsdl:message name="GenerateReportSoapIn">
     <wsdl:part name="parameters" element="tns:GenerateReport" />
   </wsdl:message>
   <wsdl:message name="GenerateReportSoapOut">
     <wsdl:part name="parameters" element="tns:GenerateReportResponse" />
+  </wsdl:message>
+  <wsdl:message name="LoginSoapIn">
+    <wsdl:part name="parameters" element="tns:Login" />
+  </wsdl:message>
+  <wsdl:message name="LoginSoapOut">
+    <wsdl:part name="parameters" element="tns:LoginResponse" />
   </wsdl:message>
   <wsdl:portType name="DynaPadServiceSoap">
     <wsdl:operation name="HelloWorld">
@@ -428,6 +549,10 @@
       <wsdl:input message="tns:BuildDynaMenuSoapIn" />
       <wsdl:output message="tns:BuildDynaMenuSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetFiles">
+      <wsdl:input message="tns:GetFilesSoapIn" />
+      <wsdl:output message="tns:GetFilesSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="SaveFile">
       <wsdl:input message="tns:SaveFileSoapIn" />
       <wsdl:output message="tns:SaveFileSoapOut" />
@@ -436,9 +561,17 @@
       <wsdl:input message="tns:GetAnswerPresetsSoapIn" />
       <wsdl:output message="tns:GetAnswerPresetsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetAllAnswerPresets">
+      <wsdl:input message="tns:GetAllAnswerPresetsSoapIn" />
+      <wsdl:output message="tns:GetAllAnswerPresetsSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
       <wsdl:input message="tns:SaveAnswerPresetSoapIn" />
       <wsdl:output message="tns:SaveAnswerPresetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateAnswerPresetJson">
+      <wsdl:input message="tns:UpdateAnswerPresetJsonSoapIn" />
+      <wsdl:output message="tns:UpdateAnswerPresetJsonSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="DeleteAnswerPreset">
       <wsdl:input message="tns:DeleteAnswerPresetSoapIn" />
@@ -456,9 +589,9 @@
       <wsdl:input message="tns:GetFormDictationsSoapIn" />
       <wsdl:output message="tns:GetFormDictationsSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="ExportToPdf">
-      <wsdl:input message="tns:ExportToPdfSoapIn" />
-      <wsdl:output message="tns:ExportToPdfSoapOut" />
+    <wsdl:operation name="GenerateSummary">
+      <wsdl:input message="tns:GenerateSummarySoapIn" />
+      <wsdl:output message="tns:GenerateSummarySoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetAllQuestionnaires">
       <wsdl:input message="tns:GetAllQuestionnairesSoapIn" />
@@ -484,13 +617,13 @@
       <wsdl:input message="tns:CreateDynaReportSoapIn" />
       <wsdl:output message="tns:CreateDynaReportSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="GenerateReportSpire">
-      <wsdl:input message="tns:GenerateReportSpireSoapIn" />
-      <wsdl:output message="tns:GenerateReportSpireSoapOut" />
-    </wsdl:operation>
     <wsdl:operation name="GenerateReport">
       <wsdl:input message="tns:GenerateReportSoapIn" />
       <wsdl:output message="tns:GenerateReportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <wsdl:input message="tns:LoginSoapIn" />
+      <wsdl:output message="tns:LoginSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="DynaPadServiceSoap" type="tns:DynaPadServiceSoap">
@@ -506,6 +639,15 @@
     </wsdl:operation>
     <wsdl:operation name="BuildDynaMenu">
       <soap:operation soapAction="http://tempuri.org/BuildDynaMenu" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFiles">
+      <soap:operation soapAction="http://tempuri.org/GetFiles" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -531,8 +673,26 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetAllAnswerPresets">
+      <soap:operation soapAction="http://tempuri.org/GetAllAnswerPresets" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
       <soap:operation soapAction="http://tempuri.org/SaveAnswerPreset" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateAnswerPresetJson">
+      <soap:operation soapAction="http://tempuri.org/UpdateAnswerPresetJson" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -576,8 +736,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="ExportToPdf">
-      <soap:operation soapAction="http://tempuri.org/ExportToPdf" style="document" />
+    <wsdl:operation name="GenerateSummary">
+      <soap:operation soapAction="http://tempuri.org/GenerateSummary" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -639,8 +799,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GenerateReportSpire">
-      <soap:operation soapAction="http://tempuri.org/GenerateReportSpire" style="document" />
+    <wsdl:operation name="GenerateReport">
+      <soap:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -648,8 +808,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GenerateReport">
-      <soap:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
+    <wsdl:operation name="Login">
+      <soap:operation soapAction="http://tempuri.org/Login" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -678,6 +838,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetFiles">
+      <soap12:operation soapAction="http://tempuri.org/GetFiles" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SaveFile">
       <soap12:operation soapAction="http://tempuri.org/SaveFile" style="document" />
       <wsdl:input>
@@ -696,8 +865,26 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetAllAnswerPresets">
+      <soap12:operation soapAction="http://tempuri.org/GetAllAnswerPresets" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
       <soap12:operation soapAction="http://tempuri.org/SaveAnswerPreset" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateAnswerPresetJson">
+      <soap12:operation soapAction="http://tempuri.org/UpdateAnswerPresetJson" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -741,8 +928,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="ExportToPdf">
-      <soap12:operation soapAction="http://tempuri.org/ExportToPdf" style="document" />
+    <wsdl:operation name="GenerateSummary">
+      <soap12:operation soapAction="http://tempuri.org/GenerateSummary" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -804,8 +991,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GenerateReportSpire">
-      <soap12:operation soapAction="http://tempuri.org/GenerateReportSpire" style="document" />
+    <wsdl:operation name="GenerateReport">
+      <soap12:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -813,8 +1000,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GenerateReport">
-      <soap12:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
+    <wsdl:operation name="Login">
+      <soap12:operation soapAction="http://tempuri.org/Login" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

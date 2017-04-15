@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using Foundation;
+using Newtonsoft.Json;
 using UIKit;
 
 namespace DynaPad
@@ -9,6 +12,10 @@ namespace DynaPad
 		// This is the main entry point of the application.
 		static void Main(string[] args)
 		{
+			//AppDomain.CurrentDomain.UnhandledException += (sender, argss) =>
+			//{
+			//	var exc = argss.ExceptionObject as Exception;
+			//};
 			// if you want to use a different Application Delegate class from "AppDelegate"
 			// you can specify it here.
 			UIApplication.Main(args, null, "AppDelegate");
@@ -22,6 +29,74 @@ namespace DynaPad
 	}
 }
 
+namespace DynaClassLibrary
+{
+	public static class DynaClasses
+	{
+		public static class LoginContainer
+		{
+			public static User User { get; set; }
+		}
+
+		public class User
+		{
+			public string UserId { get; set; }
+			public string Username { get; set; }
+			public string Password { get; set; }
+			public string DisplayName { get; set; }
+			public string Email { get; set; }
+			public List<Location> Locations { get; set; }
+			public Location SelectedLocation { get; set; }
+			public string LoginStatus { get; set; }
+			public string DynaPassword { get; set; }
+			public ConfigurationObjects DynaConfig { get; set; }
+		}
+
+		public class Location
+		{
+			public string LocationId { get; set; }
+			public string LocationName { get; set; }
+			public string LocationCity { get; set; }
+		}
+
+		public class ConfigurationObjects
+		{
+			public string EmailSupport { get; set; }
+			public string EmailPostmaster { get; set; }
+			public string EmailRoy { get; set; }
+			public string EmailSmtp { get; set; }
+			public string EmailUser { get; set; }
+			public string EmailPass { get; set; }
+			public int EmailPort { get; set; }
+			public string ConnectionString { get; set; }
+			public string ConnectionName { get; set; }
+			public string DatabaseName { get; set; }
+			public string DomainHost { get; set; }
+			public string DomainRootPathVirtual { get; set; }
+			public string DomainRootPathPhysical { get; set; }
+			public string DomainClaimantsPathVirtual { get; set; }
+			public string DomainClaimantsPathPhysical { get; set; }
+			//public DataTable DomainPaths { get; set; }
+			public List<DomainPath> DomainPaths { get; set; }
+		}
+
+		public class DomainPath
+		{
+			//public int DomainID { get; set; }
+			//public string DomainName { get; set; }
+			//public string DatabaseName { get; set; }
+			//public string DatabaseHost { get; set; }
+			//public string DatabaseUser { get; set; }
+			//public string DatabasePw { get; set; }
+			//public int ClientID { get; set; }
+			//public int DomainPathID { get; set; }
+			public string DomainPathName { get; set; }
+			public string DomainPathPhysical { get; set; }
+			public string DomainPathVirtual { get; set; }
+		}
+	}
+}
+
 
 public static class ActiveMenu
 {
@@ -31,6 +106,7 @@ public static class ActiveMenu
 
 public class MenuItem
 {
+	public MenuItem() { Menus = new List<Menu>(); }
 	public string MenuItemValue { get; set; }
 	public string MenuItemAction { get; set; }
 	public string MenuItemCaption { get; set; }
@@ -45,6 +121,7 @@ public class MenuItem
 
 public class Menu
 {
+	public Menu() { MenuItems = new List<MenuItem>(); }
 	public string MenuValue { get; set; }
 	public string MenuAction { get; set; }
 	public string MenuCaption { get; set; }
@@ -57,7 +134,7 @@ public class Menu
 }
 
 
-public class DynaMenu{}
+public class DynaMenu { }
 
 
 public static class SelectedAppointment
@@ -70,8 +147,39 @@ public static class SelectedAppointment
 	public static string ApptDoctorId { get; set; }
 	public static string ApptLocationId { get; set; }
 	public static List<Report> ApptReports { get; set; }
+	public static List<MRFolder> ApptMRFolders { get; set; }
 	public static QForm SelectedQForm { get; set; }
 	public static QForm AnsweredQForm { get; set; }
+}
+
+
+public class MRFolder
+{
+	public List<MRFolder> MrFolderMRFolders { get; set; }
+	public List<MR> MrFolderMRs { get; set; }
+	public string MRFolderId { get; set; }
+	public string MRFolderName { get; set; }
+	public string MRFolderApptId { get; set; }
+	public string MRFolderDoctorId { get; set; }
+	public string MRFolderDoctorLocationId { get; set; }
+	public string MRFolderPatientId { get; set; }
+	public string MRFolderPath { get; set; }
+}
+
+
+public class MR
+{
+	public string MRId { get; set; }
+	public string MRName { get; set; }
+	public string MRFolderName { get; set; }
+	public string MRApptId { get; set; }
+	public string MRApptDate { get; set; }
+	public string MRDoctorId { get; set; }
+	public string MRDoctor { get; set; }
+	public string MRDoctorLocationId { get; set; }
+	public string MRLocation { get; set; }
+	public string MRPatientId { get; set; }
+	public string MRPath { get; set; }
 }
 
 
@@ -131,6 +239,8 @@ public class SectionQuestion
 	public bool IsInvalid { get; set; } = false;
 	public List<string> ActiveTriggerIds { get; set; }
 	public List<QuestionOption> QuestionOptions { get; set; }
+	//public nfloat ScrollY { get; set; }
+	//public NSIndexPath GetIndexPath { get; set; }
 }
 
 
@@ -141,6 +251,10 @@ public class FormSection
 	public int SectionSelectedTemplateId { get; set; }
 	public List<SectionQuestion> SectionQuestions { get; set; }
 	public FormSection() { SectionSelectedTemplateId = 0; }
+	public bool Revalidating { get; set; }
+	public int RevalidatingRow { get; set; }
+	//public nfloat RevalidatingY { get; set; }
+	//public NSIndexPath InvalidIndexPath { get; set; }
 }
 
 

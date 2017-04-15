@@ -23,6 +23,8 @@ namespace DynaPad
 
 	class StrokeCGView : UIView
 	{
+		public bool editing;
+
 		StrokeViewDisplayOptions displayOptions;
 		public StrokeViewDisplayOptions DisplayOptions {
 			get {
@@ -410,7 +412,49 @@ namespace DynaPad
 
 		public override void Draw (CGRect rect)
 		{
-			UIColor.White.SetFill ();
+			//UIColor.White.SetFill ();
+
+			//Opaque = false;	
+			//UIColor.Clear.SetFill();
+
+			if (editing)
+			{
+				Opaque = false;	
+				UIColor.Clear.SetFill();
+			}
+			else
+			{
+				UIColor.White.SetFill();
+			}
+
+
+
+			//UIColor.FromRGBA(0, 0, 0, 0).SetFill();
+			//Alpha = 0.5f;
+			//UIColor.FromWhiteAlpha(1.0f, 0.5f).SetFill();
+			//BackgroundColor = UIColor.Clear;
+			//this.Alpha = 0.5f;
+			//UIColor.Red.SetFill();
+
+			//var img = UIImage.FromFile("dynapadscreenshot.png");
+			//UIImageView imgView = new UIImageView(rect);
+			//imgView.Image = img;
+			//imgView.ContentMode = UIViewContentMode.ScaleAspectFit; // or ScaleAspectFill
+			//														//imgView.Alpha = 0.5f;
+			//														//scrollView.AddSubview(imgView);
+			//														//scrollView.SendSubviewToBack(imgView);
+			//UIGraphics.BeginImageContext(rect.Size);
+			//img.Draw(rect);
+			//img = UIGraphics.GetImageFromCurrentImageContext();
+			//UIGraphics.EndImageContext();
+
+			//AddSubview(imgView);
+			//SendSubviewToBack(imgView);
+
+			//UIColor.Black.SetStroke();
+			//UIColor.Clear.SetColor();
+			//UIColor.FromPatternImage(img).SetFill();
+
 			UIGraphics.RectFill (rect);
 
 			// Optimization opportunity: Draw the existing collection in a different view, 

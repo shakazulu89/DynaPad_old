@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Foundation;
+using HockeyApp.iOS;
 using UIKit;
 
 namespace DynaPad
@@ -25,11 +26,12 @@ namespace DynaPad
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
-			//ste the naviagtion font size
-			//FitpulseTheme.NavigationFontSize = 16;
-
-			//Now apply the theme
-			//FitpulseTheme.Apply();
+			var manager = BITHockeyManager.SharedHockeyManager;
+			manager.Configure("25bed55ebff84002b3e57c0ed3c0d66f");
+			//manager.Authenticator.IdentificationType = BITAuthenticatorIdentificationType.HockeyAppUser;
+			//manager.DisableUpdateManager = true;
+			manager.StartManager();
+			manager.Authenticator.AuthenticateInstallation(); // This line is obsolete in crash only builds
 
 			//WritePadAPI.recoInit();
 			//WritePadAPI.initializeFlags();
@@ -42,7 +44,7 @@ namespace DynaPad
 
 			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			var directoryname = Path.Combine(documents, "DynaRestore");
-			var d = new DirectoryInfo(directoryname);
+			//var d = new DirectoryInfo(directoryname);
 
 			//foreach (FileInfo fi in d.GetFiles())
 			//{

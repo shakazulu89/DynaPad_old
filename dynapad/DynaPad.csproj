@@ -22,8 +22,6 @@
     <CodesignKey>iPhone Distribution</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <MtouchFastDev>true</MtouchFastDev>
-    <MtouchUseSGen>true</MtouchUseSGen>
-    <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
@@ -43,8 +41,6 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <MtouchUseSGen>true</MtouchUseSGen>
-    <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchFloat32>true</MtouchFloat32>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
@@ -64,8 +60,6 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <MtouchUseSGen>true</MtouchUseSGen>
-    <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
@@ -85,16 +79,14 @@
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchDebug>true</MtouchDebug>
     <MtouchFastDev>true</MtouchFastDev>
-    <MtouchUseSGen>true</MtouchUseSGen>
-    <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchFloat32>true</MtouchFloat32>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchLink>None</MtouchLink>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
-    <MtouchSdkVersion>10.2</MtouchSdkVersion>
+    <MtouchSdkVersion></MtouchSdkVersion>
     <CodesignProvision></CodesignProvision>
     <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
 <IOSDebugOverWiFi>false</IOSDebugOverWiFi>
@@ -105,8 +97,6 @@
     <DefineConstants></DefineConstants>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <MtouchUseSGen>true</MtouchUseSGen>
-    <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
     <CodesignProvision></CodesignProvision>
     <MtouchLink>SdkOnly</MtouchLink>
@@ -116,14 +106,8 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MonoTouch.Dialog-1" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.Data" />
     <Reference Include="FloatLabeledEntry.iOS.Dialog">
       <HintPath>..\packages\FloatLabeledEntry.iOS.Dialog.1.0.0\lib\Xamarin.iOS10\FloatLabeledEntry.iOS.Dialog.dll</HintPath>
       <Private>False</Private>
@@ -134,16 +118,8 @@
       <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\System.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Web.Services">
-      <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\System.Web.Services.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\portable-net45+netcore45+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="itextsharp">
-      <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SignaturePad">
@@ -178,12 +154,57 @@
     <Reference Include="Plugin.TextToSpeech">
       <HintPath>..\packages\Xam.Plugins.TextToSpeech.2.0.0\lib\Xamarin.iOS10\Plugin.TextToSpeech.dll</HintPath>
     </Reference>
-    <Reference Include="Connectivity.Plugin.Abstractions">
-      <HintPath>..\packages\Xam.Plugin.Connectivity.1.0.3\lib\Xamarin.iOS10\Connectivity.Plugin.Abstractions.dll</HintPath>
+    <Reference Include="Plugin.Connectivity.Abstractions">
+      <HintPath>..\packages\Xam.Plugin.Connectivity.2.3.0\lib\Xamarin.iOS10\Plugin.Connectivity.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Connectivity.Plugin">
-      <HintPath>..\packages\Xam.Plugin.Connectivity.1.0.3\lib\Xamarin.iOS10\Connectivity.Plugin.dll</HintPath>
+    <Reference Include="Plugin.Connectivity">
+      <HintPath>..\packages\Xam.Plugin.Connectivity.2.3.0\lib\Xamarin.iOS10\Plugin.Connectivity.dll</HintPath>
     </Reference>
+    <Reference Include="HockeySDK">
+      <HintPath>..\packages\HockeySDK.Xamarin.4.1.2\lib\Xamarin.iOS10\HockeySDK.dll</HintPath>
+    </Reference>
+    <Reference Include="HockeySDK.iOSBindings">
+      <HintPath>..\packages\HockeySDK.Xamarin.4.1.2\lib\Xamarin.iOS10\HockeySDK.iOSBindings.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfAutoComplete.iOS">
+      <HintPath>..\..\..\..\Documents\Syncfusion\15.1.0.33\Xamarin\lib\ios-unified\Syncfusion.SfAutoComplete.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\packages\iTextSharp.5.5.11\lib\itextsharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.SfDataGrid.iOS">
+      <HintPath>..\..\..\..\Documents\Syncfusion\15.1.0.33\Xamarin\lib\ios-unified\Syncfusion.SfDataGrid.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Linq.iOS">
+      <HintPath>..\..\..\..\Documents\Syncfusion\15.1.0.33\Xamarin\lib\ios-unified\Syncfusion.Linq.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.GridCommon.Portable">
+      <HintPath>..\..\..\..\Documents\Syncfusion\15.1.0.33\Xamarin\lib\pcl\Syncfusion.GridCommon.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="SlackTextViewController">
+      <HintPath>..\packages\Xamarin.SlackTextViewController.1.9.5\lib\Xamarin.iOS\SlackTextViewController.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Intersoft.Crosslight.Data.ComponentModel">
+      <HintPath>..\Components\crosslight-signature-pad-5.0\lib\ios-unified\Intersoft.Crosslight.Data.ComponentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Intersoft.Crosslight.Data">
+      <HintPath>..\Components\crosslight-signature-pad-5.0\lib\ios-unified\Intersoft.Crosslight.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Intersoft.Crosslight.UI.Core">
+      <HintPath>..\Components\crosslight-signature-pad-5.0\lib\ios-unified\Intersoft.Crosslight.UI.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Intersoft.Crosslight.UI.iOS">
+      <HintPath>..\Components\crosslight-signature-pad-5.0\lib\ios-unified\Intersoft.Crosslight.UI.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Intersoft.Crosslight">
+      <HintPath>..\Components\crosslight-signature-pad-5.0\lib\ios-unified\Intersoft.Crosslight.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -374,7 +395,6 @@
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
     <None Include="app.config" />
-    <None Include="PluginsHelp\ConnectivityReadme.txt" />
     <None Include="Web References\DynaPadService\dynapadservice.wsdl" />
     <None Include="Web References\DynaPadService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
@@ -411,6 +431,7 @@
     <Compile Include="CanvasMainViewController.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="TextToSpeech.cs" />
+    <Compile Include="CommonFunctions.cs" />
     <Compile Include="Web References\DynaPadService\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
@@ -431,6 +452,7 @@
     <BundleResource Include="Resources\Reuse-20.png" />
     <BundleResource Include="Resources\Return-20.png" />
     <BundleResource Include="Resources\Add Record-20.png" />
+    <BundleResource Include="dynapadscreenshot.png" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />
@@ -461,6 +483,10 @@
     </XamarinComponentReference>
     <XamarinComponentReference Include="ConnectivityPlugin">
       <Version>1.0.3</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="crosslight-signature-pad">
+      <Version>5.0</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>
   </ItemGroup>

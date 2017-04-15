@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-
 using UIKit;
 using Foundation;
 using CoreGraphics;
-
 using static UIKit.UIViewAutoresizing;
 using static UIKit.UIGestureRecognizerState;
 using static DynaPad.Helpers;
-using MonoTouch.Dialog;
 
 namespace DynaPad
 {
 	public class CanvasMainViewController : UIViewController, IUIScrollViewDelegate, IUIGestureRecognizerDelegate
 	{
+		public bool MREditing;
+		public string MREditPath;
+		public string MREditId;
 		public CGRect fingsize { get; set; }
 
 		readonly List<UIButton> buttons = new List<UIButton> ();
@@ -102,11 +102,16 @@ namespace DynaPad
 			var frame = new CGRect (CGPoint.Empty, new CGSize (maxScreenDimension, maxScreenDimension));
 			//var frame = new CGRect(CGPoint.Empty, new CGSize(800, 800));
 			//var frame = bounds;
-			cgView = new StrokeCGView (frame) {
-				AutoresizingMask = flexibleDimensions
+			cgView = new StrokeCGView(frame)
+			{
+				AutoresizingMask = flexibleDimensions,
+				editing = MREditing
 			};
 
 			View.BackgroundColor = UIColor.White;
+			//View.BackgroundColor = UIColor.Clear;
+			//View.BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
+			//View.Alpha = 1.0f;
 
 			canvasContainerView = CanvasContainerView.FromCanvasSize (cgView.Frame.Size);
 			canvasContainerView.DocumentView = cgView;
@@ -116,12 +121,42 @@ namespace DynaPad
 			//scrollView.ContentOffset = new CGPoint(0, 0);
 			scrollView.AddSubview (canvasContainerView);
 			scrollView.BackgroundColor = canvasContainerView.BackgroundColor;
+			//scrollView.BackgroundColor = UIColor.Clear;
+			//scrollView.BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
+			//scrollView.Alpha = 1.0f;
+
 			scrollView.MaximumZoomScale = 3;
 			scrollView.MinimumZoomScale = 0.5f;
 			scrollView.PanGestureRecognizer.AllowedTouchTypes = TouchTypes (UITouchType.Direct);
 			scrollView.PinchGestureRecognizer.AllowedTouchTypes = TouchTypes (UITouchType.Direct);
 
 			scrollView.Delegate = this;
+
+
+
+
+
+
+
+			if (MREditing)
+			{
+				var img = UIImage.FromFile("dynapadscreenshot.png");
+				UIImageView imgView = new UIImageView(bounds);
+				imgView.Image = img;
+				imgView.ContentMode = UIViewContentMode.ScaleAspectFit; // or ScaleAspectFill
+				canvasContainerView.AddSubview(imgView);
+				canvasContainerView.SendSubviewToBack(imgView);
+				//imgView.Alpha = 0.5f;
+				//scrollView.AddSubview(imgView);
+				//scrollView.SendSubviewToBack(imgView);
+				//View.AddSubview(imgView);
+				//View.SendSubviewToBack(imgView);
+			}
+
+
+
+
+
 
 			// We put our UI elements on top of the scroll view, so we don't want any of the
 			// delay or cancel machinery in place.
@@ -298,7 +333,7 @@ namespace DynaPad
 			pencilButton.AddSubview (imageView);
 			PencilMode = false;
 
-			NSObject observer = UIApplication.Notifications.ObserveWillEnterForeground ((sender, e) => {
+			var observer = UIApplication.Notifications.ObserveWillEnterForeground ((sender, e) => {
 				if (PencilMode
 				    && (!LastSeenPencilInteraction.HasValue || (DateTime.Now.Ticks - LastSeenPencilInteraction.Value) > pencilResetInterval))
 					StopPencilButtonAction (this, EventArgs.Empty);
