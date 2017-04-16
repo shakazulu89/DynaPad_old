@@ -185,11 +185,18 @@ namespace DynaPad
 					var rowIndex = e.RowColumnindex.RowIndex;
 					var rowData = (MR)e.RowData;
 					var columnIndex = e.RowColumnindex.ColumnIndex;
+					var filepath = rowData.MRPath;
+
+					if (filepath.StartsWith("error:", StringComparison.CurrentCulture))
+					{
+                        DismissViewController(true, null);
+						CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null);
+						return;
+					}
 
 					var webViews = new UIWebView(View.Bounds);
 					webViews.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
 					//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
-					var filepath = rowData.MRPath;
 					//var filepath = rowData.MRPath.Replace(@"\", "/");
 					//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
 					webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
@@ -266,11 +273,17 @@ namespace DynaPad
 					var rowIndex = e.RowColumnindex.RowIndex;
 					var rowData = (MR)e.RowData;
 					var columnIndex = e.RowColumnindex.ColumnIndex;
+					var filepath = rowData.MRPath;
+
+					if (filepath.StartsWith("error:", StringComparison.CurrentCulture))
+					{
+						CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null);
+						return;
+					}
 
 					var webViews = new UIWebView(View.Bounds);
 					webViews.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
 					//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
-					var filepath = rowData.MRPath;
 					//var filepath = rowData.MRPath.Replace(@"\", "/");
 					//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
 					webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
@@ -578,21 +591,29 @@ namespace DynaPad
 								summaryFileName = SummaryFileName;
 							}
 
-							var webViews = new UIWebView(View.Bounds);
-							webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-							//string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
-							var localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
-							//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
-							//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/" + summaryFileName)));
-							webViews.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
-							//webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl)));
-							webViews.ScalesPageToFit = true;
+							if (!summaryFileName.StartsWith("error:", StringComparison.CurrentCulture))
+							{
+								var webViews = new UIWebView(View.Bounds);
+								webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+								//string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
+								var localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
+								//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
+								//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/" + summaryFileName)));
+								webViews.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
+								//webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl)));
+								webViews.ScalesPageToFit = true;
 
-							summarySection.Add(webViews);
+								summarySection.Add(webViews);
+
+								NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
+								{ Print(summaryFileName, webViews); }), true);
+							}
+							else
+							{
+								summarySection.Add(new StringElement("File unavailable, contact administration"));
+							}
+
 							summaryElement.Add(summarySection);
-
-							NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
-							{ Print(summaryFileName, webViews); }), true);
 
 							Root = summaryElement;
 							Root.TableView.ScrollEnabled = false;
@@ -671,10 +692,6 @@ namespace DynaPad
 							reportSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 							reportSection.FooterView.Hidden = true;
 
-							var bb = View.Frame;
-							var webView = new UIWebView(View.Bounds);
-							webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-
 							var reportUrl = "";
 							if (CrossConnectivity.Current.IsConnected)
 							{
@@ -684,17 +701,28 @@ namespace DynaPad
 								//var asdf = SelectedAppointment.ApptPatientId;
 							}
 
-							//var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
-							//var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
-							//var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
-							webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
-							webView.ScalesPageToFit = true;
+							if (reportUrl.StartsWith("error:", StringComparison.CurrentCulture))
+							{
+								var bb = View.Frame;
+								var webView = new UIWebView(View.Bounds);
+								webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+								//var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
+								//var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
+								//var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
+								webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
+								webView.ScalesPageToFit = true;
 
-							reportSection.Add(webView);
+								reportSection.Add(webView);
+
+								NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
+								{ Print(SelectedAppointment.ApptFormName, webView); }), true);
+							}
+							else
+							{
+								reportSection.Add(new StringElement("File unavailable, contact administration"));
+							}
+
 							reportElement.Add(reportSection);
-
-							NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
-							{ Print(SelectedAppointment.ApptFormName, webView); }), true);
 
 							Root = reportElement;
 							Root.TableView.ScrollEnabled = true;

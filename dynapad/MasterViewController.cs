@@ -1220,7 +1220,7 @@ namespace DynaPad
 					DetailViewController.Root.Caption = "Welcome to Dynapad";
 					//DetailViewController.NavigationItem.SetLeftBarButtonItem(null, true);
 					//DetailViewController.NavigationItem.SetRightBarButtonItems(null, true);
-					DetailViewController.NavigationItem.LeftBarButtonItem = null;
+					DetailViewController.NavigationItem.LeftBarButtonItems = null;
 					DetailViewController.NavigationItem.RightBarButtonItems = null;
 
 					DetailViewController.ReloadData();

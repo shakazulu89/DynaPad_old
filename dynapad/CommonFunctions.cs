@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using CoreGraphics;
 //using DynaClassLibrary;
 using UIKit;
 
@@ -78,6 +80,7 @@ namespace DynaPad
 			{
 				prompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, CancelAction));
 			}
+
 			return prompt;
 		}
 

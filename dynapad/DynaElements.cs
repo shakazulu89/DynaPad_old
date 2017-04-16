@@ -362,7 +362,8 @@ namespace DynaPad
 						//NavigationController.PopToRootViewController(true);
 						//NavigationController.ViewControllers[0].ViewDidLoad();
 						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						MasterViewController.DynaStart();
+						//MasterViewController.DynaStart();
+						MasterViewController.DynaLocations();
 						//MasterViewController.TableView.SelectRow(null, true, UITableViewScrollPosition.Top);
 						//MasterViewController.TableView.SetNeedsDisplay();
 						NavigationController.PopToRootViewController(true);
@@ -390,7 +391,8 @@ namespace DynaPad
 					NSTimer.CreateScheduledTimer(1, delegate
 					{
 						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						MasterViewController.DynaStart();
+						//MasterViewController.DynaStart();
+						MasterViewController.DynaLocations();
 						NavigationController.PopToRootViewController(true);
 						//MasterViewController.TableView.SetNeedsDisplay();
 						MasterViewController.ReloadData();
@@ -417,7 +419,8 @@ namespace DynaPad
 					NSTimer.CreateScheduledTimer(1, delegate
 					{
 						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						MasterViewController.DynaStart();
+						//MasterViewController.DynaStart();
+						MasterViewController.DynaLocations();
 						NavigationController.PopToRootViewController(true);
 						//MasterViewController.TableView.SetNeedsDisplay();
 						MasterViewController.ReloadData();
