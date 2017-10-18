@@ -14,10 +14,19 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using Syncfusion.SfAutoComplete.iOS;
 using Syncfusion.SfDataGrid;
+using Syncfusion.SfImageEditor.iOS;
+using Syncfusion.SfPdfViewer.iOS;
 using Plugin.Connectivity;
 using System.Windows.Input;
+using System.Xml;
+using System.Net;
+using System.Collections.ObjectModel;
 //using DynaClassLibrary;
 //using static DynaClassLibrary.DynaClasses;
+using MessageUI;
+using SafariServices;
+using WebKit;
+
 
 namespace DynaPad
 {
@@ -86,8 +95,82 @@ namespace DynaPad
 
 
 
-			//var drawNavBtn = GetDrawNavBtn("1");
-			//NavigationItem.SetRightBarButtonItem(drawNavBtn, true);
+			////var drawNavBtn = GetDrawNavBtn("1");
+			//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
+			//{
+			//	//var dcanvas = new CanvasMainViewController { MREditing = false };
+			//	//var dcanvas = new FingerPaintViewController(); 
+			//	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/amato.dynadox.pro/claimantfiles/18/130.gif", MREditId = "130", MREditName = "John_Doe_True_sig_2017-05-09T10_59_08.gif", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+			//	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testpng.png", MREditId = "130", MREditName = "testpng.png", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+			//	var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testjpg.jpg", MREditId = "130", MREditName = "testjpg.jpg", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+			//	//PreferredContentSize = new CGSize(View.Bounds.Size);
+			//	//PresentViewController(dcanvas, true, null);
+
+			//	var asss = new Section();
+			//             asss.Add(dcanvas.View);
+			//             var rr = new RootElement("edit");
+			//             rr.Add(asss);
+			//             var ndia = new DialogViewController(rr);
+			//	ndia.ModalInPopover = true;
+			//             ndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+			//	ndia.PreferredContentSize = new CGSize(View.Bounds.Size); 
+			//	PreferredContentSize = new CGSize(View.Bounds.Size);
+			//             PresentViewController(dcanvas, true, null);
+
+			// //            Root.Clear();
+			//	//var asss = new Section();
+			//	//asss.Add(dcanvas.View);
+			// //            var rr = new RootElement("ass");
+			// //            rr.Add(asss);
+			//	//Root = rr;
+			//});
+			//NavigationItem.SetRightBarButtonItem(ass, true);
+
+
+
+
+
+			//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
+			//{
+			//	PreferredContentSize = new CGSize(View.Bounds.Size);
+			//	SfImageEditor imageEditor = new SfImageEditor();
+			//             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
+			//             imageEditor.Frame = View.Frame;
+			//	var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
+			//	var url = "https://amato.dynadox.pro/data/testjpg.jpg";
+			//	var webClient = new WebClient();
+			//	webClient.DownloadFile(url, downloadPath);
+			//             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
+			//             imageEditor.Image = img;
+			//             var sec = new Section();
+			//             sec.Add(imageEditor);
+			//             var rr = new RootElement("edit");
+			//             rr.Add(sec);
+			//             var dvc = new DialogViewController(rr);
+			//             var vvv = new UIViewController();
+			//             vvv.View = imageEditor;
+			//             //dvc.ModalPresentationStyle = UIModalPresentationStyle.Popover;
+			//             //dvc.PreferredContentSize = new CGSize(View.Bounds.Size);
+			//             //View.AddSubview(imageEditor);
+			//             PresentViewController(vvv, true, null);
+			//});
+			//NavigationItem.SetRightBarButtonItem(ass, true);
+
+   //         string URL = "http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf";
+			//var pdfViewerControl = new SfPdfViewer();
+			//using (MemoryStream memoryStream = new MemoryStream())
+			//{
+			//	ConvertToStream(URL, memoryStream);
+			//	memoryStream.Seek(0, SeekOrigin.Begin);
+			//	pdfViewerControl.LoadDocument(memoryStream);
+			//}
+			//pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
+            //base.View.AddSubview(pdfViewerControl);
+            ////var s = new Section();
+            ////s.Add(pdfViewerControl);
+            ////var ff = new RootElement("pdf");
+            ////ff.Add(s);
+            ////Root.Add(s);
 		}
 
 
@@ -95,6 +178,11 @@ namespace DynaPad
 		{
 			try
 			{
+				var bounds = base.TableView.Frame;
+				loadingOverlay = new LoadingOverlay(bounds);
+				mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+				mvc.Add(loadingOverlay);
+
 				//bool isValid = password == Constants.Password;
 				bool isValid = false;
 				bool isSigned = !sig.IsBlank;
@@ -118,13 +206,16 @@ namespace DynaPad
 					{
 						var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 						var dds = new DynaPadService.DynaPadService();
+                        var timeout = dds.Timeout;
 						dds.SubmitFormAnswers(CommonFunctions.GetUserConfig(), finalJson, true, isDoctorForm);
 
 						var filename = SelectedAppointment.ApptPatientName.Replace(" ", "_") + "_" + isDoctorForm + "_sig_" + DateTime.Now.ToString("s").Replace(":", "_") + ".gif";
 						var file = sig.GetImage(new CGSize(600, 400), true, true).AsPNG().ToArray();
-						dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, filename, "Signature", "DynaPad", "", file, isDoctorForm, true);
+						dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, filename, "Signature", "DynaPad", "", "", file, isDoctorForm, true);
 
-						SetDetailItem(new Section("Summary"), "Summary", "", null, false);
+                        loadingOverlay.Hide();
+						
+                        SetDetailItem(new Section("Summary"), "Summary", "", null, false);
 					}
 					else
 					{
@@ -144,11 +235,18 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                loadingOverlay.Hide();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+            finally
+            {
+                //loadingOverlay.Hide();
+            }
 		}
 
-		void Print(string jobname, UIWebView webView)
+        void Print(string jobname, UIViewPrintFormatter printFormatter)//, UIWebView webView)
 		{
 			try
 			{
@@ -158,8 +256,9 @@ namespace DynaPad
 
 				var printer = UIPrintInteractionController.SharedPrintController;
 				printer.PrintInfo = printInfo;
-				printer.PrintFormatter = webView.ViewPrintFormatter;
-				printer.ShowsPageRange = true;
+                //printer.PrintFormatter = webView.ViewPrintFormatter;
+                printer.PrintFormatter = printFormatter;
+				//printer.ShowsPageRange = true;
 				printer.Present(true, (handler, completed, err) =>
 				{
 					if (!completed && err != null)
@@ -170,182 +269,606 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
 
-		void DataGridForm_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
-		{
-			try
-			{
-				//if (e.RowData.GetType() == typeof(Syncfusion.Data.Group))
-				if (e.RowData.GetType() == typeof(MR))
-				{
-					var rowIndex = e.RowColumnindex.RowIndex;
-					var rowData = (MR)e.RowData;
-					var columnIndex = e.RowColumnindex.ColumnIndex;
-					var filepath = rowData.MRPath;
+        //		void DataGridForm_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        //		{
+        //			try
+        //			{
+        //				//if (e.RowData.GetType() == typeof(Syncfusion.Data.Group))
+        //				if (e.RowData.GetType() == typeof(MR))
+        //				{
+        //					var rowIndex = e.RowColumnindex.RowIndex;
+        //					var rowData = (MR)e.RowData;
+        //					var columnIndex = e.RowColumnindex.ColumnIndex;
+        //					var filepath = rowData.MRPath;
 
-					if (filepath.StartsWith("error:", StringComparison.CurrentCulture))
-					{
-                        DismissViewController(true, null);
-						CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null);
-						return;
-					}
+        //					if (filepath.StartsWith("Error:", StringComparison.CurrentCulture))
+        //					{
+        //                        DismissViewController(true, null);
+        //						PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
+        //						return;
+        //					}
 
-					var webViews = new UIWebView(View.Bounds);
-					webViews.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
-					//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
-					//var filepath = rowData.MRPath.Replace(@"\", "/");
-					//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
-					webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
-					webViews.ScalesPageToFit = true;
-
-
-					var nlab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50));
-					nlab.Text = rowData.MRName;
-
-					var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
-					ncellHeader.Frame = new CGRect(0, 0, View.Bounds.Width, 50);
-
-					var nheadeditbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
-					nheadeditbtn.SetImage(UIImage.FromBundle("Writing"), UIControlState.Normal);
-
-					var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
-					nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
-
-					ncellHeader.ContentView.Add(nlab);
-					ncellHeader.ContentView.Add(nheadeditbtn);
-					ncellHeader.ContentView.Add(nheadclosebtn);
-
-					var nsec = new Section(ncellHeader);
-					nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-					nsec.FooterView.Hidden = true;
-
-					//var dcanvas = new CanvasMainViewController();
-					nsec.Add(webViews);
-
-					var nroo = new RootElement("File");
-					nroo.Add(nsec);
-
-					var ndia = new DialogViewController(nroo);
-					ndia.ModalInPopover = true;
-					ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
-					ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
-
-					nheadclosebtn.TouchUpInside += delegate
-					{
-						DismissViewController(true, null);
-						//NavigationController.PopViewController(true);
-					};
-
-					nheadeditbtn.TouchUpInside += delegate
-					{
-						DismissViewController(true, null);
-						var dcanvas = new CanvasMainViewController { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId };
-						PreferredContentSize = new CGSize(View.Bounds.Size);
-						//NavigationController.View.BackgroundColor = UIColor.Clear;
-						PresentViewController(dcanvas, true, null);
-						//NavigationController.View.SizeToFit();
-					};
-
-					PreferredContentSize = new CGSize(View.Bounds.Size);
-					//NavigationController.PushViewController(ndia, true);
-					DismissViewController(true, null);
-					PresentViewController(ndia, true, null);
-					//View.SizeToFit();
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			}
-		}
+        //					var webViews = new UIWebView(View.Bounds);
+        //					webViews.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
+        //					//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
+        //					//var filepath = rowData.MRPath.Replace(@"\", "/");
+        //					//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
+        //					webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+        //					webViews.ScalesPageToFit = true;
 
 
+        //					var nlab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50));
+        //					nlab.Text = rowData.MRName;
+
+        //					var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
+        //					ncellHeader.Frame = new CGRect(0, 0, View.Bounds.Width, 50);
+
+        //					var nheadeditbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+        //					nheadeditbtn.SetImage(UIImage.FromBundle("Writing"), UIControlState.Normal);
+
+        //					var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
+        //					nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+        //					ncellHeader.ContentView.Add(nlab);
+        //					ncellHeader.ContentView.Add(nheadeditbtn);
+        //					ncellHeader.ContentView.Add(nheadclosebtn);
+
+        //					var nsec = new Section(ncellHeader);
+        //					nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+        //					nsec.FooterView.Hidden = true;
+
+        //					//var dcanvas = new CanvasMainViewController();
+        //					nsec.Add(webViews);
+
+        //					var nroo = new RootElement("File");
+        //					nroo.Add(nsec);
+
+        //					var ndia = new DialogViewController(nroo);
+        //					ndia.ModalInPopover = true;
+        //					ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+        //					ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+        //					//ndia.ProvidesPresentationContextTransitionStyle = true;
+        //					//ndia.DefinesPresentationContext = true;
+        //					//ndia.ModalPresentationStyle = UIModalPresentationStyle.OverCurrentContext;
+
+        //					nheadclosebtn.TouchUpInside += delegate
+        //					{
+        //						DismissViewController(true, null);
+        //						//NavigationController.PopViewController(true);
+        //					};
+
+        //					nheadeditbtn.TouchUpInside += delegate
+        //					{
+        //						DismissViewController(true, null);
+        //var dcanvas = new CanvasMainViewController { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
+        //						PreferredContentSize = new CGSize(View.Bounds.Size);
+        //						//NavigationController.View.BackgroundColor = UIColor.Clear;
+        //						PresentViewController(dcanvas, true, null);
+        //						//NavigationController.View.SizeToFit();
+        //					};
+
+        //					PreferredContentSize = new CGSize(View.Bounds.Size);
+        //					//NavigationController.PushViewController(ndia, true);
+        //					DismissViewController(true, null);
+        //					PresentViewController(ndia, true, null);
+        //					//View.SizeToFit();
+        //				}
+        //			}
+        //			catch (Exception ex)
+        //			{
+        //				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+        //			}
+        //		}
+
+        //SfPdfViewer pdfViewerControl;
+        MFMailComposeViewController mailController;
+        WKWebView MRWebView;
+        UIProgressView progressView;
 		void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
 		{
 			try
 			{
-				if (e.RowData.GetType() == typeof(MR))
-				{
-					var rowIndex = e.RowColumnindex.RowIndex;
-					var rowData = (MR)e.RowData;
-					var columnIndex = e.RowColumnindex.ColumnIndex;
-					var filepath = rowData.MRPath;
+                if (e.RowData.GetType() == typeof(MR))
+                {
+                    //var bounds = base.TableView.Frame;
+                    //loadingOverlay = new LoadingOverlay(bounds);
+                    //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                    //mvc.Add(loadingOverlay);
 
-					if (filepath.StartsWith("error:", StringComparison.CurrentCulture))
-					{
-						CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null);
-						return;
-					}
+                    var rowIndex = e.RowColumnindex.RowIndex;
+                    var rowData = (MR)e.RowData;
+                    var columnIndex = e.RowColumnindex.ColumnIndex;
+                    var filepath = rowData.MRPath;
+                    var filetype = rowData.MRFileType;
 
-					var webViews = new UIWebView(View.Bounds);
-					webViews.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
-					//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
-					//var filepath = rowData.MRPath.Replace(@"\", "/");
-					//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
-					webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
-					webViews.ScalesPageToFit = true;
+                    if (filepath.StartsWith("Error:", StringComparison.CurrentCulture))
+                    {
+                        PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
+                        return;
+                    }
 
+                    var nlab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50))
+                    {
+                        Text = rowData.MRName
+                    };
 
-					var nlab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50));
-					nlab.Text = rowData.MRName;
+					var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null)
+                    {
+                        Frame = new CGRect(0, 0, View.Bounds.Width, 50)
+                    };
 
-					var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
-					ncellHeader.Frame = new CGRect(0, 0, View.Bounds.Width, 50);
-
-					var nheadeditbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+					var nheadeditbtn = new UIButton(new CGRect(View.Bounds.Width - 200, 10, 50, 50));
 					nheadeditbtn.SetImage(UIImage.FromBundle("Writing"), UIControlState.Normal);
-
 					var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
 					nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+					var nheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+					nheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+					var nheadsharebtn = new UIButton(new CGRect(View.Bounds.Width - 150, 10, 50, 50));
+					nheadsharebtn.SetImage(UIImage.FromBundle("Email"), UIControlState.Normal);
 
-					ncellHeader.ContentView.Add(nlab);
-					ncellHeader.ContentView.Add(nheadeditbtn);
+					//ncellHeader.ContentView.Add(nlab);
+					//ncellHeader.ContentView.Add(nheadeditbtn);
 					ncellHeader.ContentView.Add(nheadclosebtn);
+					ncellHeader.ContentView.Add(nheadprintbtn);
+                    ncellHeader.ContentView.Add(nheadsharebtn);
+                    if (filetype == "jpg" || filetype == "jpeg" || filetype == "png" || filetype == "gif")
+                    {
+                        ncellHeader.ContentView.Add(nheadeditbtn);
+                    }
 
-					var nsec = new Section(ncellHeader);
+                    var nsec = new Section(ncellHeader);
 					nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 					nsec.FooterView.Hidden = true;
+					//nsec.HeaderView = new UIView(new CGRect(0, 0, 0, 0));
+					//nsec.HeaderView.Hidden = true;
+
+					//UIBarButtonItem printNavBtn;
+
+					//               switch (filetype)
+					//               {
+					//  //                 case "pdf":
+					//  //                     nheadeditbtn.Enabled = false;
+					//		//			var pdfViewerControl = new SfPdfViewer();
+					//		//			using (MemoryStream mem = new MemoryStream())
+					//		//			{
+					//		//				ConvertToStream(filepath, mem);
+					//		//				mem.Seek(0, SeekOrigin.Begin);
+					//		//				pdfViewerControl.LoadDocument(mem);
+					//		//			}
+
+					//  //                     //pdfViewerControl.LoadDocument(DownloadPdfStream(filepath, rowData.MRName));
+
+					//  //                     pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
+					//		//nsec.Add(pdfViewerControl);
+
+					//                       //break;
+					//                   case "jpg":
+					//                   case "jpeg":
+					//                   case "png":
+					//                   case "gif":
+					//                       ncellHeader.ContentView.Add(nheadeditbtn);
+
+					//		bool didStart = false;
+					//		bool didFinish = false;
+					//		var webViews = new UIWebView(View.Bounds);
+					//		webViews.LoadStarted += (object lssender, EventArgs lse) => {
+					//			if (didStart == false)
+					//			{
+					//				loadingOverlay = new LoadingOverlay(webViews.Bounds);
+					//				webViews.Add(loadingOverlay);
+					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+					//				didStart = true;
+					//				didFinish = false;
+					//			}
+					//		};
+
+					//		//When the web view is finished loading
+					//		webViews.LoadFinished += (object lfsender, EventArgs lfe) => {
+					//			if (didFinish == false)
+					//			{
+					//				loadingOverlay.Hide();
+					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+					//				didStart = false;
+					//				didFinish = true;
+					//			}
+					//		};
+
+					//		//If there is a load error
+					//		webViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
+					//			if (didFinish == false)
+					//			{
+					//				loadingOverlay.Hide();
+					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+					//				didStart = false;
+					//				didFinish = true;
+					//			}
+					//		};
+					//		webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+					//		webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+					//		webViews.ScalesPageToFit = true;
+
+					//		var nheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 150, 10, 50, 50));
+					//		nheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+					//		nheadprintbtn.TouchUpInside += delegate {
+					//                           Print(rowData.MRName, webViews.ViewPrintFormatter);
+					//		};
+					//                       ncellHeader.ContentView.Add(nheadprintbtn);
+
+					//		printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
+					//		{ Print(rowData.MRName, webViews.ViewPrintFormatter); });
+
+					//		nsec.Add(webViews);
+					//		break;
+					//                   default:
+					//		bool defaultDidStart = false;
+					//		bool defaultDidFinish = false;
+					//		var defaultWebViews = new UIWebView(View.Bounds);
+					//		defaultWebViews.LoadStarted += (object lssender, EventArgs lse) => {
+					//			if (defaultDidStart == false)
+					//			{
+					//				loadingOverlay = new LoadingOverlay(defaultWebViews.Bounds);
+					//				defaultWebViews.Add(loadingOverlay);
+					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+					//				defaultDidStart = true;
+					//				defaultDidFinish = false;
+					//			}
+					//		};
+
+					//		//When the web view is finished loading
+					//		defaultWebViews.LoadFinished += (object lfsender, EventArgs lfe) => {
+					//			if (defaultDidFinish == false)
+					//			{
+					//				loadingOverlay.Hide();
+					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+					//				defaultDidStart = false;
+					//				defaultDidFinish = true;
+					//			}
+					//		};
+
+					//		//If there is a load error
+					//		defaultWebViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
+					//			if (defaultDidFinish == false)
+					//			{
+					//				loadingOverlay.Hide();
+					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+					//				defaultDidStart = false;
+					//				defaultDidFinish = true;
+					//			}
+					//		};
+					//                       defaultWebViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+					//		//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
+					//		//var filepath = rowData.MRPath.Replace(@"\", "/");
+					//		//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
+					//		defaultWebViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+					//		defaultWebViews.ScalesPageToFit = true;
+
+					//		var dheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+					//		dheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+					//		dheadprintbtn.TouchUpInside += delegate {
+					//			Print(rowData.MRName, defaultWebViews.ViewPrintFormatter);
+					//		};
+					//		ncellHeader.ContentView.Add(dheadprintbtn);
+
+
+					//                       printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
+					//                               { Print(rowData.MRName, defaultWebViews.ViewPrintFormatter); });
+
+					//		nsec.Add(defaultWebViews);
+					//                       break;
+					//}
 
 					//var dcanvas = new CanvasMainViewController();
-					nsec.Add(webViews);
 
-					var nroo = new RootElement("File");
-					nroo.Add(nsec);
 
-					var ndia = new DialogViewController(nroo);
-					ndia.ModalInPopover = true;
-					ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
-					ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+
+					//bool didStart = false;
+					//bool didFinish = false;
+					//var webViews = new UIWebView(View.Bounds);
+					//webViews.LoadStarted += (object lssender, EventArgs lse) => {
+					//	if (didStart == false)
+					//	{
+					//		loadingOverlay = new LoadingOverlay(webViews.Bounds);
+					//		webViews.Add(loadingOverlay);
+					//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+					//		didStart = true;
+					//		didFinish = false;
+					//	}
+					//};
+
+					////When the web view is finished loading
+					//webViews.LoadFinished += (object lfsender, EventArgs lfe) => {
+					//	if (didFinish == false)
+					//	{
+					//		loadingOverlay.Hide();
+					//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+					//		didStart = false;
+					//		didFinish = true;
+					//	}
+					//};
+
+					////If there is a load error
+					//webViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
+					//	if (didFinish == false)
+					//	{
+					//		loadingOverlay.Hide();
+					//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+					//		didStart = false;
+					//		didFinish = true;
+					//	}
+					//};
+					//webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+					//webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+					//webViews.ScalesPageToFit = true;
+
+
+                    var wkurl = new NSUrl(rowData.MRPath);//"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf"
+					if (rowData.MRFileType == "External")
+                    {
+						var sfVC = new SFSafariViewController(wkurl);
+						PresentViewController(sfVC, true, null);
+                        return;
+					}
+
+                    var wkrequest = new NSUrlRequest(wkurl);
+                    MRWebView = new WKWebView(View.Bounds, new WKWebViewConfiguration() { SuppressesIncrementalRendering = true });
+                    MRWebView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+                    progressView = new UIProgressView(UIProgressViewStyle.Bar);
+                    progressView.Frame = new CGRect(0, 0, MRWebView.Frame.Width, 5);
+
+
+                    MRWebView.AddObserver("estimatedProgress", NSKeyValueObservingOptions.New, ProgressObserver);
+                    MRWebView.AddSubview(progressView);
+                    MRWebView.LoadRequest(wkrequest);
+
+                    nsec.Add(MRWebView);
+
+                    var nroo = new DynaMultiRootElement(rowData.MRName);
+                    nroo.Add(nsec);
+
+
+                    var ndia = new DialogViewController(nroo);
+                    //ndia.ModalInPopover = true;
+                    //ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+                    //ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
 
 					nheadclosebtn.TouchUpInside += delegate
 					{
-						DismissViewController(true, null);
+						//DismissViewController(true, null);
+                        NavigationController.PopViewController(true);
+					};
+
+					nheadprintbtn.TouchUpInside += delegate {
+                        Print(rowData.MRName, MRWebView.ViewPrintFormatter);
+                        //UIApplication.SharedApplication.OpenUrl(new NSUrl(rowData.MRPath));
+                        //var sfVC = new SFSafariViewController(new NSUrl(rowData.MRPath));
+                        //PresentViewController(sfVC, true, null);
+					};
+
+                    string mimetype;
+                    switch (filetype)
+                    {
+                        case "jpg":
+                        case "jpeg":
+                            mimetype = "image/jpeg";
+                            break;
+                        case "png":
+                            mimetype = "image/png";
+							break;
+						case "gif":
+							mimetype = "image/gif";
+							break;
+						case "doc":
+							mimetype = "application/msword";
+							break;
+						case "docm":
+							mimetype = "application/vnd.ms-word.document.macroEnabled.12";
+							break;
+						case "docx":
+							mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+							break;
+						case "pdf":
+							mimetype = "application/pdf";
+							break;
+                        default:
+                            mimetype = "application/unknown";
+                            break;
+                    }
+
+                    nheadsharebtn.TouchUpInside += delegate {
+						if (MFMailComposeViewController.CanSendMail)
+						{
+
+							//var to = new string[] { "john@doe.com" };
+
+							if (MFMailComposeViewController.CanSendMail)
+							{
+								mailController = new MFMailComposeViewController();
+                                //mailController.SetToRecipients(to);
+								mailController.SetSubject("Dynapad MR Attachment - " + rowData.MRName);
+								//mailController.SetMessageBody("this is a test", false);
+                                var attachmentfilename = rowData.MRName + "." + rowData.MRFileType;
+								var attachmentDownloadPath = Path.Combine(Path.GetTempPath(), attachmentfilename);
+								var attachmenturl = rowData.MRPath;
+								var attachmentWebClient = new WebClient();
+								attachmentWebClient.DownloadFile(attachmenturl, attachmentDownloadPath);
+                                //NSData adata = new NSData();
+                                mailController.AddAttachmentData(NSData.FromFile(attachmentDownloadPath), mimetype, attachmentfilename);
+								mailController.Finished += (object s, MFComposeResultEventArgs args) => {
+
+									//Console.WriteLine("result: " + args.Result.ToString()); // sent or cancelled
+
+									BeginInvokeOnMainThread(() => {
+										args.Controller.DismissViewController(true, null);
+									});
+								};
+							}
+
+							PresentViewController(mailController, true, null);
+						}
+						else
+						{
+							//new UIAlertView("Mail not supported", "Can't send mail from this device", null, "OK");
+							PresentViewController(CommonFunctions.AlertPrompt("Mail not supported", "Can't send mail from this device", true, null, false, null), true, null);
+						}
 					};
 
 					nheadeditbtn.TouchUpInside += delegate
 					{
-						DismissViewController(true, null);
-						var dcanvas = new CanvasMainViewController { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId };
-						PreferredContentSize = new CGSize(View.Bounds.Size);
+						//DismissViewController(true, null);
+
+						//var dcanvas = new CanvasMainViewController { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, MREditName = rowData.MRName, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
+						//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, MREditName = rowData.MRName, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
+
+
+
+						SfImageEditor imageEditor = new SfImageEditor();
+                        imageEditor.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height - 50);
+                        var editfilename = rowData.MRName + "_" + "edit" + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
+						var downloadPath = Path.Combine(Path.GetTempPath(), editfilename);
+						var url = rowData.MRPath;
+						var webClient = new WebClient();
+						webClient.DownloadFile(url, downloadPath);
+						UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
+						imageEditor.Image = img;
+                        imageEditor.ImageSaved += delegate {
+							var file = imageEditor.Image.AsPNG().ToArray();
+							var dds = new DynaPadService.DynaPadService();
+							dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, editfilename, "Edit", "DynaPad", "", "", file, true, true);
+						    DismissViewController(true, null);
+                        };
+
+						var ielab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50))
+						{
+							Text = rowData.MRName
+						};
+						var iecellHeader = new UITableViewCell(UITableViewCellStyle.Default, null)
+						{
+							Frame = new CGRect(0, 0, View.Bounds.Width, 50)
+						};
+
+						//var ieheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+						//ieheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+						//ieheadprintbtn.TouchUpInside += delegate {
+      //                      Print(rowData.MRName, imageEditor.ViewPrintFormatter);
+						//};
+						//iecellHeader.ContentView.Add(ieheadprintbtn);
+
+						var ieheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
+						ieheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+						ieheadclosebtn.TouchUpInside += delegate
+						{
+							DismissViewController(true, null);
+						};
+						iecellHeader.ContentView.Add(ielab);
+					    iecellHeader.ContentView.Add(ieheadclosebtn);
+						var iesec = new Section(iecellHeader);
+						iesec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+						iesec.FooterView.Hidden = true;
+                        iesec.Add(imageEditor);
+						var ieroo = new RootElement("File Edit");
+						ieroo.Add(iesec);
+						var iedia = new DialogViewController(ieroo);
+                        iedia.TableView.ScrollEnabled = false;
+                        iedia.ModalInPopover = true;
+						iedia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+						iedia.PreferredContentSize = new CGSize(View.Bounds.Size);
+                        PresentViewController(iedia, true, null);
+
+
+						//var asss = new Section();
+						//asss.Add(dcanvas.View); 						//var rr = new RootElement("nass");
+						//rr.Add(asss); 						//var nndia = new DialogViewController(rr);
+						//nndia.ModalInPopover = true; 						//nndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen; 						//nndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+
+
+
+						//PreferredContentSize = new CGSize(View.Bounds.Size);
 						//NavigationController.View.BackgroundColor = UIColor.Clear;
-						PresentViewController(dcanvas, true, null);
+						//dcanvas.AutomaticallyAdjustsScrollViewInsets = true;
+						//dcanvas.LoadView();
+						//PresentViewController(dcanvas, true, null);
 						//NavigationController.View.SizeToFit();
+
+
+
+
+						//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
+						//{
+						//  PreferredContentSize = new CGSize(View.Bounds.Size);
+						//  SfImageEditor imageEditor = new SfImageEditor();
+						//             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
+						//             imageEditor.Frame = View.Frame;
+						//  var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
+						//  var url = "https://amato.dynadox.pro/data/testjpg.jpg";
+						//  var webClient = new WebClient();
+						//  webClient.DownloadFile(url, downloadPath);
+						//             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
+						//             imageEditor.Image = img;
+						//             var sec = new Section();
+						//             sec.Add(imageEditor);
+						//             var rr = new RootElement("edit");
+						//             rr.Add(sec);
+						//             var dvc = new DialogViewController(rr);
+						//             var vvv = new UIViewController();
+						//             vvv.View = imageEditor;
+						//             //dvc.ModalPresentationStyle = UIModalPresentationStyle.Popover;
+						//             //dvc.PreferredContentSize = new CGSize(View.Bounds.Size);
+						//             //View.AddSubview(imageEditor);
+						//             PresentViewController(vvv, true, null);
+						//});
+						//NavigationItem.SetRightBarButtonItem(ass, true);
 					};
 
-					PreferredContentSize = new CGSize(View.Bounds.Size);
-					PresentViewController(ndia, true, null);
-					//View.SizeToFit();
+					if (rowData.IsShortcut)
+					{
+						DismissViewController(true, null);
+					}
+
+					//PreferredContentSize = new CGSize(View.Bounds.Size);
+					//PresentViewController(ndia, true, null);
+					NavigationController.PushViewController(ndia, true);
+
+					//var closeNavBtn = new UIBarButtonItem(UIImage.FromBundle("Close"), UIBarButtonItemStyle.Plain, delegate
+					//{ NavigationController.PopViewController(true); });
+					//printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
+					//{ Print(rowData.MRName, webViews.ViewPrintFormatter); });
+                    //ndia.NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { closeNavBtn, printNavBtn }, true);
+                    //NavigationController.NavigationBar.Hidden = true;
+                    //ndia.NavigationController.NavigationBarHidden = true;
+					//NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { closeNavBtn, printNavBtn }, true);
 				}
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                var errordata = (MR)e.RowData;
+                var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
+                CommonFunctions.sendErrorEmail(ex, errorfile);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
 		}
+
+        public void ProgressObserver(NSObservedChange nsObservedChange)
+		{
+            //Console.WriteLine("Progress {0}", webViews.EstimatedProgress);
+            progressView.Progress = (float)MRWebView.EstimatedProgress;
+            if (progressView.Progress >= 1.0)
+            {
+                progressView.Progress = 0;
+            }
+        }
+
 
 
 		void GridAutoGeneratingColumns(object sender, AutoGeneratingColumnArgs e)
@@ -382,6 +905,9 @@ namespace DynaPad
 				case "MRPath":
 					e.Cancel = true;
 					break;
+				case "MRFileType":
+					e.Cancel = true;
+					break;
 			}
 		}
 
@@ -415,9 +941,9 @@ namespace DynaPad
 				execute.Invoke(grid, gv);
 			}
 
-			void changeCanExecute(bool canExecute)
+			void changeCanExecute(bool parCanExecute)
 			{
-				this.canExecute = canExecute;
+				canExecute = parCanExecute;
 				if (CanExecuteChanged != null)
 					CanExecuteChanged(this, new EventArgs());
 			}
@@ -426,21 +952,48 @@ namespace DynaPad
 
 		async void ExecutePullToRefreshCommand(SfDataGrid dataGrid, string valueId)
 		{
-			dataGrid.IsBusy = true;
-			await Task.Delay(new TimeSpan(0, 0, 5));
-			ItemsSourceRefresh(dataGrid, valueId);
-			dataGrid.IsBusy = false;
+			try
+			{
+				dataGrid.IsBusy = true;
+				await Task.Delay(new TimeSpan(0, 0, 5));
+				ItemsSourceRefresh(dataGrid, valueId);
+				dataGrid.IsBusy = false;
+			}
+			catch (Exception ex)
+			{
+				CommonFunctions.sendErrorEmail(ex);
+				PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+			}
 		}
 
 		//ViewModel.cs
 		internal void ItemsSourceRefresh(SfDataGrid dataGrid, string valueId)
 		{
-			var dds = new DynaPadService.DynaPadService();
-			var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
-			JsonHandler.OriginalFormJsonString = origJson;
-			SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
-			var mrs = SelectedAppointment.ApptMRFolders.Find(mr => mr.MRFolderId == valueId).MrFolderMRs;
-			dataGrid.ItemsSource = mrs;
+            try
+			{
+				var bounds = base.TableView.Frame;
+				loadingOverlay = new LoadingOverlay(bounds);
+				mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+				mvc.Add(loadingOverlay);
+
+                var dds = new DynaPadService.DynaPadService();
+                var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+                JsonHandler.OriginalFormJsonString = origJson;
+                SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
+                var mrs = SelectedAppointment.ApptMRFolders.Find(mr => mr.MRFolderId == valueId).MrFolderMRs;
+                dataGrid.ItemsSource = mrs;
+			}
+			catch (Exception ex)
+			{
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+			}
+            finally
+            {
+                loadingOverlay.Hide();
+            }
 		}
 
 
@@ -475,15 +1028,15 @@ namespace DynaPad
 				//fgrid.AutoGeneratingColumn += GridAutoGeneratingColumns;
 				fgrid.ColumnSizer = ColumnSizer.None;
 				//fgrid.BackgroundColor = UIColor.Green;
-				fgrid.SelectionMode = SelectionMode.SingleDeselect;
+                fgrid.SelectionMode = SelectionMode.SingleDeselect;
 				fgrid.AllowPullToRefresh = true;
-				fgrid.PullToRefreshCommand = new GridCommand(ExecutePullToRefreshCommand, fgrid, valueId);
+                fgrid.PullToRefreshCommand = new GridCommand(ExecutePullToRefreshCommand, fgrid, valueId);
 				fgrid.AllowSorting = true;
 				//fgrid.View.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
 
 				var mrNameColumn = new GridTextColumn();
 				mrNameColumn.MappingName = "MRName";
-				mrNameColumn.HeaderText = " File Name";
+                mrNameColumn.HeaderText = " File Name (Double tap to view)";
 				mrNameColumn.Width = fgrid.Frame.Width * 0.55;
 				//mrNameColumn.MinimumWidth = fgrid.Frame.Width * 0.40;
 				mrNameColumn.HeaderTextAlignment = UITextAlignment.Left;
@@ -513,10 +1066,19 @@ namespace DynaPad
 				mrLocationColumn.HeaderTextAlignment = UITextAlignment.Left;
 				mrLocationColumn.TextAlignment = UITextAlignment.Left;
 
+				var mrFileTypeColumn = new GridTextColumn();
+				mrFileTypeColumn.MappingName = "MRFileType";
+				mrFileTypeColumn.HeaderText = "File Type";
+				//mrFileTypeColumn.Width = fgrid.Frame.Width * 0.15;
+				mrFileTypeColumn.HeaderTextAlignment = UITextAlignment.Left;
+				mrFileTypeColumn.TextAlignment = UITextAlignment.Left;
+                mrFileTypeColumn.IsHidden = true;
+
 				fgrid.Columns.Add(mrNameColumn);
 				fgrid.Columns.Add(mrDateColumn);
 				fgrid.Columns.Add(mrDoctorColumn);
 				fgrid.Columns.Add(mrLocationColumn);
+				fgrid.Columns.Add(mrFileTypeColumn);
 
 				mrSection.Add(fgrid);
 				mrElement.Add(mrSection);
@@ -525,222 +1087,259 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
 
 		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm, GlassButton nextbtn = null, bool IsViewSummary = false, string SummaryFileName = null, string ReportName = null)
 		{
-			try
-			{
-				//var bounds = UIScreen.MainScreen.Bounds;
-				var bounds = base.TableView.Frame;
-				loadingOverlay = new LoadingOverlay(bounds);
-				mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-				mvc.Add(loadingOverlay);
+            try
+            {
+                //var bounds = UIScreen.MainScreen.Bounds;
+                var bounds = base.TableView.Frame;
+                loadingOverlay = new LoadingOverlay(bounds);
+                mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                mvc.Add(loadingOverlay);
 
-				if (DetailItem != newDetailItem)
-				{
-					ReloadData();
-					DetailItem = newDetailItem;
-					switch (context)
-					{
-						case "MR":
-							var mrElement = GetMRElement(valueId);
-							Root = mrElement;
-							//Root.TableView.ScrollEnabled = false;
+                if (DetailItem != newDetailItem)
+                {
+                    ReloadData();
+                    DetailItem = newDetailItem;
+                    switch (context)
+                    {
+                        //                 case "URL":
+                        //                     Root.Clear();
+                        //                     string URL = "http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf";
+                        ////var defaultWebViews = new UIWebView(View.Bounds);
+                        ////                     defaultWebViews.LoadRequest(new NSUrlRequest(new NSUrl(valueId, false)));
+                        ////defaultWebViews.ScalesPageToFit = true;
 
-							break;
-						case "Summary":
-							var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
+                        //var pdfViewerControl = new SfPdfViewer();
+                        //pdfViewerControl.Frame = View.Bounds;//new CGRect(0, 0, 300, 350);
+                        //using (MemoryStream mem = new MemoryStream())
+                        //{
+                        //                         ConvertToStream(URL, mem);
+                        //	mem.Seek(0, SeekOrigin.Begin);
+                        //	pdfViewerControl.LoadDocument(mem);
+                        //}
 
-							var summaryPaddedView = new PaddedUIView<UILabel>();
-							summaryPaddedView.Enabled = true;
-							summaryPaddedView.Type = "Section";
-							summaryPaddedView.Frame = new CGRect(0, 0, 0, 40);
-							summaryPaddedView.Padding = 5f;
-							summaryPaddedView.NestedView.Text = "SUMMARY";
-							summaryPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
-							summaryPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
-							summaryPaddedView.setStyle();
+                        ////var q = new PdfDocument(URL);
 
-							var summarySection = new DynaSection("SUMMARY");
-							summarySection.HeaderView = summaryPaddedView;
-							summarySection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							summarySection.FooterView.Hidden = true;
+                        //var s = new DynaSection("file");
+                        //s.Add(pdfViewerControl);
+                        //var f = new DynaMultiRootElement("File");
+                        //f.Add(s);
+                        //Root = f;
+                        //Root.TableView.ScrollEnabled = false;
+                        //break;
+                        case "MR":
+                            var mrElement = GetMRElement(valueId);
+                            Root = mrElement;
+                            //Root.TableView.ScrollEnabled = false;
 
-							var summaryFileName = "";
+                            break;
+                        case "Summary":
+                            var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
 
-							if (!IsViewSummary)
-							{
-								if (CrossConnectivity.Current.IsConnected)
-								{
-									var dds = new DynaPadService.DynaPadService();
-									var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-									//summaryFileName = dds.ExportToPdf(finalJson);
-									summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
-								}
-								else
-								{
-									PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-								}
-							}
-							else
-							{
-								summaryFileName = SummaryFileName;
-							}
+                            var summaryPaddedView = new PaddedUIView<UILabel>();
+                            summaryPaddedView.Enabled = true;
+                            summaryPaddedView.Type = "Section";
+                            summaryPaddedView.Frame = new CGRect(0, 0, 0, 40);
+                            summaryPaddedView.Padding = 5f;
+                            summaryPaddedView.NestedView.Text = "SUMMARY";
+                            summaryPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                            summaryPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                            summaryPaddedView.setStyle();
 
-							if (!summaryFileName.StartsWith("error:", StringComparison.CurrentCulture))
-							{
-								var webViews = new UIWebView(View.Bounds);
-								webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-								//string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
-								var localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
-								//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
-								//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/" + summaryFileName)));
-								webViews.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
-								//webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl)));
-								webViews.ScalesPageToFit = true;
+                            var summarySection = new DynaSection("SUMMARY");
+                            summarySection.HeaderView = summaryPaddedView;
+                            summarySection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+                            summarySection.FooterView.Hidden = true;
 
-								summarySection.Add(webViews);
+                            var summaryFileName = "";
 
-								NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
-								{ Print(summaryFileName, webViews); }), true);
-							}
-							else
-							{
-								summarySection.Add(new StringElement("File unavailable, contact administration"));
-							}
+                            if (!IsViewSummary)
+                            {
+                                if (CrossConnectivity.Current.IsConnected)
+                                {
+                                    var dds = new DynaPadService.DynaPadService();
+                                    var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+                                    //summaryFileName = dds.ExportToPdf(finalJson);
+                                    summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
+                                }
+                                else
+                                {
+                                    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                                }
+                            }
+                            else
+                            {
+                                summaryFileName = SummaryFileName;
+                            }
 
-							summaryElement.Add(summarySection);
+                            if (!summaryFileName.StartsWith("Error:", StringComparison.CurrentCulture))
+                            {
+								//var webViews = new UIWebView(View.Bounds);
+                                var webViews = new WKWebView(View.Bounds, new WKWebViewConfiguration());
+                                webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+                                //string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
+                                var localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
+                                //webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
+                                //webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/" + summaryFileName)));
+                                webViews.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
+                                //webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl)));
+                                //webViews.ScalesPageToFit = true;
 
-							Root = summaryElement;
-							Root.TableView.ScrollEnabled = false;
+                                summarySection.Add(webViews);
 
-							break;
-						case "Finalize":
-							var rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
+                                NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
+                                { Print(summaryFileName, webViews.ViewPrintFormatter); }), true);
+                            }
+                            else
+                            {
+                                summarySection.Add(new StringElement("File unavailable, contact administration"));
+                            }
 
-							var rootPaddedView = new PaddedUIView<UILabel>();
-							rootPaddedView.Enabled = true;
-							rootPaddedView.Type = "Section";
-							rootPaddedView.Frame = new CGRect(0, 0, 0, 40);
-							rootPaddedView.Padding = 5f;
-							rootPaddedView.NestedView.Text = "FINALIZE FORM";
-							rootPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
-							rootPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
-							rootPaddedView.setStyle();
+                            summaryElement.Add(summarySection);
 
-							var rootSection = new DynaSection("FINALIZE FORM");
-							rootSection.HeaderView = rootPaddedView;
-							rootSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							rootSection.FooterView.Hidden = true;
+                            Root = summaryElement;
+                            Root.TableView.ScrollEnabled = false;
 
-							var sigPad = new SignaturePad.SignaturePadView(new CGRect(0, 0, View.Frame.Width, 600));
-							sigPad.CaptionText = "Signature here:";
-							sigPad.BackgroundColor = UIColor.White;
+                            break;
+                        case "Finalize":
+                            var rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
 
-							messageLabel = new UILabel();
+                            var rootPaddedView = new PaddedUIView<UILabel>();
+                            rootPaddedView.Enabled = true;
+                            rootPaddedView.Type = "Section";
+                            rootPaddedView.Frame = new CGRect(0, 0, 0, 40);
+                            rootPaddedView.Padding = 5f;
+                            rootPaddedView.NestedView.Text = "FINALIZE FORM";
+                            rootPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                            rootPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                            rootPaddedView.setStyle();
 
-							var btnSubmit = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
-							//btnSubmit.Font = UIFont.BoldSystemFontOfSize(17);
-							btnSubmit.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
-							btnSubmit.NormalColor = UIColor.Green;
-							btnSubmit.DisabledColor = UIColor.Gray;
-							btnSubmit.SetTitle("Submit Form", UIControlState.Normal);
-							btnSubmit.TouchUpInside += (sender, e) =>
-							{
-								var SubmitPrompt = UIAlertController.Create("Submit Form", "Please hand back the IPad to submit", UIAlertControllerStyle.Alert);
-								SubmitPrompt.AddTextField((field) =>
-								{
-									field.SecureTextEntry = true;
-									field.Placeholder = "Password";
-								});
-								SubmitPrompt.Add(messageLabel);
-								SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm, sigPad)));
-								SubmitPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-								//Present Alert
-								PresentViewController(SubmitPrompt, true, null);
-							};
+                            var rootSection = new DynaSection("FINALIZE FORM");
+                            rootSection.HeaderView = rootPaddedView;
+                            rootSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+                            rootSection.FooterView.Hidden = true;
 
-							rootSection.Add(sigPad);
-							rootSection.Add(btnSubmit);
-							rootElement.Add(rootSection);
+                            var sigPad = new SignaturePad.SignaturePadView(new CGRect(0, 0, View.Frame.Width, 600));
+                            sigPad.CaptionText = "Signature here:";
+                            sigPad.BackgroundColor = UIColor.White;
 
-							Root = rootElement;
-							Root.TableView.ScrollEnabled = false;
+                            messageLabel = new UILabel();
 
-							break;
-						case "Report":
-							//var Report = SelectedAppointment.ApptReports.Find((Report obj) => obj.FormId == sectionId);
+                            var btnSubmit = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
+                            //btnSubmit.Font = UIFont.BoldSystemFontOfSize(17);
+                            btnSubmit.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+                            btnSubmit.NormalColor = UIColor.Green;
+                            btnSubmit.DisabledColor = UIColor.Gray;
+                            btnSubmit.SetTitle("Submit Form", UIControlState.Normal);
+                            btnSubmit.TouchUpInside += (sender, e) =>
+                            {
+                                var SubmitPrompt = UIAlertController.Create("Submit Form", "Please hand back the IPad to submit", UIAlertControllerStyle.Alert);
+                                SubmitPrompt.AddTextField((field) =>
+                                {
+                                    field.SecureTextEntry = true;
+                                    field.Placeholder = "Password";
+                                });
+                                SubmitPrompt.Add(messageLabel);
+                                SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm, sigPad)));
+                                SubmitPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                                        //Present Alert
+                                        PresentViewController(SubmitPrompt, true, null);
+                            };
 
-							var reportElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
+                            rootSection.Add(sigPad);
+                            rootSection.Add(btnSubmit);
+                            rootElement.Add(rootSection);
 
-							var reportPaddedView = new PaddedUIView<UILabel>();
-							reportPaddedView.Enabled = true;
-							reportPaddedView.Type = "Section";
-							reportPaddedView.Frame = new CGRect(0, 0, 0, 40);
-							reportPaddedView.Padding = 5f;
-							reportPaddedView.NestedView.Text = ReportName;//"REPORT"; //Report.ReportName.ToUpper();
-							reportPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
-							reportPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
-							reportPaddedView.setStyle();
+                            Root = rootElement;
+                            Root.TableView.ScrollEnabled = false;
 
-							var reportSection = new DynaSection("REPORT");
-							reportSection.HeaderView = reportPaddedView;
-							reportSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-							reportSection.FooterView.Hidden = true;
+                            break;
+                        case "Report":
+                            //var Report = SelectedAppointment.ApptReports.Find((Report obj) => obj.FormId == sectionId);
 
-							var reportUrl = "";
-							if (CrossConnectivity.Current.IsConnected)
-							{
-								var dps = new DynaPadService.DynaPadService();
-								reportUrl = dps.GenerateReport(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptFormId, DateTime.Today.ToShortDateString(), "file", valueId);
-								//string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
-								//var asdf = SelectedAppointment.ApptPatientId;
-							}
+                            var reportElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
 
-							if (reportUrl.StartsWith("error:", StringComparison.CurrentCulture))
-							{
-								var bb = View.Frame;
-								var webView = new UIWebView(View.Bounds);
-								webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-								//var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
-								//var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
-								//var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
-								webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
-								webView.ScalesPageToFit = true;
+                            var reportPaddedView = new PaddedUIView<UILabel>();
+                            reportPaddedView.Enabled = true;
+                            reportPaddedView.Type = "Section";
+                            reportPaddedView.Frame = new CGRect(0, 0, 0, 40);
+                            reportPaddedView.Padding = 5f;
+                            reportPaddedView.NestedView.Text = ReportName;//"REPORT"; //Report.ReportName.ToUpper();
+                            reportPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                            reportPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                            reportPaddedView.setStyle();
 
-								reportSection.Add(webView);
+                            var reportSection = new DynaSection("REPORT");
+                            reportSection.HeaderView = reportPaddedView;
+                            reportSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+                            reportSection.FooterView.Hidden = true;
 
-								NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
-								{ Print(SelectedAppointment.ApptFormName, webView); }), true);
-							}
-							else
-							{
-								reportSection.Add(new StringElement("File unavailable, contact administration"));
-							}
+                            var reportUrl = "";
+                            if (CrossConnectivity.Current.IsConnected)
+                            {
+                                var dps = new DynaPadService.DynaPadService();
+                                reportUrl = dps.GenerateReport(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptFormId, DateTime.Today.ToShortDateString(), "file", valueId);
+                                //string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
+                                //var asdf = SelectedAppointment.ApptPatientId;
+                            }
 
-							reportElement.Add(reportSection);
+                            if (!reportUrl.StartsWith("Error:", StringComparison.CurrentCulture))
+                            {
+                                var bb = View.Frame;
+                                //var webView = new UIWebView(View.Bounds);
+                                var webView = new WKWebView(View.Bounds, new WKWebViewConfiguration());
+                                webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+                                //var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
+                                //var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
+                                //var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
+                                webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
+                                //webView.ScalesPageToFit = true;
 
-							Root = reportElement;
-							Root.TableView.ScrollEnabled = true;
+                                reportSection.Add(webView);
 
-							break;
-						default:
-							// Update the view
-							ConfigureView(context, valueId, origSectionJson, IsDoctorForm, nextbtn);
-							break;
-					}
-				}
+                                NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
+                                { Print(SelectedAppointment.ApptFormName, webView.ViewPrintFormatter); }), true);
+                            }
+                            else
+                            {
+                                reportSection.Add(new StringElement("File unavailable, contact administration"));
+                            }
 
-				loadingOverlay.Hide();
+                            reportElement.Add(reportSection);
+
+                            Root = reportElement;
+                            Root.TableView.ScrollEnabled = true;
+
+                            break;
+                        default:
+                            ConfigureView(context, valueId, origSectionJson, IsDoctorForm, nextbtn);
+                            break;
+                    }
+                }
+				//loadingOverlay.Hide();
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				Root.Clear();
+				Root.Add(CommonFunctions.ErrorDetailSection());
+				ReloadData();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+            finally
+            {
+                loadingOverlay.Hide();
+            }
 		}
 
 
@@ -772,21 +1371,21 @@ namespace DynaPad
 					{
 						// Notes/Dictation
 						var drawNavBtn = GetDrawNavBtn(sectionId);
-						var dicNavBtn = GetDicNavBtn(sectionId, IsDoctorForm);
+						//var dicNavBtn = GetDicNavBtn(sectionId, IsDoctorForm);
 						var mrNavBtn = GetMRNavBtn();
 
-						if (CrossConnectivity.Current.IsConnected)
-						{
+						//if (CrossConnectivity.Current.IsConnected)
+						//{
 							var picNavBtn = GetPhotoNavBtn(sectionId, context, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, IsDoctorForm);
 							//NavigationItem.SetLeftBarButtonItem(picNavBtn, true);
 							NavigationItem.SetLeftBarButtonItems(new UIBarButtonItem[] { picNavBtn, mrNavBtn }, true);
-						}
-						else
-						{
-							PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-						}
+						//}
+						//else
+						//{
+						//	PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+						//}
 
-						NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { dicNavBtn, drawNavBtn }, true);
+						//NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { dicNavBtn, drawNavBtn }, true);
 
 						// Presets
 						var presetPaddedView = new PaddedUIView<UILabel>();
@@ -806,15 +1405,15 @@ namespace DynaPad
 						var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
 						string[][] FormPresetNames = { };
-						if (CrossConnectivity.Current.IsConnected)
-						{
+						//if (CrossConnectivity.Current.IsConnected)
+						//{
 							var dds = new DynaPadService.DynaPadService();
 							FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
-						}
-						else
-						{
-							PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-						}
+						//}
+						//else
+						//{
+						//	PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+						//}
 
 						var presetGroup = new RadioGroup("PresetAnswers", sectionQuestions.SectionSelectedTemplateId);
 						var presetsRoot = new DynaRootElement("Section Presets", presetGroup);
@@ -822,7 +1421,7 @@ namespace DynaPad
 
 						var noPresetRadio = new PresetRadioElement("No Preset", "PresetAnswers");
 						noPresetRadio.PresetName = "No Preset";
-						noPresetRadio.OnSelected += delegate (object sender, EventArgs e)
+						noPresetRadio.OnSelected += delegate
 						{
 							string presetJson = origS;
 							SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
@@ -1150,7 +1749,6 @@ namespace DynaPad
 								break;
 
 							case "TextInput":
-
 								var tidval = question.AnswerText;
 								if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
 								{
@@ -1235,42 +1833,55 @@ namespace DynaPad
 									atidval = question.DefaultValue;
 								}
 
-								var answerList = new NSMutableArray();
-								answerList.Add((NSString)"Uganda");
-								answerList.Add((NSString)"Ukraine");
-								answerList.Add((NSString)"United Arab Emirates");
-								answerList.Add((NSString)"United Kingdom");
-								answerList.Add((NSString)"United States");
-								//foreach (QuestionOption answer in question.QuestionOptions)
+								//var answerList = new NSMutableArray();
+								//var listurl = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/" + SelectedAppointment.ApptFormId + "/AutoBoxLists/" + question.QuestionId + ".txt";
+								//if (URLExists(listurl))
 								//{
-								//	answerList.Add((NSString)answer.OptionText);
+								//	XmlDocument listxml = new XmlDocument();
+								//	//doc1.Load("https://amato.dynadox.pro/data/testautobox.txt");
+								//	listxml.Load(listurl);
+								//	XmlElement root = listxml.DocumentElement;
+								//	XmlNodeList nodes = root.SelectNodes("/Items/Item");
+
+								//	foreach (XmlNode node in nodes)
+								//	{
+								//		answerList.Add((NSString)node.Attributes[0].Value);
+								//	}
 								//}
+
+								GetAutoData(question.QuestionId);
 
 								var entryAutoComplete = new DynaAuto(new SFControlAutoCompleteDelegate(question, qSection));
 								entryAutoComplete.Text = atidval;
-								entryAutoComplete.AutoCompleteSource = answerList;
-								entryAutoComplete.ShowSuggestionsOnFocus = true;
+								//entryAutoComplete.AutoCompleteSource = answerList;
+								entryAutoComplete.DataSource = AutoDetails;
+								entryAutoComplete.ShowSuggestionsOnFocus = false;
 								entryAutoComplete.QuestionId = question.QuestionId;
 								entryAutoComplete.Frame = new CGRect(0, 0, View.Frame.Width, 30);
 								entryAutoComplete.TextField.BorderStyle = UITextBorderStyle.None;
-								entryAutoComplete.Bounds = new CGRect(0, 0, View.Frame.Width - 20, 30);
+								//entryAutoComplete.Bounds = new CGRect(0, 0, View.Frame.Width - 8, 30);
+								entryAutoComplete.TextField.Bounds = new CGRect(0, 0, View.Frame.Width - 10, 30);
 								entryAutoComplete.AutosizesSubviews = true;
 								entryAutoComplete.BorderColor = UIColor.White;
-								entryAutoComplete.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
+								entryAutoComplete.Layer.BorderWidth = 0;
+								//entryAutoComplete.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
 								entryAutoComplete.SuggestionBoxPlacement = SFAutoCompleteSuggestionBoxPlacement.SFAutoCompleteSuggestionBoxPlacementBottom;
 								entryAutoComplete.SuggestionMode = SFAutoCompleteSuggestionMode.SFAutoCompleteSuggestionModeContains;
 								entryAutoComplete.Watermark = (NSString)"Enter your answer here";
-								entryAutoComplete.MaxDropDownHeight = 90;
+								entryAutoComplete.MaxDropDownHeight = 150;
 								entryAutoComplete.AutoCompleteMode = SFAutoCompleteAutoCompleteMode.SFAutoCompleteAutoCompleteModeSuggest;
-								entryAutoComplete.PopUpDelay = 100;
+								//entryAutoComplete.PopUpDelay = 100;
 								entryAutoComplete.IsEnabled = enabled;
 								entryAutoComplete.Enabled = enabled;
 								entryAutoComplete.ConditionTriggerId = question.ParentConditionTriggerId;
 								entryAutoComplete.parentSec = qSection;
 								//entryAutoComplete.TextField.ShouldClear = (textField) => true;
-								entryAutoComplete.TextField.ClearButtonMode = UITextFieldViewMode.UnlessEditing;
+								entryAutoComplete.TextField.ClearButtonMode = UITextFieldViewMode.Always;
 								entryAutoComplete.Required = question.IsRequired;
 								entryAutoComplete.Invalid = question.IsInvalid;
+								entryAutoComplete.DisplayMemberPath = "Text";
+								entryAutoComplete.SelectedValuePath = "Value";
+								entryAutoComplete.MinimumPrefixCharacters = 2;
 
 								entryAutoComplete.TextField.EditingDidEnd += (sender, e) =>
 								{
@@ -1281,26 +1892,23 @@ namespace DynaPad
 									}
 								};
 
-								//UITapGestureRecognizer agesture = new UITapGestureRecognizer(() =>
-								//{
-								//	entryAutoComplete.EndEditing(true);
-								//	if (qSection.GetContainerTableView() != null)
-								//	{
-								//		qSection.GetContainerTableView().ReloadData();
-								//	}
-								//});
-								//View.AddGestureRecognizer(agesture);
-
 								if (!enabled)
 								{
 									entryAutoComplete.TextColor = UIColor.LightGray;
+									entryAutoComplete.BorderColor = UIColor.GroupTableViewBackgroundColor;
+									entryAutoComplete.Layer.BorderColor = UIColor.GroupTableViewBackgroundColor.CGColor;
 									entryAutoComplete.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+									entryAutoComplete.TextField.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 									entryAutoComplete.Watermark = (NSString)"Not applicable";
+									entryAutoComplete.Layer.BackgroundColor = UIColor.GroupTableViewBackgroundColor.CGColor;
 								}
 								else
 								{
 									entryAutoComplete.TextColor = UIColor.Black;
+									entryAutoComplete.BorderColor = UIColor.White;
+									entryAutoComplete.Layer.BorderColor = UIColor.White.CGColor;
 									entryAutoComplete.BackgroundColor = UIColor.White;
+									entryAutoComplete.TextField.BackgroundColor = UIColor.White;
 									entryAutoComplete.Watermark = (NSString)"Enter your answer here";
 								}
 
@@ -1357,10 +1965,40 @@ namespace DynaPad
 								qSection.Add(dateElement);
 								//QuestionsView.UnevenRows = true;
 								QuestionsView.Add(qSection);
-
 								break;
-
 							case "Height":
+								var htidval = question.AnswerText;
+								if (string.IsNullOrEmpty(SelectedAppointment.SelectedQForm.DateCompleted) && string.IsNullOrEmpty(question.AnswerText) && !string.IsNullOrEmpty(question.DefaultValue))
+								{
+									htidval = question.DefaultValue;
+								}
+
+								var seg = new DynaSegmented();
+								seg.Frame = new CGRect(0, 0, View.Frame.Width, 30);
+								for (int i = 1; i <= 12; i++)
+								{
+									seg.InsertSegment(i.ToString(), i - 1, true);
+								}
+								seg.ValueChanged += (sender, e) =>
+								{
+									var selectedSegmentId = (sender as UISegmentedControl).SelectedSegment;
+									question.AnswerText = (sender as UISegmentedControl).TitleAt(selectedSegmentId);
+
+								};
+								seg.Required = question.IsRequired;
+								seg.Invalid = question.IsInvalid;
+								seg.Enabled = enabled;
+								seg.IsEnabled = enabled;
+								seg.QuestionId = question.QuestionId;
+								seg.ConditionTriggerId = question.ParentConditionTriggerId;
+								seg.parentSec = qSection;
+                                if (!string.IsNullOrEmpty(htidval) && IsDigitsOnly(htidval))
+								{
+                                    seg.SelectedSegment = Convert.ToInt16(htidval) - 1;
+								}
+								qSection.Add(seg);
+								QuestionsView.Add(qSection);
+								break;
 							case "Weight":
 							case "Amount":
 							case "Numeric":
@@ -1429,13 +2067,152 @@ namespace DynaPad
 								sliderElement.QuestionId = question.QuestionId;
 								sliderElement.ConditionTriggerId = question.ParentConditionTriggerId;
 
-
 								qSection.Add(sliderElement);
 								//QuestionsView.UnevenRows = true;
 								QuestionsView.Add(qSection);
 								break;
-						}
+							case "Grid":
+								var columns = new List<ItemColumn>();// question.QuestionRowItem.ItemColumns;
+								columns.Add(new ItemColumn() { Header = "first", Type = "Text", AnswerText = "dani" });
+								columns.Add(new ItemColumn() { Header = "last", Type = "Text", AnswerText = "harel" });
+								columns.Add(new ItemColumn() { Header = "ass", Type = "Switch", AnswerText = "true" });
+								var rows = new List<QuestionRowItem>();
+								rows.Add(new QuestionRowItem() { ItemColumns = columns });
+								var viewModel = new ViewModel(columns, rows);//(question.QuestionRowItem.ItemColumns, question.ItemRows);
 
+								var grid = new DynaGrid();
+
+								grid.CellRenderers.Remove("TextView");
+								grid.CellRenderers.Add("TextView", new GridCellTextViewRendererExt());
+
+								grid.Frame = new CGRect(0, 0, View.Frame.Width, 190);
+								grid.Required = question.IsRequired;
+								grid.Invalid = question.IsInvalid;
+								grid.IsEnabled = enabled;
+								grid.QuestionId = question.QuestionId;
+								grid.ConditionTriggerId = question.ParentConditionTriggerId;
+								grid.parentSec = qSection;
+								grid.AutoGenerateColumns = false;
+								grid.ColumnSizer = ColumnSizer.LastColumnFill;
+								grid.SelectionMode = SelectionMode.None;
+								grid.AllowPullToRefresh = false;
+								grid.AllowSorting = false;
+								grid.AllowEditing = true;
+								grid.EditTapAction = TapAction.OnTap;
+								grid.EditorSelectionBehavior = EditorSelectionBehavior.SelectAll;
+
+								grid.GridTapped += (object sender, GridTappedEventsArgs e) => { viewModel.RefreshGroup(columns[0].Header); };
+								grid.ItemsSource = viewModel.DynamicCollection;
+								grid.GridLoaded += (sender, e) => { grid.View.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping; };
+								//grid.CurrentCellEndEdit += (object sender, GridCurrentCellEndEditEventArgs args) =>
+								//{
+								//	var a = sender;
+								//	var b = args;
+								//	DynamicModel c = (DynaPad.DynamicModel)grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
+								//	var d = grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
+								//	//var e = c.Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName];
+								//	var n = viewModel.DynamicCollection[args.RowColumnIndex.RowIndex - 1].Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Substring(7, grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Length - 8)].ToString();
+								//	var newvalue = grid.GetCellValue(viewModel.DynamicCollection[args.RowColumnIndex.RowIndex - 1], grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName).ToString();
+								//	Debug.WriteLine(n);
+								//	Debug.WriteLine(newvalue);
+								//};
+								grid.CurrentCellEndEdit += async (object sender, GridCurrentCellEndEditEventArgs args) =>
+								{
+									await Task.Delay(100);
+									var a = sender;
+									var b = args;
+									DynamicModel c = (DynamicModel)grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
+									var d = grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
+									//var e = c.Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName];
+									var n = viewModel.DynamicCollection[args.RowColumnIndex.RowIndex - 1].Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Substring(7, grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Length - 8)].ToString();
+									var newvalue = grid.GetCellValue(viewModel.DynamicCollection[args.RowColumnIndex.RowIndex - 1], grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName).ToString();
+									Debug.WriteLine(n);
+									Debug.WriteLine(newvalue);
+								};
+								//grid.CurrentCellEndEdit += Grid_CurrentCellEndEdit;
+
+								foreach (var c in columns)
+								{
+									switch (c.Type)
+									{
+										case "Text":
+											var cText = new GridTextColumn();
+											cText.MappingName = "Values[" + c.Header.Replace(" ", "") + "]";
+											cText.HeaderText = c.Header;
+											cText.AllowEditing = true;
+											cText.HeaderTextAlignment = UITextAlignment.Left;
+											cText.TextAlignment = UITextAlignment.Left;
+											cText.LineBreakMode = UILineBreakMode.WordWrap;
+											grid.Columns.Add(cText);
+											break;
+										case "Switch":
+											var cSwitch = new GridSwitchColumn();
+											cSwitch.MappingName = "Values[" + c.Header.Replace(" ", "") + "]";
+											cSwitch.HeaderText = c.Header;
+											cSwitch.AllowEditing = true;
+											cSwitch.HeaderTextAlignment = UITextAlignment.Left;
+											cSwitch.TextAlignment = UITextAlignment.Left;
+											grid.Columns.Add(cSwitch);
+											break;
+										case "Numeric":
+											var cNumeric = new GridNumericColumn();
+											cNumeric.MappingName = "Values[" + c.Header.Replace(" ", "") + "]";
+											cNumeric.HeaderText = c.Header;
+											cNumeric.AllowEditing = true;
+											cNumeric.HeaderTextAlignment = UITextAlignment.Left;
+											cNumeric.TextAlignment = UITextAlignment.Left;
+											grid.Columns.Add(cNumeric);
+											break;
+										case "Date":
+											var cDate = new GridDateTimeColumn();
+											cDate.MappingName = "Values[" + c.Header.Replace(" ", "") + "]";
+											cDate.HeaderText = c.Header;
+											cDate.AllowEditing = true;
+											cDate.HeaderTextAlignment = UITextAlignment.Left;
+											cDate.TextAlignment = UITextAlignment.Left;
+											grid.Columns.Add(cDate);
+											break;
+										case "Picker":
+											var cPicker = new GridPickerColumn();
+											cPicker.MappingName = "Values[" + c.Header.Replace(" ", "") + "]";
+											cPicker.HeaderText = c.Header;
+											ObservableCollection<string> coptions = new ObservableCollection<string>();
+											foreach (var o in c.Options)
+											{
+												coptions.Add(o);
+											}
+											cPicker.AllowEditing = true;
+											cPicker.HeaderTextAlignment = UITextAlignment.Left;
+											grid.Columns.Add(cPicker);
+											break;
+									}
+								}
+
+								//Dummy column need to be added since we have internally checked grouping column against grid column collection.
+								grid.Columns.Add(new GridTextColumn()
+								{
+									HeaderText = "GroupProperty",
+									MappingName = "GroupProperty",
+									Width = 0
+								});
+								//Need to refresh the GroupProperty of DynamicModel in the given collection before applying groupdescription to the grid.
+								//viewModel.RefreshGroup(columns[0].Header);
+								//grid.GroupColumnDescriptions.Add(new GroupColumnDescription() { ColumnName = "GroupProperty" });
+
+								var addRowButton = new UIButton(new CGRect(0, 0, View.Frame.Width, 30));
+								addRowButton.SetTitle("Add Row", UIControlState.Normal);
+								addRowButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+								addRowButton.BackgroundColor = UIColor.LightGray;
+								addRowButton.TouchUpInside += (sender, e) =>
+								{
+									viewModel.DynamicCollection.Add(new DynamicModel() { Values = viewModel.GetDynamicModel(columns).Values });
+								};
+
+								qSection.Add(grid);
+								qSection.Add(addRowButton);
+								QuestionsView.Add(qSection);
+								break;
+						}
 						//question.ScrollY = qSection.HeaderView.Frame.Y;
 					}
 
@@ -1466,8 +2243,63 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				Root.Clear();
+				Root.Add(CommonFunctions.ErrorDetailSection());
+				ReloadData();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+		}
+
+
+
+
+		bool IsDigitsOnly(string str)
+		{
+			foreach (char c in str)
+			{
+				if (c < '0' || c > '9')
+					return false;
+			}
+
+			return true;
+		}
+
+
+
+
+		async void Grid_CurrentCellEndEdit(object sender, GridCurrentCellEndEditEventArgs args)
+		{
+			await Task.Delay(100);
+			var grid = (DynaGrid)sender;
+			ObservableCollection<DynamicModel> viewModel_dynamicCollection = (ObservableCollection<DynamicModel>)grid.ItemsSource;
+			var n = viewModel_dynamicCollection[args.RowColumnIndex.RowIndex - 1].Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Substring(7, grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Length - 8)].ToString();
+			var newvalue = grid.GetCellValue(viewModel_dynamicCollection[args.RowColumnIndex.RowIndex - 1], grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName).ToString();
+			System.Console.Write(newvalue);
+		}
+
+
+
+
+		public bool URLExists(string url)
+		{
+			bool result = true;
+
+			WebRequest webRequest = WebRequest.Create(url);
+			webRequest.Timeout = 1200; // miliseconds
+			webRequest.Method = "HEAD";
+
+			try
+			{
+				webRequest.GetResponse();
+			}
+			catch
+			{
+				result = false;
+			}
+
+			return result;
 		}
 
 
@@ -1482,19 +2314,27 @@ namespace DynaPad
 				question = inq;
 				qSection = ds;
 			}
-			public override void DidSelectionChange(SFAutoComplete SFAutoComplete, string value)
+			public override void DidSelectionChange(SFAutoComplete SFAutoComplete, NSObject value)
 			{
-				question.AnswerText = value;
+				question.AnswerText = value.ValueForKey((NSString)"Value").ToString();
+				//var truequestion = SelectedAppointment.SelectedQForm.FormSections[0].SectionQuestions.Find((SectionQuestion obj) => obj.QuestionId == question.QuestionId);
+				//truequestion.AnswerText = value.ToString();
 				(SFAutoComplete as DynaAuto).Invalid = ValidateAuto(question);
-				//if (qSection.GetContainerTableView() != null)
-				//{
-				//	qSection.GetContainerTableView().ReloadData();
-				//}
+				if (qSection.GetContainerTableView() != null)
+				{
+					qSection.GetContainerTableView().ReloadData();
+				}
 			}
 			public override void DidTextChange(SFAutoComplete SFAutoComplete, string value)
 			{
 				question.AnswerText = value;
 				(SFAutoComplete as DynaAuto).Invalid = ValidateAuto(question);
+				//if (string.IsNullOrEmpty(value) && qSection.GetContainerTableView() != null)
+				//{
+				//	question.AnswerText = "";
+				//	(SFAutoComplete as DynaAuto).Text = "";
+				//	qSection.GetContainerTableView().ReloadData();
+				//}
 			}
 			public bool ValidateAuto(SectionQuestion question)
 			{
@@ -1514,10 +2354,75 @@ namespace DynaPad
 				}
 				catch (Exception ex)
 				{
-					throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                    CommonFunctions.sendErrorEmail(ex);
+                    //PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    return false;
+					//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 				}
 			}
 		}
+
+		//public class AutoData
+		//{
+		//	string Text;//Name;
+		//	string Value;//Age;
+		//	public AutoData(string Text, string Value)
+		//	{
+		//		this.Text = Text;
+		//		this.Value = Value;
+
+		//	}
+		//	public string getText()
+		//	{
+		//		return Text;
+		//	}
+		//	public string getValue()
+		//	{
+		//		return Value;
+		//	}
+		//}
+
+		public NSMutableArray AutoDetails
+		{
+			get;
+			set;
+		}
+
+		void GetAutoData(string qid)
+		{
+			NSMutableArray array = new NSMutableArray();
+			//array.Add(getDictionary("John", "24"));
+			//array.Add(getDictionary("James", "37"));
+
+			var listurl = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/" + SelectedAppointment.ApptFormId + "/AutoBoxLists/" + qid + ".txt";
+			if (URLExists(listurl))
+			{
+				XmlDocument listxml = new XmlDocument();
+				listxml.Load(listurl);
+				XmlElement root = listxml.DocumentElement;
+				XmlNodeList nodes = root.SelectNodes("/Items/Item");
+
+				foreach (XmlNode node in nodes)
+				{
+					array.Add(getDictionary(node.Attributes[0].Value, node.Attributes[1].Value));
+				}
+			}
+
+			AutoDetails = array;
+		}
+
+		NSDictionary getDictionary(string text, string value)
+		{
+
+			object[] objects = new object[2];
+			object[] keys = new object[2];
+			keys.SetValue("Text", 0);
+			keys.SetValue("Value", 1);
+			objects.SetValue((NSString)text, 0);
+			objects.SetValue((NSString)value, 1);
+			return NSDictionary.FromObjectsAndKeys(objects, keys);
+		}
+
 
 
 
@@ -1614,6 +2519,32 @@ namespace DynaPad
 							}
 							else question.IsInvalid = false;
 							break;
+						case "Grid":
+							foreach (QuestionRowItem row in question.ItemRows)
+							{
+								foreach (ItemColumn col in row.ItemColumns)
+								{
+									if (col.Required)
+									{
+										if (string.IsNullOrEmpty(col.AnswerText))
+										{
+											question.IsInvalid = false;
+											break;
+										}
+										question.IsInvalid = true;
+									}
+								}
+							}
+							valid &= !question.IsInvalid;
+							break;
+						default:
+							if (string.IsNullOrEmpty(question.AnswerText))
+							{
+								valid = false;
+								question.IsInvalid = true;
+							}
+							else question.IsInvalid = false;
+							break;
 					}
 				}
 
@@ -1621,7 +2552,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return false;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1700,8 +2634,8 @@ namespace DynaPad
 									//var dps = new DynaPadService.DynaPadService();
 									//var savefile = dps.SaveFile(apptId, patientId, doctorId, locationId, filename, "DynaPad", testByte, IsDoctorForm, false);
 
-									if (CrossConnectivity.Current.IsConnected)
-									{
+									//if (CrossConnectivity.Current.IsConnected)
+									//{
 
 										var bw = new BackgroundWorker();
 
@@ -1714,21 +2648,21 @@ namespace DynaPad
 											var b = o as BackgroundWorker;
 
 											var dps = new DynaPadService.DynaPadService();
-											var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, "DynaPad Photo", "DynaPad", "", testByte, IsDoctorForm, false);
+											var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, "DynaPad Photo", "DynaPad", "", "", testByte, IsDoctorForm, false);
 										};
 
 										// what to do when worker completes its task (notify the user)
-										bw.RunWorkerCompleted += delegate (object o, RunWorkerCompletedEventArgs argsss)
+										bw.RunWorkerCompleted += delegate
 										{
 											PresentViewController(CommonFunctions.AlertPrompt("Photo Saved", "A new photo has been saved to medical records", true, null, false, null), true, null);
 										};
 
 										bw.RunWorkerAsync();
-									}
-									else
-									{
-										PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-									}
+									//}
+									//else
+									//{
+									//	PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+									//}
 								}
 							});
 
@@ -1746,7 +2680,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1764,7 +2701,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1791,7 +2731,9 @@ namespace DynaPad
 					nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 					nsec.FooterView.Hidden = true;
 
-					var dcanvas = new CanvasMainViewController { MREditing = false };
+					//var dcanvas = new CanvasMainViewController { MREditing = false };
+					//nsec.Add(dcanvas.View);
+					var dcanvas = new FingerPaintViewController { MREditing = false };
 					nsec.Add(dcanvas.View);
 
 					//CanvasContainerView notesCanvas = CanvasContainerView.FromCanvasSize(new CGSize(800, 800));
@@ -1857,7 +2799,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1897,6 +2842,7 @@ namespace DynaPad
 						foreach (MR m in mrf.MrFolderMRs)
 						{
 							m.MRFolderName = mrf.MRFolderName;
+							m.IsShortcut = true;
 						}
 						mrs.AddRange(SelectedAppointment.ApptMRFolders.Find(mr => mr.MRFolderId == mrf.MRFolderId).MrFolderMRs);
 					}
@@ -1904,7 +2850,7 @@ namespace DynaPad
 					var fgrid = new SfDataGrid();
 					fgrid.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
 					fgrid.ItemsSource = mrs;
-					fgrid.GridDoubleTapped += DataGridForm_GridDoubleTapped;
+					fgrid.GridDoubleTapped += DataGrid_GridDoubleTapped;
 					fgrid.AutoGenerateColumns = false;
 					fgrid.ColumnSizer = ColumnSizer.None;
 					fgrid.SelectionMode = SelectionMode.SingleDeselect;
@@ -1952,11 +2898,20 @@ namespace DynaPad
 					mrLocationColumn.HeaderTextAlignment = UITextAlignment.Left;
 					mrLocationColumn.TextAlignment = UITextAlignment.Left;
 
+					var mrFileTypeColumn = new GridTextColumn();
+					mrFileTypeColumn.MappingName = "MRFileType";
+					mrFileTypeColumn.HeaderText = "File Type";
+					//mrFileTypeColumn.Width = fgrid.Frame.Width * 0.15;
+					mrFileTypeColumn.HeaderTextAlignment = UITextAlignment.Left;
+					mrFileTypeColumn.TextAlignment = UITextAlignment.Left;
+					mrFileTypeColumn.IsHidden = true;
+
 					fgrid.Columns.Add(mrFolderColumn);
 					fgrid.Columns.Add(mrNameColumn);
 					fgrid.Columns.Add(mrDateColumn);
 					fgrid.Columns.Add(mrDoctorColumn);
 					fgrid.Columns.Add(mrLocationColumn);
+                    fgrid.Columns.Add(mrFileTypeColumn);
 
 					fgrid.GroupColumnDescriptions.Add(new GroupColumnDescription { ColumnName = "MRFolderName" });
 					fgrid.AllowGroupExpandCollapse = true;
@@ -1987,7 +2942,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2073,7 +3031,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2332,7 +3293,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2351,7 +3315,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2370,7 +3336,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2414,7 +3382,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2434,7 +3404,7 @@ namespace DynaPad
 						TriggerCheck(untriggeredQuestions, false, sectionId);
 					}
 
-					if (newTriggerIds != null && newTriggerIds.Count > 0 && !string.IsNullOrEmpty(newTriggerIds[0]))
+                    if (newTriggerIds != null && newTriggerIds.Count > 0 && !string.IsNullOrEmpty(newTriggerIds[0]))
 					{
 						var triggeredQuestions = sectionQuestions.SectionQuestions.FindAll(((obj) => newTriggerIds.Contains(((dynamic)obj).ParentConditionTriggerId) && !string.IsNullOrEmpty(((dynamic)obj).ParentConditionTriggerId)));
 
@@ -2444,7 +3414,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2480,7 +3452,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2657,6 +3631,7 @@ namespace DynaPad
 											case "DynaPad.DynaAuto":
 												var apeui = (DynaAuto)pelement.ContainerView.Subviews[0];
 												apeui.Enabled = triggered;
+												apeui.IsEnabled = triggered;
 												apeui.UserInteractionEnabled = triggered;
 												//peui.Draw(peui.Frame);
 												if (!triggered)
@@ -2672,6 +3647,25 @@ namespace DynaPad
 													apeui.Watermark = "Enter your answer here";
 													apeui.TextColor = UIColor.Black;
 													apeui.BackgroundColor = UIColor.White;
+												}
+												break;
+											case "DynaPad.DynaSegmented":
+												var speui = (DynaSegmented)pelement.ContainerView.Subviews[0];
+												speui.Enabled = triggered;
+												speui.IsEnabled = triggered;
+												speui.UserInteractionEnabled = triggered;
+												break;
+											case "DynaPad.DynaGrid":
+												var gpeui = (DynaGrid)pelement.ContainerView.Subviews[0];
+												gpeui.IsEnabled = triggered;
+												gpeui.UserInteractionEnabled = triggered;
+												if (!triggered)
+												{
+													gpeui.GridStyle = new DisabledGrid();
+												}
+												else
+												{
+													gpeui.GridStyle = new EnabledGrid();
 												}
 												break;
 										}
@@ -2693,7 +3687,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2749,7 +3745,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -2782,7 +3780,7 @@ namespace DynaPad
 
 		void OnStartRecording(object sender, EventArgs e)
 		{
-			System.Console.WriteLine("Begin Recording");
+			//System.Console.WriteLine("Begin Recording");
 
 			session = AVAudioSession.SharedInstance();
 
@@ -2790,14 +3788,18 @@ namespace DynaPad
 			session.SetCategory(AVAudioSession.CategoryRecord, out error);
 			if (error != null)
 			{
-				System.Console.WriteLine(error);
+				CommonFunctions.sendNSErrorEmail(error);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//System.Console.WriteLine(error);
 				return;
 			}
 
 			session.SetActive(true, out error);
 			if (error != null)
 			{
-				System.Console.WriteLine(error);
+				CommonFunctions.sendNSErrorEmail(error);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//System.Console.WriteLine(error);
 				return;
 			}
 
@@ -2889,15 +3891,19 @@ namespace DynaPad
 
 			try
 			{
-				System.Console.WriteLine("Playing Back Recording {0}", audioFilePath);
+				//System.Console.WriteLine("Playing Back Recording {0}", audioFilePath);
 
 				// The following line prevents the audio from stopping
 				// when the device autolocks. will also make sure that it plays, even
 				// if the device is in mute
 				NSError error = null;
 				AVAudioSession.SharedInstance().SetCategory(AVAudioSession.CategoryPlayback, out error);
-				if (error != null)
-					throw new Exception(error.DebugDescription);
+                if (error != null)
+				{
+					CommonFunctions.sendNSErrorEmail(error);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    //throw new Exception(error.DebugDescription);
+                }
 				NSError audioError;
 				//player = new AVPlayer(audioFilePath);
 				player = new AVAudioPlayer(audioFilePath, "aac", out audioError);
@@ -2942,8 +3948,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				System.Console.WriteLine("There was a problem playing back audio: ");
-				System.Console.WriteLine(ex.Message);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//System.Console.WriteLine("There was a problem playing back audio: ");
+				//System.Console.WriteLine(ex.Message);
 			}
 		}
 
@@ -2952,15 +3960,19 @@ namespace DynaPad
 		{
 			try
 			{
-				System.Console.WriteLine("Playing Back Recording {0}", title);
+				//System.Console.WriteLine("Playing Back Recording {0}", title);
 
 				// The following line prevents the audio from stopping
 				// when the device autolocks. will also make sure that it plays, even
 				// if the device is in mute
 				NSError error = null;
 				AVAudioSession.SharedInstance().SetCategory(AVAudioSession.CategoryPlayback, out error);
-				if (error != null)
-					throw new Exception(error.DebugDescription);
+                if (error != null)
+				{
+					CommonFunctions.sendNSErrorEmail(error);
+                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    //throw new Exception(error.DebugDescription);
+                }
 				//byte[] bytes = Convert.FromBase64String(dictationBytes);
 				//NSData dataDictation = NSData.FromArray(bytes);
 				//NSError audioError;
@@ -3002,8 +4014,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				System.Console.WriteLine("There was a problem playing back audio: ");
-				System.Console.WriteLine(ex.Message);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//System.Console.WriteLine("There was a problem playing back audio: ");
+				//System.Console.WriteLine(ex.Message);
 			}
 		}
 
@@ -3025,7 +4039,9 @@ namespace DynaPad
 			recorder = AVAudioRecorder.Create(audioFilePath, audioSettings, out error);
 			if (error != null)
 			{
-				System.Console.WriteLine(error);
+				CommonFunctions.sendNSErrorEmail(error);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//System.Console.WriteLine(error);
 				return false;
 			}
 
@@ -3041,7 +4057,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				System.Console.WriteLine("record error: " + ex.Message);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//System.Console.WriteLine("record error: " + ex.Message);
 			}
 
 			recorder.FinishedRecording += OnFinishedRecording;
@@ -3054,7 +4072,7 @@ namespace DynaPad
 		{
 			recorder.Dispose();
 			recorder = null;
-			System.Console.WriteLine("Done Recording (status: {0})", e.Status);
+			//System.Console.WriteLine("Done Recording (status: {0})", e.Status);
 		}
 
 
@@ -3072,17 +4090,17 @@ namespace DynaPad
 			//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			//mvc.Add(loadingOverlay);
 			popd.ContentViewController.Add(loadingOverlay);
-
-			var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
-			var dictationArray = dictationData.ToArray();
 			try
 			{
 				if (CrossConnectivity.Current.IsConnected)
 				{
+					var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
+					var dictationArray = dictationData.ToArray();
+
 					var dds = new DynaPadService.DynaPadService();
 					//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 					var dictationPath = dds.SaveDictation(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, sectionId + "_" + DateTime.Now.ToShortTimeString(), dictationArray);
-					System.Console.WriteLine("Saving Recording {0}", audioFilePath);
+					//System.Console.WriteLine("Saving Recording {0}", audioFilePath);
 
 					//var dps = new DynaPadService.DynaPadService();
 					//var dictations = dps.GetFormDictations(SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
@@ -3123,7 +4141,7 @@ namespace DynaPad
 					//	dicSec.GetImmediateRootElement().Reload(dicSec, UITableViewRowAnimation.Fade);
 					//}
 
-					loadingOverlay.Hide();
+					//loadingOverlay.Hide();
 
 					//pop.Dismiss(true);
 					NavigationController.DismissViewController(true, null);
@@ -3135,8 +4153,14 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+            finally
+            {
+                loadingOverlay.Hide();
+            }
 		}
 
 
@@ -3144,10 +4168,12 @@ namespace DynaPad
 		{
 			try
 			{
-				System.Console.WriteLine("Canceled Recording");
+				Console.WriteLine("Canceled Recording");
 			}
 			catch (Exception ex)
 			{
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
 				System.Console.WriteLine("There was a problem canceling audio: ");
 				System.Console.WriteLine(ex.Message);
 			}
@@ -3204,7 +4230,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                NavigationController.PopViewController(true);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -3241,7 +4270,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                NavigationController.PopViewController(true);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -3253,7 +4285,7 @@ namespace DynaPad
 				mre.PresetID = presetId;
 				mre.PresetName = presetName;
 				mre.PresetJson = presetJson;
-				mre.OnSelected += delegate (object sender, EventArgs e)
+				mre.OnSelected += delegate
 				{
 					SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
 					var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
@@ -3294,8 +4326,14 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
+
+
+
 	}
 }

@@ -33,6 +33,18 @@ namespace DynaPad
 			manager.StartManager();
 			manager.Authenticator.AuthenticateInstallation(); // This line is obsolete in crash only builds
 
+   //         System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+   //         timer.Start();
+   //         var dds = new DynaPadService.DynaPadService();
+   //         var hello = dds.HelloWorld();
+   //         timer.Stop();
+
+   //         if(timer.Elapsed.Seconds > 4)
+			//{
+            //    Exception ex = new Exception("hellow world took " + timer.Elapsed.Seconds + " seconds");
+            //    CommonFunctions.sendErrorEmail(ex);
+            //}
+
 			//WritePadAPI.recoInit();
 			//WritePadAPI.initializeFlags();
 
@@ -44,23 +56,31 @@ namespace DynaPad
 
 			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			var directoryname = Path.Combine(documents, "DynaRestore");
-			//var d = new DirectoryInfo(directoryname);
+            //var d = new DirectoryInfo(directoryname);
 
-			//foreach (FileInfo fi in d.GetFiles())
-			//{
-			//	if fi.CreationTime
-			//}
-			if (Directory.Exists(directoryname))
+            //foreach (FileInfo fi in d.GetFiles())
+            //{
+            //	if fi.CreationTime
+            //}
+            try
+            {
+                if (Directory.Exists(directoryname))
+                {
+                    //string[] restorefiles = Directory.GetFiles(directoryname);
+                    foreach (var file in Directory.GetFiles(directoryname))
+                    {
+                        if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 2)
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
 			{
-				//string[] restorefiles = Directory.GetFiles(directoryname);
-				foreach (var file in Directory.GetFiles(directoryname))
-				{
-					if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 2)
-					{
-						File.Delete(file);
-					}
-				}
-			}
+				CommonFunctions.sendErrorEmail(ex);
+                return false;
+            }
 
 			return true;
 		}

@@ -90,6 +90,8 @@ namespace DynaPad
 			Func<UIView> dirtyRectView = () => {
 				var view = new UIView (new CGRect (-10, -10, 0, 0));
 				view.Layer.BorderColor = UIColor.Red.CGColor;
+				//view.Layer.BackgroundColor = UIColor.Red.CGColor;
+				//view.BackgroundColor = UIColor.Green;
 				view.Layer.BorderWidth = 0.5f;
 				view.UserInteractionEnabled = false;
 				view.Hidden = true;
@@ -421,6 +423,21 @@ namespace DynaPad
 			{
 				Opaque = false;	
 				UIColor.Clear.SetFill();
+				//BackgroundColor = UIColor.Green;
+				//BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
+				//Alpha = 1.0f;
+				//SetNeedsDisplay();
+				//var context = UIGraphics.GetCurrentContext();
+				//context.SetBlendMode(CGBlendMode.Clear);
+				//context.ClearRect(rect);
+				//foreach (UIView ass in Subviews)
+				//{
+				//	ass.Opaque = false;
+				//	ass.BackgroundColor = UIColor.Clear;
+				//}
+				//if (context == null)
+				//return;
+				//context.SetFillColor(UIColor.Clear.CGColor);
 			}
 			else
 			{
@@ -464,6 +481,8 @@ namespace DynaPad
 				foreach (var stroke in strokeCollection.Strokes)
 					Draw (stroke);
 			}
+
+			//Draw(new Stroke());
 
 			var toDraw = StrokeToDraw;
 			if (toDraw != null)

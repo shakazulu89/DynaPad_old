@@ -5,9 +5,9 @@
 	<key>CFBundleName</key>
 	<string>DynaPad</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.7</string>
+	<string>1.2.4.7</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.7</string>
+	<string>1.2.4.7</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
@@ -42,5 +42,9 @@
 	<string>This app needs access to your location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Take the photo</string>
+	<key>UIRequiresPersistentWiFi</key>
+	<true/>
+	<key>UIApplicationExitsOnSuspend</key>
+	<true/>
 </dict>
 </plist>

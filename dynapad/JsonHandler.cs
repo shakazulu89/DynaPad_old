@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Json;
 using MonoTouch.Dialog;
 //using static DynaClassLibrary.DynaClasses;
 

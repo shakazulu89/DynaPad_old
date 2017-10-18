@@ -13,6 +13,8 @@ using HockeyApp.iOS;
 using CoreGraphics;
 //using static DynaClassLibrary.DynaClasses;
 //using DynaClassLibrary;
+using System.Threading.Tasks;
+//using MultiThreading.Controls;
 
 namespace DynaPad
 {
@@ -25,10 +27,32 @@ namespace DynaPad
 		Menu myDynaMenu;
 
 
+		//ResultsTableController resultsTableController;
+		//UISearchController searchController;
+		//bool searchControllerWasActive;
+		//bool searchControllerSearchFieldWasFirstResponder;
+		//readonly Appointment[] products;
+
+
+
 		protected MasterViewController(IntPtr handle) : base(handle)
 		{
 			// Note: this .ctor should not contain any initialization logic.
 			//Title = "";
+
+
+
+			//products = new Appointment[] {
+			//	new Appointment(Appointment.DeviceTypeTitle, "iPhone", 2007, 599),
+			//	new Appointment(Appointment.DeviceTypeTitle, "iPod", 2001, 399),
+			//	new Appointment(Appointment.DeviceTypeTitle, "iPod touch", 2007, 210),
+			//	new Appointment(Appointment.DeviceTypeTitle, "iPad", 2010, 499),
+			//	new Appointment(Appointment.DeviceTypeTitle, "iPad mini", 2012, 659),
+			//	new Appointment(Appointment.DesktopTypeTitle, "iMac", 1997, 1299),
+			//	new Appointment(Appointment.DesktopTypeTitle, "Mac Pro", 2006, 2499),
+			//	new Appointment(Appointment.PortableTypeTitle, "MacBook Air", 2008, 1799),
+			//	new Appointment(Appointment.PortableTypeTitle, "MacBook Pro", 2006, 1499),
+			//};
 		}
 
 		bool needLogin = true;
@@ -78,25 +102,75 @@ namespace DynaPad
 		{
 			base.ViewDidAppear(animated);
 
-			//plist.SetString("test", "testdomain");
+
+			//string ass = plist.StringForKey("Domain_Name");
+			//plist.SetString("DynaDomain", NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"));
 			//plist.Synchronize();
-			DynaDomain = plist.StringForKey("DynaDomain");
+			DynaDomain = plist.StringForKey("Domain_Name");
+			//DynaDomain = plist.StringForKey("DynaDomain");
 			if (!string.IsNullOrEmpty(DynaDomain))
 			{
+				//plist.SetString("DynaDomain", DynaDomain);
+				//plist.Synchronize();
 				var con = CrossConnectivity.Current;
 				if (con.IsConnected)
 				{
 					if (needLogin)
 					{
 						LoginScreenControl<CredentialsProvider, DefaultLoginScreenMessages>.Activate(this);
+						//DynaLogin<CredentialsProvider, DefaultLoginScreenMessages>.Activate(this);
 						needLogin = false;
 					}
 					else
 					{
 						Title = NSBundle.MainBundle.LocalizedString("Menu", "Form Sections");
-						DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                        DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).ViewControllers[0];//.TopViewController;
 						DetailViewController.Root.Clear();
-						DetailViewController.Root.Add(new Section("Logged in"));
+						DetailViewController.Root.Add(new Section("Logged in")
+						{
+							FooterView = new UIView(new CGRect(0, 0, 0, 0))
+							{
+								Hidden = true
+							}
+						});
+						//DetailViewController.Root.Add(new Section("Logged in"));
+
+
+
+						//resultsTableController = new ResultsTableController
+						//{
+						//	FilteredProducts = new List<Appointment>()
+						//};
+
+						//searchController = new UISearchController(resultsTableController)
+						//{
+						//	WeakDelegate = this,
+						//	DimsBackgroundDuringPresentation = false,
+						//	WeakSearchResultsUpdater = this
+						//};
+
+						//searchController.SearchBar.SizeToFit();
+						//TableView.TableHeaderView = searchController.SearchBar;
+
+						//resultsTableController.TableView.WeakDelegate = this;
+						//searchController.SearchBar.WeakDelegate = this;
+
+						//DefinesPresentationContext = true;
+
+						//if (searchControllerWasActive)
+						//{
+						//	searchController.Active = searchControllerWasActive;
+						//	searchControllerWasActive = false;
+
+						//	if (searchControllerSearchFieldWasFirstResponder)
+						//	{
+						//		searchController.SearchBar.BecomeFirstResponder();
+						//		searchControllerSearchFieldWasFirstResponder = false;
+						//	}
+						//}
+
+
+
 
 						DynaLocations();
 						//DynaStart();
@@ -136,7 +210,9 @@ namespace DynaPad
 
 		public void SaveDomain(string domainname)
 		{
-			plist.SetString(domainname, "DynaDomain");
+			//plist.SetString(domainname, "DynaDomain");
+			//plist.Synchronize();
+			plist.SetString(domainname, "Domain_Name");
 			plist.Synchronize();
 		}
 
@@ -151,33 +227,33 @@ namespace DynaPad
 		{
 			base.ViewDidLoad();
 
-			//DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-			//DetailViewController.Style = UITableViewStyle.Plain;
+            //DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+            //DetailViewController.Style = UITableViewStyle.Plain;
 
-			////var refresh = new UIRefreshControl();
-			////this.RefreshControl = refresh;
-			////RefreshRequested += delegate { ReloadComplete(); };
+            ////var refresh = new UIRefreshControl();
+            ////this.RefreshControl = refresh;
+            ////RefreshRequested += delegate { ReloadComplete(); };
 
 
-			//var dds = new DynaPadService.DynaPadService();
+            //var dds = new DynaPadService.DynaPadService();
 
-			////var menu = dds.BuildDynaMenu("123");
-			////var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
+            ////var menu = dds.BuildDynaMenu("123");
+            ////var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
 
-			//myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("1"));
-			//DetailViewController.DynaMenu = myDynaMenu;
+            //myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("1"));
+            //DetailViewController.DynaMenu = myDynaMenu;
 
-			//var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
-			//rootMainMenu.UnevenRows = true;
-			//rootMainMenu.Enabled = true;
+            //var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
+            //rootMainMenu.UnevenRows = true;
+            //rootMainMenu.Enabled = true;
 
-			//var sectionMainMenu = new Section();
-			//sectionMainMenu.HeaderView = null;
-			//BuildMenu(myDynaMenu, sectionMainMenu);
-			//rootMainMenu.Add(sectionMainMenu);
+            //var sectionMainMenu = new Section();
+            //sectionMainMenu.HeaderView = null;
+            //BuildMenu(myDynaMenu, sectionMainMenu);
+            //rootMainMenu.Add(sectionMainMenu);
 
-			//Root = rootMainMenu;
-
+            //Root = rootMainMenu;
+            //Style = UITableViewStyle.Plain;
 			//DynaStart();
 			DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			DetailViewController.Style = UITableViewStyle.Plain;
@@ -185,14 +261,20 @@ namespace DynaPad
 
 		public void DynaLocations()
 		{
+			var rootMainMenu = new DynaFormRootElement("Locations");
+			var sectionMainMenu = new Section();
+			//sectionMainMenu.HeaderView = null;
+
+   //         sectionMainMenu.HeaderView = new UIView(new CGRect(0, 0, 0, 0));
+			//sectionMainMenu.HeaderView.Hidden = true;
+			//sectionMainMenu.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+			//sectionMainMenu.FooterView.Hidden = true;
+
 			try
 			{
-				var rootMainMenu = new DynaFormRootElement("Locations");
 				rootMainMenu.UnevenRows = true;
 				rootMainMenu.Enabled = true;
 
-				var sectionMainMenu = new Section();
-				sectionMainMenu.HeaderView = null;
 				foreach (DynaClassLibrary.DynaClasses.Location loc in DynaClassLibrary.DynaClasses.LoginContainer.User.Locations)
 				{
 					//sectionMainMenu.Add(new SectionStringElement(loc.LocationName, delegate
@@ -213,19 +295,9 @@ namespace DynaPad
 
 				var feedbackStringElement = new StyledStringElement("Feedback (v" + NSBundle.MainBundle.InfoDictionary["CFBundleVersion"] + ")", ShowFeedbackList);
 
-				var logoutStringElement = new StyledStringElement("Logout", delegate
-				{
-					var LogoutPrompt = UIAlertController.Create("Logout", "Administrative use only. Logout?", UIAlertControllerStyle.Alert);
-					LogoutPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => Logout()));
-					LogoutPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-					//Present Alert
-					PresentViewController(LogoutPrompt, true, null);
-				});
-				logoutStringElement.BackgroundColor = UIColor.FromRGB(255, 172, 172);
-
 				sectionMainMenu.Add(settingsStringElement);
 				sectionMainMenu.Add(feedbackStringElement);
-				sectionMainMenu.Add(logoutStringElement);
+                sectionMainMenu.Add(GetLogoutElement());
 
 				rootMainMenu.Add(sectionMainMenu);
 
@@ -233,9 +305,37 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                //DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                DetailViewController.Root.Clear();
+                DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
+				sectionMainMenu.Add(GetLogoutElement());
+				rootMainMenu.Add(sectionMainMenu);
+				Root = rootMainMenu;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
+
+
+
+
+        public StyledStringElement GetLogoutElement()
+        {
+            var logoutStringElement = new StyledStringElement("Logout", delegate
+            {
+                var LogoutPrompt = UIAlertController.Create("Logout", "Administrative use only. Logout?", UIAlertControllerStyle.Alert);
+                LogoutPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => Logout()));
+                LogoutPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+            //Present Alert
+            PresentViewController(LogoutPrompt, true, null);
+            });
+            logoutStringElement.BackgroundColor = UIColor.FromRGB(255, 172, 172);
+
+            return logoutStringElement;
+        }
+
+
 
 
 		//public DynaPadService.ConfigurationObjects CommonFunctions.GetUserConfig()
@@ -304,7 +404,7 @@ namespace DynaPad
 					sectionMainMenu.HeaderView = null;
 					BuildMenu(myDynaMenu, sectionMainMenu);
 					rootMainMenu.Add(sectionMainMenu);
-
+                    //DetailViewController.SetDetailItem(new Section(), "URL", "http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf", "", true, null, false, null, null);
 					var formDVC = new DynaDialogViewController(rootMainMenu, true);
 					return formDVC;
 				}
@@ -314,7 +414,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return new DynaDialogViewController(CommonFunctions.ErrorRootElement() , true);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -358,11 +461,11 @@ namespace DynaPad
 
 				Root = rootMainMenu;
 
-				NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
-				  {
-					  DynaLocations();
-				  });
-
+                NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                  {
+                      DynaLocations();
+                  });
+                //DetailViewController.SetDetailItem(new Section(), "URL", "", "", true, null, false, null, null);
 				//var ass = SelectedAppointment.SelectedQForm.PatientName;
 			}
 			catch (Exception ex)
@@ -370,6 +473,10 @@ namespace DynaPad
 				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
+
+
+
+
 
 		public void Logout()
 		{
@@ -390,6 +497,7 @@ namespace DynaPad
 			try
 			{
 				if (myMenu.MenuItems == null) return null;
+
 				foreach (MenuItem mItem in myMenu.MenuItems)
 				{
 					var rootMenu = new DynaFormRootElement(mItem.MenuItemCaption);
@@ -486,7 +594,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -502,14 +613,18 @@ namespace DynaPad
 
 		public void ShowSettings()
 		{
-			var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width - 60, 50));
-			//nlab.Text = "NOTES: (" + SelectedAppointment.SelectedQForm.FormName + ")";
+			//var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width - 60, 50));
+			//var nlab = new UILabel(new CGRect(10, 0, 710, 50));
+			var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Width - 310, 50));
 			nlab.Text = "Settings";
 
 			var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
-			ncellHeader.Frame = new CGRect(0, 0, View.Bounds.Width, 50);
+			//ncellHeader.Frame = new CGRect(0, 0, 770, 50);
+			ncellHeader.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 50);
 
-			var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 0, 50, 50));
+			//var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 0, 50, 50));
+			//var nheadclosebtn = new UIButton(new CGRect(720, 0, 50, 50));
+			var nheadclosebtn = new UIButton(new CGRect(UIScreen.MainScreen.Bounds.Width - 300, 0, 50, 50));
 			nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
 
 			ncellHeader.ContentView.Add(nlab);
@@ -522,29 +637,34 @@ namespace DynaPad
 			var SettingsView = new DynaMultiRootElement();
 
 			var sSection = new DynaSection("Settings");
-			sSection.HeaderView = new UIView(new CGRect(0, 0, View.Bounds.Width, 30));
+			sSection.HeaderView = new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30));
 			sSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
 			sSection.FooterView.Hidden = true;
 
 			var sPaddedView = new PaddedUIView<UILabel>();
-			sPaddedView.Frame = new CGRect(0, 0, View.Bounds.Width, 30);
+			sPaddedView.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30);
 			sPaddedView.Padding = 5f;
 			sPaddedView.NestedView.Text = "DOMAIN NAME:";
 			sPaddedView.setStyle();
 
 			sSection.HeaderView.Add(sPaddedView);
 
-			var txtDomain = new UITextView(new CGRect(0, 0, View.Bounds.Width, 30));
-			txtDomain.Text = plist.StringForKey("DynaDomain");
+			var txtDomain = new UITextView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30));
+			//txtDomain.Text = plist.StringForKey("DynaDomain");
+			txtDomain.Text = plist.StringForKey("Domain_Name");
 
 			sSection.Add(txtDomain);
 
-			var btnDomain = new UIButton(new CGRect(0, 0, View.Bounds.Width, 40));
+			var btnDomain = new UIButton(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40));
 			btnDomain.SetTitle("Update", UIControlState.Normal);
 			btnDomain.SetTitleColor(UIColor.Black, UIControlState.Normal);
+			btnDomain.BackgroundColor = UIColor.FromRGB(224, 238, 240);
+			btnDomain.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
 			btnDomain.TouchUpInside += delegate {
-				plist.SetString(txtDomain.Text, "DynaDomain");
+				plist.SetString(txtDomain.Text, "Domain_Name");
 				plist.Synchronize();
+				//NSUserDefaults.StandardUserDefaults.SetString("domain_preference", txtDomain.Text);
+				//NSUserDefaults.StandardUserDefaults.Synchronize();
 				NavigationController.DismissViewController(true, null);
 				Logout();
 			};
@@ -561,7 +681,7 @@ namespace DynaPad
 
 			var ndia = new DialogViewController(SettingsView);
 			ndia.ModalInPopover = true;
-			ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+			ndia.ModalPresentationStyle = UIModalPresentationStyle.PageSheet;
 			ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
 
 			nheadclosebtn.TouchUpInside += delegate
@@ -594,6 +714,7 @@ namespace DynaPad
 				SelectedAppointment.ApptDoctorId = dfElemet.DoctorID;
 				SelectedAppointment.ApptLocationId = dfElemet.LocationID;
 				SelectedAppointment.ApptId = dfElemet.ApptID;
+                SelectedAppointment.CaseId = dfElemet.CaseID;
 
 				var formDVC = new DynaDialogViewController(rElement, true);
 				return formDVC;
@@ -602,7 +723,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -625,13 +749,19 @@ namespace DynaPad
 				DetailViewController.ReloadData();
 
 				var formDVC = new DynaDialogViewController(rElement, true);
-				formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+				formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate 
 				  {
 				  //DetailViewController.Title = "Welcome to Dynapad";
 				  DetailViewController.QuestionsView = null; //.Clear();
 				  DetailViewController.NavigationItem.RightBarButtonItem = null;
 					  DetailViewController.Root.Clear();
-					  DetailViewController.Root.Add(new Section("Logged in"));
+					  DetailViewController.Root.Add(new Section("Logged in")
+					  {
+						  FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						  {
+							  Hidden = true
+						  }
+					  });
 					  DetailViewController.Root.Caption = "Welcome to Dynapad";
 					  DetailViewController.ReloadData();
 
@@ -643,7 +773,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -704,13 +837,19 @@ namespace DynaPad
 					DetailViewController.Root.Caption = dfElemet.FormName;
 					DetailViewController.ReloadData();
 
-					formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+					formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate 
 					  {
 					  //DetailViewController.Title = "Welcome to Dynapad";
 					  DetailViewController.QuestionsView = null; //.Clear();
 					  DetailViewController.NavigationItem.RightBarButtonItem = null;
 						  DetailViewController.Root.Clear();
-						  DetailViewController.Root.Add(new Section("Logged in"));
+						  DetailViewController.Root.Add(new Section("Logged in")
+						  {
+							  FooterView = new UIView(new CGRect(0, 0, 0, 0))
+							  {
+								  Hidden = true
+							  }
+						  });
 						  DetailViewController.Root.Caption = SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName;
 						  DetailViewController.ReloadData();
 
@@ -725,7 +864,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -734,13 +876,13 @@ namespace DynaPad
 		{
 			try
 			{
+				var bounds = base.TableView.Frame;
+				// show the loading overlay on the UI thread using the correct orientation sizing
+				loadingOverlay = new LoadingOverlay(bounds);
+				SplitViewController.Add(loadingOverlay);
+
 				if (CrossConnectivity.Current.IsConnected)
 				{
-					var bounds = base.TableView.Frame;
-					// show the loading overlay on the UI thread using the correct orientation sizing
-					loadingOverlay = new LoadingOverlay(bounds);
-					SplitViewController.Add(loadingOverlay);
-
 					var dds = new DynaPadService.DynaPadService();
 					var dfElemet = (DynaFormRootElement)rElement;
 
@@ -793,20 +935,26 @@ namespace DynaPad
 					rootMRFolders.Add(mrFolderSections);
 
 					var formDVC = new DynaDialogViewController(rootMRFolders, true);
-					formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+					formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate 
 						  {
 						  //DetailViewController.Title = "Welcome to Dynapad";
 						  DetailViewController.QuestionsView = null; //.Clear();
 						  DetailViewController.NavigationItem.RightBarButtonItem = null;
 							  DetailViewController.Root.Clear();
-							  DetailViewController.Root.Add(new Section("Logged in"));
+							  DetailViewController.Root.Add(new Section("Logged in")
+							  {
+								  FooterView = new UIView(new CGRect(0, 0, 0, 0))
+								  {
+									  Hidden = true
+								  }
+							  });
 							  DetailViewController.Root.Caption = "Welcome to Dynapad";
 							  DetailViewController.ReloadData();
 
 							  NavigationController.PopViewController(true);
 						  });
 
-					loadingOverlay.Hide();
+					//loadingOverlay.Hide();
 
 					return formDVC;
 				}
@@ -816,19 +964,37 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+            finally
+            {
+                loadingOverlay.Hide();
+            }
 		}
 
 		void LoadMRView(string folderName, string folderID, string folderPath, MRFolder mrf, RootElement rt)
 		{
 			try
 			{
-				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+                if (DetailViewController.NavigationController.ViewControllers.Length > 1)
+                {
+                    DetailViewController.NavigationController.PopViewController(true);
+                }
+
+				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate 
 				{
 					DetailViewController.NavigationItem.RightBarButtonItem = null;
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in"));
+					DetailViewController.Root.Add(new Section("Logged in")
+					{
+						FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						{
+							Hidden = true
+						}
+					});
 					DetailViewController.Root.Caption = "Welcome to Dynapad";
 					DetailViewController.ReloadData();
 
@@ -839,274 +1005,358 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				NavigationController.PopViewController(true);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
-
+        UIBarButtonItem restorebtn;
 		public UIViewController GetFormService(RootElement rElement)
 		{
-			try
-			{
-				//if (DetailViewController.QuestionsView != null)
-				//{
-				//	DetailViewController.Title = "";
-				//	DetailViewController.QuestionsView = null; //.Clear();
-				//}
+            try
+            {
+                //if (DetailViewController.QuestionsView != null)
+                //{
+                //	DetailViewController.Title = "";
+                //	DetailViewController.QuestionsView = null; //.Clear();
+                //}
 
-				if (CrossConnectivity.Current.IsConnected)
-				{
-					//var bounds = UIScreen.MainScreen.Bounds;
-					var bounds = base.TableView.Frame;
-					// show the loading overlay on the UI thread using the correct orientation sizing
-					loadingOverlay = new LoadingOverlay(bounds);
-					//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
-					SplitViewController.Add(loadingOverlay);
-					var dds = new DynaPadService.DynaPadService();
-					var dfElemet = (DynaFormRootElement)rElement;
-					var origJson = dds.GetFormQuestions(CommonFunctions.GetUserConfig(), dfElemet.FormID, dfElemet.DoctorID, dfElemet.LocationID, dfElemet.PatientID, dfElemet.PatientName, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
-					JsonHandler.OriginalFormJsonString = origJson;
-					SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
+                //if (CrossConnectivity.Current.IsConnected)
+                //{
+                //var bounds = UIScreen.MainScreen.Bounds;
+                var bounds = base.TableView.Frame;
+                // show the loading overlay on the UI thread using the correct orientation sizing
+                loadingOverlay = new LoadingOverlay(bounds);
+                //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
+                SplitViewController.Add(loadingOverlay);
 
-					DetailViewController.Root.Caption = SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName;
-					DetailViewController.ReloadData();
+                var dds = new DynaPadService.DynaPadService();
+                var dfElemet = (DynaFormRootElement)rElement;
+                var origJson = dds.GetFormQuestions(CommonFunctions.GetUserConfig(), dfElemet.FormID, dfElemet.DoctorID, dfElemet.LocationID, dfElemet.PatientID, dfElemet.PatientName, SelectedAppointment.CaseId, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
+                JsonHandler.OriginalFormJsonString = origJson;
+                SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 
-					bool IsDoctorForm = dfElemet.IsDoctorForm;
+                DetailViewController.Root.Caption = SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName;
+                DetailViewController.ReloadData();
 
-					var navTitle = IsDoctorForm ? "Doctor Form" : "Patient Form";
-					var sectionsGroup = new RadioGroup("sections", -1);
-					//var rootFormSections = new RootElement(SelectedAppointment.SelectedQForm.FormName, sectionsGroup);
-					var rootFormSections = new RootElement(navTitle, sectionsGroup);
+                bool IsDoctorForm = dfElemet.IsDoctorForm;
 
-					var sectionFormSections = new Section();
+                var navTitle = IsDoctorForm ? "Doctor Form" : "Patient Form";
+                var sectionsGroup = new RadioGroup("sections", -1);
+                //var rootFormSections = new RootElement(SelectedAppointment.SelectedQForm.FormName, sectionsGroup);
+                var rootFormSections = new RootElement(navTitle, sectionsGroup);
 
-					if (IsDoctorForm)
-					{
-						/*
-						 * TODO: make presets password protected (maybe not, since for doctors only?)! (maybe component: Passcode)
-						*/
+                var sectionFormSections = new Section();
 
-						var FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
-						var formPresetSection = new DynaSection("Form Presets");
-						formPresetSection.Enabled = true;
-						var formPresetGroup = new RadioGroup("FormPresetAnswers", SelectedAppointment.SelectedQForm.FormSelectedTemplateId);
-						var formPresetsRoot = new DynaRootElement("Form Presets", formPresetGroup);
-						formPresetsRoot.IsPreset = true;//background color
+                if (IsDoctorForm)
+                {
+                    /*
+                     * TODO: make presets password protected (maybe not, since for doctors only?)! (maybe component: Passcode)
+                    */
 
-						//var noPresetRadio = new MyRadioElement("No Preset", "FormPresetAnswers");
-						var noPresetRadio = new PresetRadioElement("No Preset", "FormPresetAnswers");
-						noPresetRadio.PresetName = "No Preset";
-						noPresetRadio.OnSelected += delegate (object sender, EventArgs e)
-						{
-							JsonHandler.OriginalFormJsonString = origJson;
-							SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
+                    var FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
+                    var formPresetSection = new DynaSection("Form Presets");
+                    formPresetSection.Enabled = true;
+                    var formPresetGroup = new RadioGroup("FormPresetAnswers", SelectedAppointment.SelectedQForm.FormSelectedTemplateId);
+                    var formPresetsRoot = new DynaRootElement("Form Presets", formPresetGroup);
+                    formPresetsRoot.IsPreset = true;//background color
 
-							LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
-						};
+                    //var noPresetRadio = new MyRadioElement("No Preset", "FormPresetAnswers");
+                    var noPresetRadio = new PresetRadioElement("No Preset", "FormPresetAnswers");
+                    noPresetRadio.PresetName = "No Preset";
+                    noPresetRadio.OnSelected += delegate
+                    {
+                        JsonHandler.OriginalFormJsonString = origJson;
+                        SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
 
-						formPresetSection.Add(noPresetRadio);
+                        LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
+                    };
 
-						var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(SelectedAppointment.SelectedQForm.FormSections[0]);
+                    formPresetSection.Add(noPresetRadio);
 
-						foreach (string[] arrPreset in FormPresetNames)
-						{
-							var radioPreset = GetPreset(arrPreset[3], arrPreset[1], arrPreset[2], fs, SelectedAppointment.SelectedQForm.FormSections[0].SectionId, formPresetGroup, SelectedAppointment.SelectedQForm.FormSections[0], formPresetSection, origJson, sectionFormSections, IsDoctorForm);
+                    var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(SelectedAppointment.SelectedQForm.FormSections[0]);
 
-							//var radioPreset = new PresetRadioElement(arrPreset[1], "FormPresetAnswers");
-							//radioPreset.PresetName = arrPreset[1];
-							//radioPreset.PresetJson = arrPreset[2];
-							//radioPreset.OnSelected += delegate (object sender, EventArgs e)
-							//{
-							//	string presetJson = arrPreset[2];
-							//	JsonHandler.OriginalFormJsonString = presetJson;
-							//	SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(presetJson);
-							//	LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
-							//};
+                    foreach (string[] arrPreset in FormPresetNames)
+                    {
+                        var radioPreset = GetPreset(arrPreset[3], arrPreset[1], arrPreset[2], fs, SelectedAppointment.SelectedQForm.FormSections[0].SectionId, formPresetGroup, SelectedAppointment.SelectedQForm.FormSections[0], formPresetSection, origJson, sectionFormSections, IsDoctorForm);
 
-							formPresetSection.Add(radioPreset);
-						}
+                        //var radioPreset = new PresetRadioElement(arrPreset[1], "FormPresetAnswers");
+                        //radioPreset.PresetName = arrPreset[1];
+                        //radioPreset.PresetJson = arrPreset[2];
+                        //radioPreset.OnSelected += delegate (object sender, EventArgs e)
+                        //{
+                        //	string presetJson = arrPreset[2];
+                        //	JsonHandler.OriginalFormJsonString = presetJson;
+                        //	SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(presetJson);
+                        //	LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm);
+                        //};
 
-						var btnNewFormPreset = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
-						//btnNewFormPreset.Font = UIFont.BoldSystemFontOfSize(17);
-						btnNewFormPreset.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
-						btnNewFormPreset.SetTitleColor(UIColor.Black, UIControlState.Normal);
-						btnNewFormPreset.NormalColor = UIColor.FromRGB(224, 238, 240);
-						btnNewFormPreset.SetTitle("Save New Form Preset", UIControlState.Normal);
-						btnNewFormPreset.TouchUpInside += (sender, e) =>
-						{
-							/*
-							 * TODO: popup to enter preset name (DONE?)
-							*/
+                        formPresetSection.Add(radioPreset);
+                    }
 
-							//Create Alert
-							var SavePresetPrompt = UIAlertController.Create("New Form Preset", "Enter preset name: ", UIAlertControllerStyle.Alert);
-							SavePresetPrompt.AddTextField((field) =>
-							{
-								field.Placeholder = "Preset Name";
-							});
-							//Add Actions
-							SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveFormPreset(null, SavePresetPrompt.TextFields[0].Text, SelectedAppointment.SelectedQForm.FormSections[0].SectionId, formPresetSection, null, formPresetGroup, origJson, sectionFormSections, IsDoctorForm)));
-							SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-							//Present Alert
-							PresentViewController(SavePresetPrompt, true, null);
-						};
+                    var btnNewFormPreset = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50));
+                    //btnNewFormPreset.Font = UIFont.BoldSystemFontOfSize(17);
+                    btnNewFormPreset.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+                    btnNewFormPreset.SetTitleColor(UIColor.Black, UIControlState.Normal);
+                    btnNewFormPreset.NormalColor = UIColor.FromRGB(224, 238, 240);
+                    btnNewFormPreset.SetTitle("Save New Form Preset", UIControlState.Normal);
+                    btnNewFormPreset.TouchUpInside += (sender, e) =>
+                    {
+                        /*
+                         * TODO: popup to enter preset name (DONE?)
+                        */
 
-						formPresetSection.Add(btnNewFormPreset);
-						formPresetsRoot.Add(formPresetSection);
-						formPresetsRoot.Enabled = true;
+                        //Create Alert
+                        var SavePresetPrompt = UIAlertController.Create("New Form Preset", "Enter preset name: ", UIAlertControllerStyle.Alert);
+                        SavePresetPrompt.AddTextField((field) =>
+                        {
+                            field.Placeholder = "Preset Name";
+                        });
+                        //Add Actions
+                        SavePresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveFormPreset(null, SavePresetPrompt.TextFields[0].Text, SelectedAppointment.SelectedQForm.FormSections[0].SectionId, formPresetSection, null, formPresetGroup, origJson, sectionFormSections, IsDoctorForm)));
+                        SavePresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                        //Present Alert
+                        PresentViewController(SavePresetPrompt, true, null);
+                    };
 
-						sectionFormSections.Add(formPresetsRoot);
-					}
+                    formPresetSection.Add(btnNewFormPreset);
+                    formPresetsRoot.Add(formPresetSection);
+                    formPresetsRoot.Enabled = true;
 
-					foreach (FormSection fSection in SelectedAppointment.SelectedQForm.FormSections)
-					{
-						var section = new SectionStringElement(fSection.SectionName, delegate
-						{
-							LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm, sectionFormSections);
-							foreach (Element d in sectionFormSections.Elements)
-							{
-								var t = d.GetType();
-								if (t == typeof(SectionStringElement))
-								{
-									var di = (SectionStringElement)d;
-									di.selected = false;
-								}
-							}
+                    sectionFormSections.Add(formPresetsRoot);
+                }
 
-						//var shhh = sectionFormSections.GetContainerTableView();
-						sectionFormSections.GetContainerTableView().ReloadData();
-						});
+                foreach (FormSection fSection in SelectedAppointment.SelectedQForm.FormSections)
+                {
+                    var section = new SectionStringElement(fSection.SectionName, delegate
+                    {
+                        LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm, sectionFormSections);
+                        foreach (Element d in sectionFormSections.Elements)
+                        {
+                            var t = d.GetType();
+                            if (t == typeof(SectionStringElement))
+                            {
+                                var di = (SectionStringElement)d;
+                                di.selected = false;
+                            }
+                        }
 
-						sectionFormSections.Add(section);
-						//sectionFormSections.Add(new StringElement(fSection.SectionName, delegate { LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm); }));
-					}
+                            //var shhh = sectionFormSections.GetContainerTableView();
+                            sectionFormSections.GetContainerTableView().ReloadData();
+                    });
 
-					var finalizeSection = new SectionStringElement("Finalize", delegate
-					{
-						LoadSectionView("", "Finalize", null, IsDoctorForm, sectionFormSections);
+                    sectionFormSections.Add(section);
+                    //sectionFormSections.Add(new StringElement(fSection.SectionName, delegate { LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm); }));
+                }
 
-						foreach (Element d in sectionFormSections.Elements)
-						{
-							var t = d.GetType();
-							if (t == typeof(SectionStringElement))
-							{
-								var di = (SectionStringElement)d;
-								di.selected = false;
-							}
-						}
-						sectionFormSections.GetContainerTableView().ReloadData();
+                var finalizeSection = new SectionStringElement("Finalize", delegate
+                {
+                    LoadSectionView("", "Finalize", null, IsDoctorForm, sectionFormSections);
+
+                    foreach (Element d in sectionFormSections.Elements)
+                    {
+                        var t = d.GetType();
+                        if (t == typeof(SectionStringElement))
+                        {
+                            var di = (SectionStringElement)d;
+                            di.selected = false;
+                        }
+                    }
+                    sectionFormSections.GetContainerTableView().ReloadData();
+                });
+
+                sectionFormSections.Add(finalizeSection);
+
+                //sectionFormSections.Add(new StringElement("Finalize", delegate { LoadSectionView("", "Finalize", null, IsDoctorForm); }));
+
+                rootFormSections.Add(sectionFormSections);
+
+                var formDVC = new DynaDialogViewController(rootFormSections, true, false);
+                //formDVC.IsForm = true;
+
+                string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var directoryname = Path.Combine(documents, "DynaRestore");
+                var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+                //var showrestore = false;
+                //UIBarButtonItem restorebtn = new UIBarButtonItem();
+
+                if (File.Exists(filename))
+                {
+                    //showrestore = true;
+
+                    var restoreFile = File.ReadAllText(filename);
+                    var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+                    var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+                    var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+                    if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                    {
+                        messageLabel = new UILabel();
+                        restorebtn = new UIBarButtonItem(UIImage.FromBundle("Restore"), UIBarButtonItemStyle.Bordered, delegate
+                        {
+                            //Create Alert
+                            var RestorePrompt = UIAlertController.Create("Restore Form", "Administrative use only. Please enter password to restore", UIAlertControllerStyle.Alert);
+                            RestorePrompt.AddTextField((field) =>
+                            {
+                                field.SecureTextEntry = true;
+                                field.Placeholder = "Password";
+                            });
+
+                            RestorePrompt.Add(messageLabel);
+                            RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject, sectionFormSections)));
+                            RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+
+                            //Present Alert
+                            PresentViewController(RestorePrompt, true, null);
+                        });
+                    }
+
+                    DetailViewController.NavigationItem.SetRightBarButtonItem(restorebtn, true);
+                }
+
+                if (IsDoctorForm)
+                {
+                    messageLabel = new UILabel();
+
+					//var backdiscard = new UIBarButtonItem(UIImage.FromBundle("Delete"), UIBarButtonItemStyle.Plain, delegate {
+                    var backdiscard = new UIBarButtonItem(UIBarButtonSystemItem.Cancel, delegate {
+                        var BackPrompt_DoctorDiscard = UIAlertController.Create("Discard and Exit", "** WARNING **" + Environment.NewLine + "This will discard any changes, do you wish to continue? " + Environment.NewLine + " ** WARNING **", UIAlertControllerStyle.Alert);
+
+						BackPrompt_DoctorDiscard.Add(messageLabel);
+						BackPrompt_DoctorDiscard.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => PopBack(null, IsDoctorForm, false, sectionFormSections)));
+						BackPrompt_DoctorDiscard.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+
+						//Present Alert
+						PresentViewController(BackPrompt_DoctorDiscard, true, null);
 					});
 
-					sectionFormSections.Add(finalizeSection);
+					//var backsave = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate {
+                    var backsave = new UIBarButtonItem(UIBarButtonSystemItem.Done, delegate {
+						var BackPrompt_DoctorDiscard = UIAlertController.Create("Save and Exit", "Save changes?", UIAlertControllerStyle.Alert);
 
-					//sectionFormSections.Add(new StringElement("Finalize", delegate { LoadSectionView("", "Finalize", null, IsDoctorForm); }));
+						BackPrompt_DoctorDiscard.Add(messageLabel);
+						BackPrompt_DoctorDiscard.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => PopBack(null, IsDoctorForm, true, sectionFormSections)));
+						BackPrompt_DoctorDiscard.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
 
-					rootFormSections.Add(sectionFormSections);
+						//Present Alert
+						PresentViewController(BackPrompt_DoctorDiscard, true, null);
+					});
 
-					var formDVC = new DynaDialogViewController(rootFormSections, true, false);
-					//formDVC.IsForm = true;
+                    //formDVC.NavigationItem.SetLeftBarButtonItems(new UIBarButtonItem[] { backsave, backdiscard }, true);
+                    formDVC.NavigationItem.SetLeftBarButtonItem(backsave, true);
+                    formDVC.NavigationItem.SetRightBarButtonItem(backdiscard, true);
 
-					messageLabel = new UILabel();
-					formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("LockedBack"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
-					  {
-					  //Create Alert
-					  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue", UIAlertControllerStyle.Alert);
-						  BackPrompt.AddTextField((field) =>
-						  {
-							  field.SecureTextEntry = true;
-							  field.Placeholder = "Password";
-						  });
-
-						  BackPrompt.Add(messageLabel);
-						  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text, IsDoctorForm)));
-						  BackPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-
-					  //Present Alert
-					  PresentViewController(BackPrompt, true, null);
-					  });
-
-					//if (!IsDoctorForm)
-					//{
-					//	messageLabel = new UILabel();
-					//	formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Lock"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
-					//  	{
-					//		  //Create Alert
-					//		  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue", UIAlertControllerStyle.Alert);
-					//		  BackPrompt.AddTextField((field) =>
-					//		  {
-					//			  field.SecureTextEntry = true;
-					//			  field.Placeholder = "Password";
-					//		  });
-
-					//		  BackPrompt.Add(messageLabel);
-					//		  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text)));
-					//		  BackPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-
-					//		  //Present Alert
-					//		  PresentViewController(BackPrompt, true, null);
-					//  	});
-					//	//formDVC.NavigationItem.LeftBarButtonItem.Title = "Back";
-					//}
-
-					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-					var directoryname = Path.Combine(documents, "DynaRestore");
-					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+                    //if (showrestore)
+                    //{
+                    //    //formDVC.NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { restorebtn, backdiscard }, true);
+                    //    DetailViewController.NavigationItem.SetRightBarButtonItem(restorebtn, true);
+                    //}
+                    //else
+                    //{
+                    //    formDVC.NavigationItem.SetRightBarButtonItem(backdiscard, true);
+                    //}
 
 
-					if (File.Exists(filename))
-					{
-						var restoreFile = File.ReadAllText(filename);
-						var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-						var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-						var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+                    //formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+                    //{
+                    //    var BackPrompt_Doctor = UIAlertController.Create("Exit Form", "Save changes?", UIAlertControllerStyle.Alert);
 
-						if (!JToken.DeepEquals(sourceJObject, targetJObject))
-						{
-							messageLabel = new UILabel();
-							formDVC.NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Restore"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
-							  {
-							  //Create Alert
-							  var RestorePrompt = UIAlertController.Create("Restore Form", "Administrative use only. Please enter password to restore", UIAlertControllerStyle.Alert);
-								  RestorePrompt.AddTextField((field) =>
-								  {
-									  field.SecureTextEntry = true;
-									  field.Placeholder = "Password";
-								  });
+                    //    BackPrompt_Doctor.Add(messageLabel);
+                    //    BackPrompt_Doctor.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => PopBack(null, IsDoctorForm, true, sectionFormSections)));
+                    //    BackPrompt_Doctor.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                    //    BackPrompt_Doctor.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Default, action => PopBack(null, IsDoctorForm, false, sectionFormSections)));
 
-								  RestorePrompt.Add(messageLabel);
-								  RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject, sectionFormSections)));
-								  RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                    //    //Present Alert
+                    //    PresentViewController(BackPrompt_Doctor, true, null);
+                    //});
+                }
+                else
+                {
+                    messageLabel = new UILabel();
+                    var clientbackbtn = new UIBarButtonItem(UIImage.FromBundle("LockedBack"), UIBarButtonItemStyle.Plain, delegate
+                    {
+                      //Create Alert
+                      var BackPrompt_Patient = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue, save changes?", UIAlertControllerStyle.Alert);
+                      BackPrompt_Patient.AddTextField((field) =>
+                      {
+                          field.SecureTextEntry = true;
+                          field.Placeholder = "Password";
+                      });
 
-							  //Present Alert
-							  PresentViewController(RestorePrompt, true, null);
-							  });
-						}
-					}
+                      BackPrompt_Patient.Add(messageLabel);
+                      BackPrompt_Patient.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => PopBack(BackPrompt_Patient.TextFields[0].Text, IsDoctorForm, true, sectionFormSections)));
+                      BackPrompt_Patient.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                      BackPrompt_Patient.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Default, action => PopBack(BackPrompt_Patient.TextFields[0].Text, IsDoctorForm, false, sectionFormSections)));
 
-					var firstid = 0;
-					if (IsDoctorForm) { firstid = 1; }
-					var q = (SectionStringElement)sectionFormSections[firstid];
-					q.selected = true;
-					//q.GetContainerTableView().ReloadData();
-					//sectionFormSections.GetContainerTableView().SelectRow(sectionFormSections.Elements[1].IndexPath, true, UITableViewScrollPosition.Top);
-					//var shhh = sections.GetContainerTableView();
-					//sectionFormSections.GetContainerTableView().ReloadData();
-					//ReValidate(SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections, 0);
-					LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
+                      //Present Alert
+                      PresentViewController(BackPrompt_Patient, true, null);
+                    });
 
-					loadingOverlay.Hide();
+                    formDVC.NavigationItem.SetLeftBarButtonItem(clientbackbtn, true);
 
-					return formDVC;
-				}
+                    //if (showrestore)
+                    //{
+                    //    formDVC.NavigationItem.SetRightBarButtonItem(restorebtn, true);
+                    //}
+                }
 
-				PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-				return new DynaDialogViewController(new RootElement("No internet"), true);
-			}
+                //if (!IsDoctorForm)
+                //{
+                //	messageLabel = new UILabel();
+                //	formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Lock"), UIBarButtonItemStyle.Bordered, delegate (object sender, EventArgs e)
+                //  	{
+                //		  //Create Alert
+                //		  var BackPrompt = UIAlertController.Create("Exit Form", "Administrative use only. Please enter password to continue", UIAlertControllerStyle.Alert);
+                //		  BackPrompt.AddTextField((field) =>
+                //		  {
+                //			  field.SecureTextEntry = true;
+                //			  field.Placeholder = "Password";
+                //		  });
+
+                //		  BackPrompt.Add(messageLabel);
+                //		  BackPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => PopBack(BackPrompt.TextFields[0].Text)));
+                //		  BackPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+
+                //		  //Present Alert
+                //		  PresentViewController(BackPrompt, true, null);
+                //  	});
+                //	//formDVC.NavigationItem.LeftBarButtonItem.Title = "Back";
+                //}
+
+                var firstid = 0;
+                if (IsDoctorForm) { firstid = 1; }
+                var q = (SectionStringElement)sectionFormSections[firstid];
+                q.selected = true;
+                //q.GetContainerTableView().ReloadData();
+                //sectionFormSections.GetContainerTableView().SelectRow(sectionFormSections.Elements[1].IndexPath, true, UITableViewScrollPosition.Top);
+                //var shhh = sections.GetContainerTableView();
+                //sectionFormSections.GetContainerTableView().ReloadData();
+                //ReValidate(SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections, 0);
+                LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
+
+						//loadingOverlay.Hide();
+
+                return formDVC;
+                //}
+
+                //PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                //return new DynaDialogViewController(new RootElement("No internet"), true);
+            }
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                //loadingOverlay.Hide();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
+            finally
+            {
+                loadingOverlay.Hide();
+            }
 		}
 
 
@@ -1151,12 +1401,14 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
 
-		void PopBack(string password, bool IsDoctorForm)
+		void PopBack(string password, bool IsDoctorForm, bool save, Section sections = null)
 		{
 			try
 			{
@@ -1173,13 +1425,91 @@ namespace DynaPad
 
 				if (SelectedAppointment.ApptLocationId == DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId)
 				{
-					isValid |= password == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
+					//isValid |= password == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
+					isValid |= (password == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword || IsDoctorForm);
 				}
 
 				if (isValid)
 				{
 					//if (DetailViewController.QuestionsView != null)
 					//{
+					if (save)
+					{
+						var CanContinue = true;
+						string qlist = "";
+						List<SectionStringElement> qelements = new List<SectionStringElement>();
+
+						object[,] vsecs = new object[SelectedAppointment.SelectedQForm.FormSections.Count, 2];
+						for (int x = 0; x < SelectedAppointment.SelectedQForm.FormSections.Count; x++)
+						{
+							var vsec = SelectedAppointment.SelectedQForm.FormSections[x];
+							vsecs[x, 0] = vsec;
+							//if (ValidateSection(vsec).Count == 0)
+							var invalidquestions = ValidateSection(vsec);
+							//if (ValidateSection(vsec))
+							if (invalidquestions.Count == 0)
+							{
+								vsecs[x, 1] = true;
+								vsec.Revalidating = false;
+							}
+							else
+							{
+								vsecs[x, 1] = false;
+								CanContinue = false;
+								qelements.Add(new SectionStringElement(vsec.SectionName + ":") { vsection = true });
+
+								foreach (InvalidQuestion q in invalidquestions)
+								{
+									qelements.Add(new SectionStringElement(" - " + q.QuestionText) { vquestion = true });
+									qlist = qlist + "\n" + vsec.SectionName + " - " + q.QuestionText;
+								}
+							}
+						}
+
+						if (CanContinue)
+						{
+							BackSubmitForm(IsDoctorForm, sections);
+						}
+						else
+						{
+							FormSection qSection = null;
+							int firstinvalid = 0;
+
+							for (int i = 0; i < SelectedAppointment.SelectedQForm.FormSections.Count; i++)
+							{
+								var test = vsecs[i, 1];
+								if (Equals(test, false))
+								{
+									qSection = vsecs[i, 0] as FormSection;
+									firstinvalid = i;
+
+									for (int qi = 0; qi < qSection.SectionQuestions.Count; qi++)
+									{
+										var firstinvalidquestion = qSection.SectionQuestions[qi];
+										if (firstinvalidquestion.IsInvalid == true)
+										{
+											qSection.RevalidatingRow = qi;
+											break;
+										}
+									}
+
+									break;
+								}
+							}
+
+							if (qSection == null)
+							{
+								return;
+							}
+
+							var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[SelectedAppointment.SelectedQForm.FormSections.IndexOf(qSection)];
+							nextSectionQuestions.Revalidating = true;
+							ValidationAlert(qelements, nextSectionQuestions, IsDoctorForm, sections, firstinvalid);
+
+							return;
+						}
+					}
+
 					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
 					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 					var directoryname = Path.Combine(documents, "DynaRestore");
@@ -1216,7 +1546,13 @@ namespace DynaPad
 					//DetailViewController.Title = "Welcome to Dynapad";
 					DetailViewController.QuestionsView = null; //.Clear();
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in"));
+					DetailViewController.Root.Add(new Section("Logged in") 
+                    {
+                        FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                        {
+                            Hidden = true
+                        }
+                    });
 					DetailViewController.Root.Caption = "Welcome to Dynapad";
 					//DetailViewController.NavigationItem.SetLeftBarButtonItem(null, true);
 					//DetailViewController.NavigationItem.SetRightBarButtonItems(null, true);
@@ -1226,7 +1562,7 @@ namespace DynaPad
 					DetailViewController.ReloadData();
 					//}
 
-					NavigationController.PopViewController(true);
+                    NavigationController.PopViewController(true);
 				}
 				else
 				{
@@ -1235,27 +1571,72 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                foreach (Element d in sections.Elements)
+				{
+					var t = d.GetType();
+					if (t == typeof(SectionStringElement))
+					{
+						var di = (SectionStringElement)d;
+						di.selected = false;
+					}
+				}
+				sections.GetContainerTableView().ReloadData();
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				DetailViewController.Root.Clear();
+				DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
+                DetailViewController.ReloadData();
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
+        void BackSubmitForm(bool IsDoctorForm, Section sections = null)
+        {
+            try
+            {
+                var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+                var dds = new DynaPadService.DynaPadService();
+				dds.SubmitFormAnswers(CommonFunctions.GetUserConfig(), finalJson, true, IsDoctorForm);
+                dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
+            }
+            catch (Exception ex)
+			{
+				foreach (Element d in sections.Elements)
+				{
+					var t = d.GetType();
+					if (t == typeof(SectionStringElement))
+					{
+						var di = (SectionStringElement)d;
+						di.selected = false;
+					}
+				}
+				sections.GetContainerTableView().ReloadData();
+				//DetailViewController.Root.Clear();
+				//DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
+				//DetailViewController.ReloadData();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
+        }
 
-		//void SaveFormPreset(string presetName)
-		//{
-		//	// doctorid = 123 / 321
-		//	// locationid = 321 / 123
 
-		//	string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-		//	var dds = new DynaPadService.DynaPadService();
-		//	dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, null);
-		//}
+        //void SaveFormPreset(string presetName)
+        //{
+        //	// doctorid = 123 / 321
+        //	// locationid = 321 / 123
 
-
-
+        //	string presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+        //	var dds = new DynaPadService.DynaPadService();
+        //	dds.SaveAnswerPreset(SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, null);
+        //}
 
 
 
-		void SaveFormPreset(string presetId, string presetName, string sectionId, Section presetSection, PresetRadioElement pre, RadioGroup presetGroup, string origS, Section sectionFormSections, bool IsDoctorForm = true)
+
+
+
+        void SaveFormPreset(string presetId, string presetName, string sectionId, Section presetSection, PresetRadioElement pre, RadioGroup presetGroup, string origS, Section sectionFormSections, bool IsDoctorForm = true)
 		{
 			try
 			{
@@ -1322,7 +1703,29 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				//foreach (Element d in sectionFormSections.Elements)
+				//{
+				//	var t = d.GetType();
+				//	if (t == typeof(SectionStringElement))
+				//	{
+				//		var di = (SectionStringElement)d;
+				//		if (di.selected == true)
+				//		{
+				//			di.selected = false;
+				//		}
+				//	}
+				//}
+
+				//var q = (SectionStringElement)sectionFormSections[1];
+				//q.selected = true;
+
+				//LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
+
+				NavigationController.PopViewController(true);
+
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1359,7 +1762,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				NavigationController.PopViewController(true);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1379,7 +1785,7 @@ namespace DynaPad
 				mre.PresetID = presetId;
 				mre.PresetName = presetName;
 				mre.PresetJson = presetJson;
-				mre.OnSelected += delegate (object sender, EventArgs e)
+				mre.OnSelected += delegate 
 				{
 					SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(presetJson);
 
@@ -1460,7 +1866,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(true), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1550,6 +1959,32 @@ namespace DynaPad
 								}
 								else question.IsInvalid = false;
 								break;
+							case "Grid":
+								foreach (QuestionRowItem row in question.ItemRows)
+								{
+									foreach (ItemColumn col in row.ItemColumns)
+									{
+										if (col.Required)
+										{
+											if (string.IsNullOrEmpty(col.AnswerText))
+											{
+												question.IsInvalid = false;
+												break;
+											}
+											question.IsInvalid = true;
+										}
+									}
+								}
+								valid &= !question.IsInvalid;
+								break;
+							default:
+								if (string.IsNullOrEmpty(question.AnswerText))
+								{
+									valid = false;
+									question.IsInvalid = true;
+								}
+								else question.IsInvalid = false;
+								break;
 						}
 
 						if (question.IsInvalid)
@@ -1564,10 +1999,147 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
+
+
+		public void FinalizationLogic(FormSection OrigSection, string sectionName, string sectionId, bool IsDoctorForm, GlassButton btnNextSection, Section sections, bool IsFinalize)
+		{
+            //try
+            //{
+                var CanContinue = true;
+                string qlist = "";
+                List<SectionStringElement> qelements = new List<SectionStringElement>();
+
+                object[,] vsecs = new object[SelectedAppointment.SelectedQForm.FormSections.Count, 2];
+                for (int x = 0; x < SelectedAppointment.SelectedQForm.FormSections.Count; x++)
+                {
+                    var vsec = SelectedAppointment.SelectedQForm.FormSections[x];
+                    vsecs[x, 0] = vsec;
+                    var invalidquestions = ValidateSection(vsec);
+                    if (invalidquestions.Count == 0)
+                    {
+                        vsecs[x, 1] = true;
+                        vsec.Revalidating = false;
+                    }
+                    else
+                    {
+                        vsecs[x, 1] = false;
+                        CanContinue = false;
+                        qelements.Add(new SectionStringElement(vsec.SectionName + ":") { vsection = true });
+
+                        foreach (InvalidQuestion q in invalidquestions)
+                        {
+                            qelements.Add(new SectionStringElement(" - " + q.QuestionText) { vquestion = true });
+                            qlist = qlist + "\n" + vsec.SectionName + " - " + q.QuestionText;
+                        }
+                    }
+                }
+
+                if (CanContinue)
+                {
+                    if (IsFinalize)
+                    {
+                        var origSectionJson = JsonConvert.SerializeObject(OrigSection);
+                        if (DetailViewController.NavigationController != null) DetailViewController.NavigationController.PopViewController(true);
+                        DetailViewController.SetDetailItem(new Section(sectionName), sectionName, sectionId, origSectionJson, IsDoctorForm, btnNextSection);
+                    }
+                    else
+                    {
+                        BackSubmitForm(IsDoctorForm, sections);
+
+                        string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+                        var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        var directoryname = Path.Combine(documents, "DynaRestore");
+                        var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+                        var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+                        if (File.Exists(filename))
+                        {
+                            var restoreFile = File.ReadAllText(filename);
+                            var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+                            var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+                            if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                            {
+                                Directory.CreateDirectory(directoryname);
+                                File.WriteAllText(filename, sourceJson);
+                            }
+
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(directoryname);
+                            File.WriteAllText(filename, sourceJson);
+                        }
+
+                        DetailViewController.QuestionsView = null; //.Clear();
+    					DetailViewController.Root.Clear();
+                        DetailViewController.Root.Add(new Section("Logged in")
+                        {
+                            FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                            {
+                                Hidden = true
+                            }
+                        });
+                        DetailViewController.Root.Caption = "Welcome to Dynapad";
+                        DetailViewController.NavigationItem.LeftBarButtonItems = null;
+                        DetailViewController.NavigationItem.RightBarButtonItems = null;
+                        DetailViewController.ReloadData();
+
+                        NavigationController.PopViewController(true);
+                    }
+                }
+                else
+                {
+                    FormSection qSection = null;
+                    int firstinvalid = 0;
+
+                    for (int i = 0; i < SelectedAppointment.SelectedQForm.FormSections.Count; i++)
+                    {
+                        var test = vsecs[i, 1];
+                        if (Equals(test, false))
+                        {
+                            qSection = vsecs[i, 0] as FormSection;
+                            firstinvalid = i;
+
+                            for (int qi = 0; qi < qSection.SectionQuestions.Count; qi++)
+                            {
+                                var firstinvalidquestion = qSection.SectionQuestions[qi];
+                                if (firstinvalidquestion.IsInvalid == true)
+                                {
+                                    qSection.RevalidatingRow = qi;
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+
+                    if (qSection == null)
+                    {
+                        return;
+                    }
+
+                    var nextSectionQuestions = SelectedAppointment.SelectedQForm.FormSections[SelectedAppointment.SelectedQForm.FormSections.IndexOf(qSection)];
+                    nextSectionQuestions.Revalidating = true;
+
+                    ValidationAlert(qelements, nextSectionQuestions, IsDoctorForm, sections, firstinvalid);
+                }
+			//}
+			//catch (Exception ex)
+			//{
+			//	CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+			//	//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+			//}
+		}
 
 
 		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null) 		{
@@ -1585,8 +2157,10 @@ namespace DynaPad
 				}
 				else if (sectionName == "Finalize")
 				{
+					//FinalizationLogic(OrigSection, sectionName, sectionId, IsDoctorForm, btnNextSection, sections, true);
 					var CanContinue = true;
 					string qlist = "";
+					List<SectionStringElement> qelements = new List<SectionStringElement>();
 
 					object[,] vsecs = new object[SelectedAppointment.SelectedQForm.FormSections.Count, 2];
 					for (int x = 0; x < SelectedAppointment.SelectedQForm.FormSections.Count; x++)
@@ -1605,9 +2179,11 @@ namespace DynaPad
 						{
 							vsecs[x, 1] = false;
 							CanContinue = false;
+							qelements.Add(new SectionStringElement(vsec.SectionName + ":") { vsection = true } );
 
 							foreach (InvalidQuestion q in invalidquestions)
 							{
+								qelements.Add(new SectionStringElement(" - " + q.QuestionText) { vquestion = true } );
 								qlist = qlist + "\n" + vsec.SectionName + " - " + q.QuestionText;
 							}
 						}
@@ -1677,8 +2253,8 @@ namespace DynaPad
 						//nextSectionQuestions.InvalidIndexPath = asspath;
 
 						//LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
-
-						PresentViewController(CommonFunctions.AlertPrompt("Validation Error", "Please provide the required information (marked with a red asterisk):" + qlist, true, action => ReValidate(nextSectionQuestions, IsDoctorForm, sections, firstinvalid), false, null), true, null);
+						ValidationAlert(qelements, nextSectionQuestions, IsDoctorForm, sections, firstinvalid);
+						//PresentViewController(CommonFunctions.AlertPrompt("Validation Error", "Please provide the required information (marked with a red asterisk):" + qlist, true, action => ReValidate(nextSectionQuestions, IsDoctorForm, sections, firstinvalid), false, null), true, null);
 					}
 				}
 				else
@@ -1690,8 +2266,77 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                //NavigationController.PopViewController(true);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			} 		}
+
+
+		void ValidationAlert(List<SectionStringElement> qlist, FormSection nextSectionQuestions, bool isDoctorForm, Section sections, int firstinvalid)
+		{
+			var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Width - 250, 50));
+			nlab.Text = "Validation Error";
+			nlab.TextAlignment = UITextAlignment.Center;
+
+			var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
+			ncellHeader.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 50);
+
+			//var nheadclosebtn = new UIButton(new CGRect(UIScreen.MainScreen.Bounds.Width - 300, 0, 50, 50));
+			//nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+			ncellHeader.ContentView.Add(nlab);
+			//ncellHeader.ContentView.Add(nheadclosebtn);
+
+			var nsec = new Section(ncellHeader);
+			nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+			nsec.FooterView.Hidden = true;
+
+			var SettingsView = new DynaMultiRootElement();
+
+			var sSection = new DynaSection("ValidationError");
+			sSection.HeaderView = new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30));
+			sSection.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+			sSection.FooterView.Hidden = true;
+
+			var sPaddedView = new PaddedUIView<UILabel>();
+			sPaddedView.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30);
+			sPaddedView.Padding = 5f;
+			sPaddedView.NestedView.Text = "Please provide the required information (marked with a red asterisk):";
+			sPaddedView.Type = "Validation";
+			sPaddedView.setStyle();
+
+			sSection.HeaderView.Add(sPaddedView);
+
+			sSection.AddAll(qlist);
+
+			var btnDismiss = new UIButton(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40));
+			btnDismiss.SetTitle("Return", UIControlState.Normal);
+			btnDismiss.SetTitleColor(UIColor.Black, UIControlState.Normal);
+			btnDismiss.BackgroundColor = UIColor.FromRGB(224, 238, 240);
+			btnDismiss.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
+			btnDismiss.TouchUpInside += delegate {
+				ReValidate(nextSectionQuestions, isDoctorForm, sections, firstinvalid);
+				NavigationController.DismissViewController(true, null);
+			};
+
+			sSection.Add(btnDismiss);
+
+			SettingsView.Add(nsec);
+			SettingsView.Add(sSection);
+
+			var nroo = new RootElement("Validations");
+			nroo.Add(nsec);
+
+			var ndia = new DialogViewController(SettingsView);
+			ndia.ModalInPopover = true;
+			ndia.ModalPresentationStyle = UIModalPresentationStyle.PageSheet;
+			ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+
+			NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
+			NavigationController.PresentViewController(ndia, true, null);
+		}
+
 
 		void ReValidate(FormSection nextSectionQuestions, bool IsDoctorForm, Section sections, int firstinvalid)
 		{
@@ -1719,7 +2364,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1808,7 +2455,10 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(true), true, null);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -1816,11 +2466,17 @@ namespace DynaPad
 		void LoadReportView(string valueId, string sectionName, RootElement rt, string reportName) 		{
 			try
 			{
-				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
 				{
 					DetailViewController.NavigationItem.RightBarButtonItem = null;
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in"));
+					DetailViewController.Root.Add(new Section("Logged in")
+					{
+						FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						{
+							Hidden = true
+						}
+					});
 					DetailViewController.Root.Caption = "Welcome to Dynapad";
 					DetailViewController.ReloadData();
 
@@ -1831,18 +2487,29 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				DetailViewController.Root.Clear();
+				DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
+				DetailViewController.ReloadData();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			} 		}
 
 		void LoadSummaryView(string fileName, string sectionName, RootElement rt)
 		{
 			try
 			{
-				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate (object sender, EventArgs e)
+				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate 
 				{
 					DetailViewController.NavigationItem.RightBarButtonItem = null;
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in"));
+					DetailViewController.Root.Add(new Section("Logged in")
+					{
+						FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						{
+							Hidden = true
+						}
+					});
 					DetailViewController.Root.Caption = "Welcome to Dynapad";
 					DetailViewController.ReloadData();
 
@@ -1853,7 +2520,12 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				DetailViewController.Root.Clear();
+				DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
+				DetailViewController.ReloadData();
+				CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 

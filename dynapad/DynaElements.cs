@@ -14,9 +14,11 @@ using Syncfusion.SfAutoComplete.iOS;
 using System.ComponentModel;
 using System.Linq;
 using SlackHQ;
-using System.Text;
 using Newtonsoft.Json;
 using Plugin.Connectivity;
+using System.Threading.Tasks;
+using Syncfusion.SfDataGrid;
+using System.Collections.ObjectModel;
 //using DynaClassLibrary;
 #else
 using MonoTouch.UIKit;
@@ -38,6 +40,8 @@ using CGRect = global::System.Drawing.RectangleF;
 
 using LoginScreen;
 //using static DynaClassLibrary.DynaClasses;
+
+using Syncfusion.SfImageEditor.iOS;
 
 
 namespace DynaPad
@@ -81,6 +85,7 @@ namespace DynaPad
 			//Alpha = 1.0f;
 
 			AddSubview(canvasView);
+			SetNeedsDisplay();
 		}
 
 		public static CanvasContainerView FromCanvasSize(CGSize canvasSize)
@@ -121,11 +126,10 @@ namespace DynaPad
 	}
 
 
-
-
 	public class CredentialsProvider : ICredentialsProvider
 	{
 		public string locid;
+		//int failCount = 0;
 
 		// Constructor without parameters is required
 
@@ -182,7 +186,8 @@ namespace DynaPad
 				{
 					var dds = new DynaPadService.DynaPadService();
 					//var ass = NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain");
-					var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain"), userName, password);
+					//var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain"), userName, password);
+					var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), userName, password);
 					JsonHandler.OriginalFormJsonString = jsonUser;
 					DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
 					//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig = new DynaClassLibrary.DynaClasses.ConfigurationObjects();
@@ -223,11 +228,13 @@ namespace DynaPad
 
 					if (isValid)
 					{
+						//failCount = 0;
 						// If login was successfully completed
 						successCallback();
 					}
 					else
 					{
+						//failCount = failCount + 1;
 						generalFault |= (userFault == false && passFault == false);
 						var loginDetails = new LoginScreenFaultDetails();
 						//if (userName != Constants.Username)
@@ -256,6 +263,24 @@ namespace DynaPad
 						}
 						// Otherwise
 						failCallback(loginDetails);
+
+						//if (failCount > 3)
+						//{
+						//	var SetDomainPrompt = UIAlertController.Create("Set Domain Name", "Enter domain name: ", UIAlertControllerStyle.Alert);
+						//	SetDomainPrompt.AddTextField((field) =>
+						//	{
+						//		field.Placeholder = "Domain Name";
+						//	});
+						//	//Add Actions
+						//	SetDomainPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveDomain(SetDomainPrompt.TextFields[0].Text)));
+						//	SetDomainPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+						//	//Present Alert
+						//	var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+						//	var ;
+
+						//	failCallback( new LoginScreenFaultDetails()
+						//	 PresentViewController(SetDomainPrompt, true, null);
+						//}
 					}
 				}
 				else
@@ -267,7 +292,11 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+				CommonFunctions.sendErrorEmail(ex);
+                var exceptionLoginDetails = new LoginScreenFaultDetails();
+                exceptionLoginDetails.CommonErrorMessage = "Error. An exception occured. If issue persists contact support.";
+                failCallback(exceptionLoginDetails);
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -309,7 +338,7 @@ namespace DynaPad
 				//return true;
 
 				// Otherwise you can:
-				 return false;
+				return false;
 			}
 		}
 
@@ -321,7 +350,7 @@ namespace DynaPad
 				//return true;
 
 				// Otherwise you can:
-				 return false;
+				return false;
 			}
 		}
 	}
@@ -335,45 +364,52 @@ namespace DynaPad
 		public DynaDialogViewController(IntPtr handle) : base(handle)
 		{
 			Style = UITableViewStyle.Plain;
+            //TableView.EstimatedSectionHeaderHeight = 0;
 		}
 
 		public DynaDialogViewController(RootElement root) : base(root)
 		{
 			Style = UITableViewStyle.Plain;
 			Title = root.Caption;
+			//TableView.EstimatedSectionHeaderHeight = 0;
 
 			if (!IsForm)
 			{
 				RefreshRequested += delegate
 				{
-					// Wait 3 seconds, to simulate some network activity
-					NSTimer.CreateScheduledTimer(1, delegate
-					{
-						//root[0].Add(new StringElement("Added " + (++i)));
-						//this.ViewDidLoad();
-						//this.ReloadData();
-						//this.TriggerRefresh();
-						//this.NavigationController.View.ReloadInputViews();
-						//this.NavigationController.View.SetNeedsDisplay();
-						//this.NavigationController.PopViewController(true);
-						//Root.TableView.ReloadData();
+					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-						//this.TableView.SetNeedsDisplay();
-						//NavigationController.PopToRootViewController(true);
-						//NavigationController.ViewControllers[0].ViewDidLoad();
-						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						//MasterViewController.DynaStart();
-						MasterViewController.DynaLocations();
-						//MasterViewController.TableView.SelectRow(null, true, UITableViewScrollPosition.Top);
-						//MasterViewController.TableView.SetNeedsDisplay();
-						NavigationController.PopToRootViewController(true);
-						MasterViewController.ReloadData();
-						//MasterViewController.NavigationController.PopToRootViewController(true);
+					MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action => {
+						// Wait 3 seconds, to simulate some network activity
+						NSTimer.CreateScheduledTimer(1, delegate
+						{
+							//root[0].Add(new StringElement("Added " + (++i)));
+							//this.ViewDidLoad();
+							//this.ReloadData();
+							//this.TriggerRefresh();
+							//this.NavigationController.View.ReloadInputViews();
+							//this.NavigationController.View.SetNeedsDisplay();
+							//this.NavigationController.PopViewController(true);
+							//Root.TableView.ReloadData();
 
-						// Notify the dialog view controller that we are done
-						// this will hide the progress info
-						ReloadComplete();
-					});
+							//this.TableView.SetNeedsDisplay();
+							//NavigationController.PopToRootViewController(true);
+							//NavigationController.ViewControllers[0].ViewDidLoad();
+							//MasterViewController.DynaStart();
+							MasterViewController.DynaLocations();
+							//MasterViewController.TableView.SelectRow(null, true, UITableViewScrollPosition.Top);
+							//MasterViewController.TableView.SetNeedsDisplay();
+							NavigationController.PopToRootViewController(true);
+							MasterViewController.ReloadData();
+							//MasterViewController.NavigationController.PopToRootViewController(true);
+
+							// Notify the dialog view controller that we are done
+							// this will hide the progress info
+							ReloadComplete();
+						});
+                    }, true, action => {
+                        ReloadComplete();
+                    }), true, null);
 				};
 			}
 		}
@@ -382,26 +418,31 @@ namespace DynaPad
 		{
 			Style = UITableViewStyle.Plain;
 			Title = root.Caption;
+			//TableView.EstimatedSectionHeaderHeight = 0;
 
 			if (!IsForm)
 			{
 				RefreshRequested += delegate
 				{
-					// Wait 3 seconds, to simulate some network activity
-					NSTimer.CreateScheduledTimer(1, delegate
-					{
-						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						//MasterViewController.DynaStart();
-						MasterViewController.DynaLocations();
-						NavigationController.PopToRootViewController(true);
-						//MasterViewController.TableView.SetNeedsDisplay();
-						MasterViewController.ReloadData();
-						//MasterViewController.NavigationController.PopToRootViewController(true);
+					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-						// Notify the dialog view controller that we are done
-						// this will hide the progress info
-						ReloadComplete();
-					});
+                    MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action => {
+						// Wait 3 seconds, to simulate some network activity
+						NSTimer.CreateScheduledTimer(1, delegate
+						{
+							//MasterViewController.DynaStart();
+							MasterViewController.DynaLocations();
+							NavigationController.PopToRootViewController(true);
+							//MasterViewController.TableView.SetNeedsDisplay();
+							MasterViewController.ReloadData();
+							//MasterViewController.NavigationController.PopToRootViewController(true);
+							// Notify the dialog view controller that we are done
+							// this will hide the progress info
+							ReloadComplete();
+						});
+                    }, true, action => {
+                        ReloadComplete();
+                    }), true, null);
 				};
 			}
 		}
@@ -410,26 +451,34 @@ namespace DynaPad
 		{
 			Style = UITableViewStyle.Plain;
 			Title = root.Caption;
+			//TableView.EstimatedSectionHeaderHeight = 0;
 
 			if (pull)
 			{
 				RefreshRequested += delegate
 				{
-					// Wait 3 seconds, to simulate some network activity
-					NSTimer.CreateScheduledTimer(1, delegate
-					{
-						var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						//MasterViewController.DynaStart();
-						MasterViewController.DynaLocations();
-						NavigationController.PopToRootViewController(true);
-						//MasterViewController.TableView.SetNeedsDisplay();
-						MasterViewController.ReloadData();
-						//MasterViewController.NavigationController.PopToRootViewController(true);
+					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-						// Notify the dialog view controller that we are done
-						// this will hide the progress info
-						ReloadComplete();
-					});
+                    MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action =>
+                    {
+                        // Wait 3 seconds, to simulate some network activity
+                        NSTimer.CreateScheduledTimer(1, delegate
+                        {
+                            //MasterViewController.DynaStart();
+                            MasterViewController.DynaLocations();
+                            NavigationController.PopToRootViewController(true);
+                            //MasterViewController.TableView.SetNeedsDisplay();
+                            MasterViewController.ReloadData();
+                            //MasterViewController.NavigationController.PopToRootViewController(true);
+
+                            // Notify the dialog view controller that we are done
+                            // this will hide the progress info
+                            ReloadComplete();
+                        });
+                    }, true, action =>
+                    {
+                        ReloadComplete();
+                    }), true, null);
 				};
 			}
 		}
@@ -468,8 +517,10 @@ namespace DynaPad
 		public string Value;
 		//public bool selected = false;
 		public bool selected;
+		public bool vsection;
+		public bool vquestion;
 
-		public SectionStringElement(string caption) : base(caption) {}
+		public SectionStringElement(string caption) : base(caption) { }
 
 		public SectionStringElement(string caption, string value) : base(caption)
 		{
@@ -500,9 +551,24 @@ namespace DynaPad
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			cell.TextLabel.Lines = 0;
 
+			if (cell.TextLabel.Text == "Causal Relationship" || cell.TextLabel.Text == "Treatment" || cell.TextLabel.Text == "Diagnostic Testing" || cell.TextLabel.Text == "Disability")
+			{
+				cell.BackgroundColor = UIColor.FromRGB(242, 211, 121);
+			}
+
 			if (selected)
 			{
 				cell.BackgroundColor = UIColor.FromRGB(220, 237, 185);
+			}
+
+			if (vsection)
+			{
+				cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(13);
+			}
+
+			if (vquestion)
+			{
+				cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
 			}
 
 			// The check is needed because the cell might have been recycled.
@@ -559,7 +625,7 @@ namespace DynaPad
 			var selected = OnSelected;
 			if (selected != null)
 				selected(this, EventArgs.Empty);
-			
+
 			dvc.DeactivateController(true);
 		}
 
@@ -761,11 +827,16 @@ namespace DynaPad
 				case "Preset":
 					(_nestedView as UILabel).TextColor = UIColor.DarkGray;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
-					BackgroundColor = UIColor.FromRGB(216,219,226);
+					BackgroundColor = UIColor.FromRGB(216, 219, 226);
 					break;
 				case "Section":
 					(_nestedView as UILabel).TextColor = UIColor.Black;
 					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(17);
+					BackgroundColor = UIColor.FromRGB(169, 188, 208);
+					break;
+				case "Validation":
+					(_nestedView as UILabel).TextColor = UIColor.Black;
+					(_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
 					BackgroundColor = UIColor.FromRGB(169, 188, 208);
 					break;
 				default:
@@ -887,7 +958,7 @@ namespace DynaPad
 		public string ParentConditionTriggerId { get; set; }
 		public bool IsConditional { get; set; }
 		public Group thisGroup { get; set; }
-		public bool IsPreset {get; set; }
+		public bool IsPreset { get; set; }
 
 		public DynaRootElement(string caption) : base(caption)
 		{
@@ -933,7 +1004,7 @@ namespace DynaPad
 		{
 			get
 			{
-				return (NSString) "Identifier";
+				return (NSString)"Identifier";
 			}
 		}
 		public override UITableViewCell GetCell(UITableView tv)
@@ -1000,6 +1071,7 @@ namespace DynaPad
 		public string DoctorID { get; set; }
 		public string LocationID { get; set; }
 		public string ApptID { get; set; }
+		public string CaseID { get; set; }
 		public List<Report> ApptReports { get; set; }
 		public Group thisGroup { get; set; }
 
@@ -1187,7 +1259,7 @@ namespace DynaPad
 
 			if (string.IsNullOrEmpty(Text))
 			{
-				placeholderLabel.Text = Placeholder; 
+				placeholderLabel.Text = Placeholder;
 				((UILabel)Subviews[1]).Text = Placeholder;
 
 			}
@@ -1329,7 +1401,9 @@ namespace DynaPad
 
 		public DynaEntryElement(string cCaption, string cPlaceHolder, string cValue) : base(cCaption, cPlaceHolder, cValue) { }
  		protected override UITextField CreateTextField(CGRect frame) 		{ 			var tf = base.CreateTextField(frame);
-			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left; 			//tf.TextAlignment = UITextAlignment.Left; 			EntryTextField = tf;
+			//tf.HorizontalAlignment = UIControlContentHorizontalAlignment.Left;
+			//tf.TextAlignment = UITextAlignment.Left;
+			EntryTextField = tf;
 			return tf; 		}  		public override UITableViewCell GetCell(UITableView tv) 		{ 			var cell = base.GetCell(tv);
 
 			cell.ContentView.AutosizesSubviews = false;
@@ -1403,12 +1477,278 @@ namespace DynaPad
 
 
 
+	public class DynaGrid : SfDataGrid
+	{
+		//public DynaGrid() { }
+
+		public bool IsEnabled;
+		public string ConditionTriggerId;
+		public string ActiveTriggerId = "";
+		public List<QuestionOption> QuestionOptions;
+		public List<QuestionOption> QuestionAnswers;
+		public string QuestionId { get; set; }
+		public string QuestionParentId { get; set; }
+		public string QuestionText { get; set; }
+		public string QuestionType { get; set; }
+		public string QuestionKeyboardType { get; set; }
+		public bool Answered { get; set; }
+		public bool Disabled { get; set; }
+		public string AnswerId { get; set; }
+		public string AnswerText { get; set; }
+		public string ParentConditionTriggerId { get; set; }
+		public bool IsConditional { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
+		public int MaxChars { get; set; }
+		//static NSString MyCellId = new NSString("MyCellId");
+		public DynaSection parentSec { get; set; }
+
+		public override void Draw(CGRect rect)
+		{
+			base.Draw(rect);
+
+			UserInteractionEnabled = IsEnabled;
+
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Black.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
+			}
+
+			Layer.BorderWidth = 0;
+
+			if (!IsEnabled)
+			{
+				//BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				GridStyle = new DisabledGrid();
+			}
+			else
+			{
+				//BackgroundColor = UIColor.White;
+				GridStyle = new EnabledGrid();
+			}
+		}
+	}
+
+	public class DisabledGrid : DataGridStyle
+	{
+		//public DisabledGrid() { }
+
+		public override UIColor GetRecordBackgroundColor()
+		{
+			return UIColor.GroupTableViewBackgroundColor;
+		}
+
+		public override UIColor GetHeaderBackgroundColor()
+		{
+			return UIColor.GroupTableViewBackgroundColor;
+		}
+	}
+
+	public class EnabledGrid : DataGridStyle
+	{
+		//public EnabledGrid() { }
+
+		public override UIColor GetRecordBackgroundColor()
+		{
+			return UIColor.White;
+		}
+
+		public override UIColor GetHeaderBackgroundColor()
+		{
+			return base.GetHeaderBackgroundColor();
+		}
+	}
+
+	public class GridCellTextViewRendererExt : GridCellTextViewRenderer
+	{
+		//public GridCellTextViewRendererExt() { }
+
+		public async override void CommitCellValue(bool isNewValue)
+		{
+			var newValue = GetControlValue();
+			var editingColumn = DataGrid.Columns[CurrentCellIndex.ColumnIndex];
+			var columnName = editingColumn.MappingName.Substring(7, editingColumn.MappingName.Length - 8);
+			var dataColumn = (CurrentCellElement as GridCell).DataColumn;
+			(dataColumn.RowData as DynamicModel).Values[columnName] = newValue;
+			await Task.Delay(10);
+			UpdateCellValue(dataColumn);
+			RefreshDisplayValue(dataColumn);
+		}
+	}
+
+	//public class DynamicModel : INotifyPropertyChanged
+	//{
+	//	public Dictionary<string, object> _values;
+	//	//public object _groupProperty;
+
+	//	public event PropertyChangedEventHandler PropertyChanged;
+
+	//	//public object GroupProperty
+	//	//{
+	//	//	get
+	//	//	{
+	//	//		return _groupProperty;
+	//	//	}
+	//	//	set
+	//	//	{
+	//	//		_groupProperty = value;
+	//	//		if (PropertyChanged != null)
+	//	//			PropertyChanged(this, new PropertyChangedEventArgs("GroupProperty"));
+	//	//	}
+	//	//}
+
+	//	public Dictionary<string, object> Values
+	//	{
+	//		get
+	//		{
+	//			return _values;
+	//		}
+	//		set
+	//		{
+	//			_values = value;
+	//			if (PropertyChanged != null)
+	//				PropertyChanged(this, new PropertyChangedEventArgs("Values"));
+	//		}
+	//	}
+
+	//	public DynamicModel()
+	//	{
+	//		this._values = new Dictionary<string, object>();
+	//	}
+
+	//	public void RefreshGroupProperty(string key)
+	//	{
+	//		object value = null;
+	//		this.Values.TryGetValue(key, out value);
+	//		//this.GroupProperty = value;
+	//	}
+	//}
+
+	public class DynamicModel : INotifyPropertyChanged
+	{
+		public Dictionary<string, object> _values;
+		public object _groupProperty;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public object GroupProperty
+		{
+			get
+			{
+				return _groupProperty;
+			}
+			set
+			{
+				_groupProperty = value;
+				if (PropertyChanged != null)
+					PropertyChanged(this, new PropertyChangedEventArgs("GroupProperty"));
+			}
+		}
+
+		public Dictionary<string, object> Values
+		{
+			get
+			{
+				return _values;
+			}
+			set
+			{
+				_values = value;
+				if (PropertyChanged != null)
+					PropertyChanged(this, new PropertyChangedEventArgs("Values"));
+			}
+
+		}
+		public DynamicModel()
+		{
+			_values = new Dictionary<string, object>();
+
+		}
+
+		public void RefreshGroupProperty(string key)
+		{
+			object value = null;
+			Values.TryGetValue(key, out value);
+			GroupProperty = value;
+		}
+	}
+
+	public class ViewModel
+	{
+		public ObservableCollection<DynamicModel> DynamicCollection { get; set; }
+		List<ItemColumn> columns;
+		List<QuestionRowItem> rows;
+
+		public ViewModel(List<ItemColumn> columns, List<QuestionRowItem> rows)
+		{
+			this.columns = columns;
+			this.rows = rows;
+			DynamicCollection = GetData(rows);
+		}
+
+		ObservableCollection<DynamicModel> GetData(List<QuestionRowItem> itemRows)
+		{
+			var data = new ObservableCollection<DynamicModel>();
+			foreach (QuestionRowItem qri in itemRows)
+			{
+				var obj = GetDynamicModel(qri.ItemColumns);
+				data.Add(obj);
+			}
+			return data;
+		}
+
+		public DynamicModel GetDynamicModel(List<ItemColumn> itemColumns)
+		{
+			var obj = new DynamicModel();
+			foreach (ItemColumn ic in itemColumns)
+			{
+				switch (ic.Type)
+				{
+					case "Text":
+						obj.Values[ic.Header.Replace(" ", "")] = ic.AnswerText;
+						break;
+					case "Switch":
+						obj.Values[ic.Header.Replace(" ", "")] = true;
+						break;
+					case "Numeric":
+						obj.Values[ic.Header.Replace(" ", "")] = ic.AnswerText;
+						break;
+					case "Date":
+						obj.Values[ic.Header.Replace(" ", "")] = ic.AnswerText;
+						break;
+					case "Picker":
+						obj.Values[ic.Header.Replace(" ", "")] = ic.AnswerText;
+						break;
+				}
+			}
+
+			return obj;
+		}
+
+		public void RefreshGroup(string key)
+		{
+			foreach (var dynamicItem in DynamicCollection)
+			{
+				dynamicItem.RefreshGroupProperty(key);
+			}
+		}
+	}
+
+
+
+
+
+
 
 
 
 	public class DynaAuto : SFAutoComplete
 	{
-		public DynaAuto(AutoCompleteDelegate ddelegate) 
+		public DynaAuto(AutoCompleteDelegate ddelegate)
 		{
 			//this.Delegate = new Delegateclass();
 			Delegate = ddelegate;
@@ -1461,8 +1801,97 @@ namespace DynaPad
 				parentSec.HeaderView.Layer.BorderWidth = 1;
 				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
 			}
+
+			Layer.BorderWidth = (nfloat)0;
+
+			if (!IsEnabled)
+			{
+				TextColor = UIColor.LightGray;
+				BorderColor = UIColor.GroupTableViewBackgroundColor;
+				BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				TextField.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+				Watermark = (NSString)"Not applicable";
+				TextField.TextColor = UIColor.LightGray;
+				TextField.Placeholder = (NSString)"Not applicable";
+				Layer.BorderColor = UIColor.GroupTableViewBackgroundColor.CGColor;
+				Layer.BackgroundColor = UIColor.GroupTableViewBackgroundColor.CGColor;
+			}
+			else
+			{
+				TextColor = UIColor.Black;
+				BorderColor = UIColor.White;
+				BackgroundColor = UIColor.White;
+				TextField.BackgroundColor = UIColor.White;
+				Watermark = (NSString)"Enter your answer here";
+				TextField.TextColor = UIColor.Black;
+				TextField.Placeholder = (NSString)"Enter your answer here";
+				Layer.BorderColor = UIColor.White.CGColor;
+				Layer.BackgroundColor = UIColor.White.CGColor;
+			}
 		}
 	}
+
+
+
+
+
+
+	public class DynaSegmented : UISegmentedControl
+	{
+		public DynaSegmented()
+		{
+			//this.Delegate = new Delegateclass();
+		}
+
+		public bool IsEnabled;
+		public string ConditionTriggerId;
+		public string ActiveTriggerId = "";
+		public List<QuestionOption> QuestionOptions;
+		public List<QuestionOption> QuestionAnswers;
+		public string QuestionId { get; set; }
+		public string QuestionParentId { get; set; }
+		public string QuestionText { get; set; }
+		public string QuestionType { get; set; }
+		public string QuestionKeyboardType { get; set; }
+		public bool Answered { get; set; }
+		public bool Disabled { get; set; }
+		public string AnswerId { get; set; }
+		public string AnswerText { get; set; }
+		public string ParentConditionTriggerId { get; set; }
+		public bool IsConditional { get; set; }
+		public bool Required { get; set; }
+		public bool Invalid { get; set; }
+		public int MaxChars { get; set; }
+		//static NSString MyCellId = new NSString("MyCellId");
+		public DynaSection parentSec { get; set; }
+
+		public EventHandler EntryEnded { get; set; }
+
+		public override void Draw(CGRect rect)
+		{
+			base.Draw(rect);
+
+			UserInteractionEnabled = IsEnabled;
+
+			//if (Invalid)
+			//{
+			//	this.Layer.BorderWidth = 1;
+			//	this.Layer.BorderColor = UIColor.Red.CGColor;
+			//}
+
+			parentSec.HeaderView.Layer.BorderWidth = 0;
+			parentSec.HeaderView.Layer.BorderColor = UIColor.Black.CGColor;
+
+			if (Invalid)
+			{
+				parentSec.HeaderView.Layer.BorderWidth = 1;
+				parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
+			}
+		}
+	}
+
+
+
 
 
 
@@ -1491,7 +1920,7 @@ namespace DynaPad
 				//base.GetActiveCell().Highlighted = true;
 				//Value = true;
 				selected(this, EventArgs.Empty);
-			
+
 			tableView.SelectRow(path, true, UITableViewScrollPosition.None);
 		}
 
@@ -1519,6 +1948,76 @@ namespace DynaPad
 			cell.TextLabel.Lines = 0;
 			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
 
+			if (Caption.Length > 78)
+			{
+				var ww = (decimal)Caption.Length / 78;
+				var wlines = (int)Math.Ceiling(ww);
+				//var wheight = 42 * wlines;
+				var cellAdjSize = Caption.StringSize(cell.TextLabel.Font, new CGSize(cell.Bounds.Width, 300), UILineBreakMode.WordWrap);
+				cell.TextLabel.Lines = wlines;
+				var bounds = cell.Bounds;
+				//bounds.Height = wheight;
+				bounds.Height = cellAdjSize.Height;
+				cell.TextLabel.Bounds = bounds;
+				cell.Bounds = bounds;
+				cell.TextLabel.Frame = bounds;
+				cell.Frame = bounds;
+				cell.SizeToFit();
+				cell.AutosizesSubviews = true;
+				cell.TextLabel.SizeToFit();
+				cell.TextLabel.AutosizesSubviews = true;
+				//cell.SetNeedsLayout();
+				//cell.TextLabel.SetNeedsLayout();
+
+				var font = cell.TextLabel.Font;
+				var size = cell.Frame.Size;
+				for (var maxSize = cell.TextLabel.Font.PointSize; maxSize >= cell.TextLabel.MinimumScaleFactor * cell.TextLabel.Font.PointSize; maxSize -= 1f)
+				{
+					font = font.WithSize(maxSize);
+					//var constraintSize = new SizeF(size.Width, float.MaxValue);
+					var constraintSize = new CGSize(size.Width, float.MaxValue);
+					var labelSize = (new NSString(cell.TextLabel.Text)).StringSize(font, constraintSize, UILineBreakMode.WordWrap);
+					if (labelSize.Height <= size.Height)
+					{
+						cell.TextLabel.Font = font;
+						cell.TextLabel.SetNeedsLayout();
+						break;
+					}
+				}
+				// set the font to the minimum size anyway
+				cell.TextLabel.Font = font;
+				cell.TextLabel.SetNeedsLayout();
+
+
+				//var text = cell.TextLabel.Text;
+				//var bounds = cell.Bounds;
+				//var width = cell.TextLabel.Bounds.Width;
+				//var height = text.StringSize(cell.TextLabel.Font);
+				//var minHeight = string.Empty.StringSize(cell.TextLabel.Font);
+				//var requiredLines = Math.Round(height.Height / minHeight.Height, MidpointRounding.AwayFromZero);
+				//var supportedLines = Math.Round(bounds.Height / minHeight.Height, MidpointRounding.ToEven);
+				//if (supportedLines != requiredLines)
+				//{
+				//	bounds.Height += (float)(minHeight.Height * (requiredLines - supportedLines));
+				//	cell.TextLabel.Bounds = bounds;
+				//	cell.Bounds = bounds;
+				//	cell.TextLabel.Frame = bounds;
+				//	cell.Frame = bounds;
+				//	//this.Element.HeightRequest = bounds.Height;
+				//}
+
+
+				//var text = cell.TextLabel.Text;
+				//var bounds = cell.Bounds;
+				//var ass = cell.TextLabel.Bounds;
+				//var width = cell.TextLabel.Bounds.Width;
+				//var imageHeight = cell.ImageView.Bounds.Height;
+				//var textHeight = text.StringSize(cell.TextLabel.Font, new CGSize(width, nfloat.MaxValue)).Height;
+				//bounds.Height = (nfloat)Math.Max(imageHeight, textHeight);
+				//cell.TextLabel.Bounds = bounds;
+				//Element.HeightRequest = bounds.Height;
+			}
+
 			if (Value)
 			{
 				cell.BackgroundColor = UIColor.FromRGB(239, 246, 223);
@@ -1531,7 +2030,7 @@ namespace DynaPad
 
 				//if (cell.Selected)
 				//{
-					cell.Accessory = UITableViewCellAccessory.None;
+				cell.Accessory = UITableViewCellAccessory.None;
 				//}
 			}
 
@@ -1660,7 +2159,7 @@ namespace DynaPad
 		public bool Invalid { get; set; }
 		public event Action<DynaMultiRadioElement> OnDeselected;
 		public event Action<DynaMultiRadioElement> ElementSelected;
-		readonly static NSString ReuseId = new NSString("CustomRadioElement");
+		readonly static NSString ReuseId = new NSString("DynaMultiRadioElement");
 		string _subtitle;
 		public int? Index { get; protected set; }
 
@@ -1681,11 +2180,15 @@ namespace DynaPad
 		{
 			EnsureIndex();
 			//tv.CellLayoutMarginsFollowReadableWidth = false;
+
 			var cell = tv.DequeueReusableCell(CellKey);
 			if (cell == null)
 			{
 				cell = new UITableViewCell(UITableViewCellStyle.Subtitle, CellKey);
 			}
+			//cell.SetNeedsDisplay();
+			//cell = new UITableViewCell(UITableViewCellStyle.Subtitle, CellKey);
+
 			//cell.ContentView.Frame = new CGRect(0, 0, 310, 50);
 			cell.ContentView.AutosizesSubviews = false;
 			//cell.ApplyStyle(this);
@@ -1693,6 +2196,77 @@ namespace DynaPad
 			cell.TextLabel.Text = Caption;
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			cell.TextLabel.Lines = 0;
+
+			if (Caption.Length > 78)
+			{
+				var ww = (decimal)Caption.Length / 78;
+				var wlines = (int)Math.Ceiling(ww);
+				//var wheight = 42 * wlines;
+				var cellAdjSize = Caption.StringSize(cell.TextLabel.Font, new CGSize(cell.Bounds.Width, 300), UILineBreakMode.WordWrap);
+				cell.TextLabel.Lines = wlines;
+				var bounds = cell.Bounds;
+				//bounds.Height = wheight;
+				bounds.Height = cellAdjSize.Height;
+				cell.TextLabel.Bounds = bounds;
+				cell.Bounds = bounds;
+				cell.TextLabel.Frame = bounds;
+				cell.Frame = bounds;
+				cell.SizeToFit();
+				cell.AutosizesSubviews = true;
+				cell.TextLabel.SizeToFit();
+				cell.TextLabel.AutosizesSubviews = true;
+				//cell.SetNeedsLayout();
+				//cell.TextLabel.SetNeedsLayout();
+
+				var font = cell.TextLabel.Font;
+				var size = cell.Frame.Size;
+				for (var maxSize = cell.TextLabel.Font.PointSize; maxSize >= cell.TextLabel.MinimumScaleFactor * cell.TextLabel.Font.PointSize; maxSize -= 1f)
+				{
+					font = font.WithSize(maxSize);
+					//var constraintSize = new SizeF(size.Width, float.MaxValue);
+					var constraintSize = new CGSize(size.Width, float.MaxValue);
+					var labelSize = (new NSString(cell.TextLabel.Text)).StringSize(font, constraintSize, UILineBreakMode.WordWrap);
+					if (labelSize.Height <= size.Height)
+					{
+						cell.TextLabel.Font = font;
+						//cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
+						cell.TextLabel.SetNeedsLayout();
+						break;
+					}
+				}
+				// set the font to the minimum size anyway
+				cell.TextLabel.Font = font;
+				cell.TextLabel.SetNeedsLayout();
+
+
+				//var text = cell.TextLabel.Text;
+				//var bounds = cell.Bounds;
+				//var width = cell.TextLabel.Bounds.Width;
+				//var height = text.StringSize(cell.TextLabel.Font);
+				//var minHeight = string.Empty.StringSize(cell.TextLabel.Font);
+				//var requiredLines = Math.Round(height.Height / minHeight.Height, MidpointRounding.AwayFromZero);
+				//var supportedLines = Math.Round(bounds.Height / minHeight.Height, MidpointRounding.ToEven);
+				//if (supportedLines != requiredLines)
+				//{
+				//	bounds.Height += (float)(minHeight.Height * (requiredLines - supportedLines));
+				//	cell.TextLabel.Bounds = bounds;
+				//	cell.Bounds = bounds;
+				//	cell.TextLabel.Frame = bounds;
+				//	cell.Frame = bounds;
+				//	//this.Element.HeightRequest = bounds.Height;
+				//}
+
+
+				//var text = cell.TextLabel.Text;
+				//var bounds = cell.Bounds;
+				//var ass = cell.TextLabel.Bounds;
+				//var width = cell.TextLabel.Bounds.Width;
+				//var imageHeight = cell.ImageView.Bounds.Height;
+				//var textHeight = text.StringSize(cell.TextLabel.Font, new CGSize(width, nfloat.MaxValue)).Height;
+				//bounds.Height = (nfloat)Math.Max(imageHeight, textHeight);
+				//cell.TextLabel.Bounds = bounds;
+				//Element.HeightRequest = bounds.Height;
+			}
 
 			if (!string.IsNullOrEmpty(_subtitle))
 			{
@@ -1747,6 +2321,7 @@ namespace DynaPad
 
 			return cell;
 		}
+
 
 		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
@@ -1987,7 +2562,7 @@ namespace DynaPad
 						cell.DetailTextLabel.Text = FormatDate(date);
 						Value = cell.DetailTextLabel.Text;
 						if (DateSelected != null)       // Fire our changed event.
-						DateSelected();
+							DateSelected();
 					};
 
 					_inline_date_element.ClearPressed += () =>
@@ -2116,7 +2691,7 @@ namespace DynaPad
 					DateSelected(DateTime.Now);
 				else if (_current_date.HasValue)
 					_date_picker.Date = ((DateTime)_current_date).ToNSDate();
-					//_date_picker.Date = NSDateExtensions.ToNSDate((DateTime)_current_date);
+				//_date_picker.Date = NSDateExtensions.ToNSDate((DateTime)_current_date);
 
 				_date_picker.ValueChanged += (object sender, EventArgs e) =>
 				{
@@ -2141,8 +2716,8 @@ namespace DynaPad
 				_date_picker.Frame = new RectangleF((float)(tv.Frame.Width / 2 - _picker_size.Width / 2), _cell_size.Height / 2 - _picker_size.Height / 2, _picker_size.Width, _picker_size.Height);
 				_clear_cancel_button.TouchUpInside += (object sender, EventArgs e) =>
 				{
-				// Clear button pressed. 
-				if (ClearPressed != null)
+					// Clear button pressed. 
+					if (ClearPressed != null)
 						ClearPressed();
 				};
 				_close_cancel_button.TouchUpInside += (object sender, EventArgs e) =>
@@ -2277,7 +2852,7 @@ namespace DynaPad
 			{
 				slider = new UISlider(new CGRect(10f + captionSize.Width, UIDevice.CurrentDevice.CheckSystemVersion(7, 0) ? 18f : 12f, cell.ContentView.Bounds.Width - 20 - captionSize.Width, 7f))
 				{
-					 
+
 					BackgroundColor = UIColor.Clear,
 					MinValue = MinValue,
 					MaxValue = MaxValue,
@@ -2313,7 +2888,8 @@ namespace DynaPad
 					}
 				};
 			}
-			else {
+			else
+			{
 				slider.Value = Value;
 			}
 
@@ -3286,450 +3862,6 @@ namespace DynaPad
 	}
 
 
-
-	public class DynaSlack : SlackTextViewController
-	{
-		const string MessengerCellIdentifier = "MessengerCell";
-		const string AutoCompletionCellIdentifier = "AutoCompletionCell";
-
-		readonly static Random random;
-
-		readonly static string CurrentUsername;
-		readonly static UIColor CurrentProfileColor;
-
-		readonly static UIColor[] colors;
-		readonly static string[] users;
-		readonly static string[] channels;
-		readonly static string[] emojis;
-		readonly static string[] words;
-
-		static DynaSlack()
-		{
-			random = new Random();
-
-			users = new[] { "Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve" };
-			colors = new UIColor[users.Length];
-			channels = new[] { "General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB" };
-			emojis = new[] { "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood" };
-			words = new[] { "lorem", "ipsum", "dolor", "sit", "amet", "consectetuer", "adipiscing", "elit", "sed", "diam", "nonummy", "nibh", "euismod", "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat" };
-
-			CurrentUsername = "Xamarin";
-			CurrentProfileColor = RandomColor(null);
-		}
-
-		List<Message> messages = new List<Message>();
-		string[] searchResult = new string[0];
-
-		NSObject contentSizeObserver;
-
-		public DynaSlack(IntPtr handle)
-			: base(handle)
-		{
-			contentSizeObserver = NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.ContentSizeCategoryChangedNotification, note => TableView.ReloadData());
-
-			// initial data
-			for (int i = 0; i < 100; i++)
-			{
-				var username = RandomUser();
-				messages.Add(new Message
-				{
-					Username = username,
-					Text = LoremIpsum(),
-					ProfileColor = RandomColor(username)
-				});
-			}
-
-			// Register a SlackTextView subclass, if you need any special appearance and/or behavior customisation.
-			RegisterClassForTextView<MessageTextView>();
-		}
-
-		[Preserve]
-		[Export("tableViewStyleForCoder:")]
-		static UITableViewStyle GetTableViewStyleForCoder(NSCoder decoder)
-		{
-			return UITableViewStyle.Plain;
-		}
-
-		public override void ViewDidLoad()
-		{
-			base.ViewDidLoad();
-
-			Bounces = true;
-			ShakeToClearEnabled = true;
-			KeyboardPanningEnabled = true;
-			ShouldScrollToBottomAfterKeyboardShows = false;
-			Inverted = true;
-
-			LeftButton.SetImage(UIImage.FromBundle("upload.png"), UIControlState.Normal);
-			LeftButton.TintColor = UIColor.Gray;
-
-			RightButton.SetTitle("Send", UIControlState.Normal);
-
-			TextInputbar.AutoHideRightButton = true;
-			TextInputbar.MaxCharCount = 256;
-			TextInputbar.CounterStyle = CounterStyle.Split;
-			TextInputbar.CounterPosition = CounterPosition.Top;
-
-			TextInputbar.EditorTitle.TextColor = UIColor.DarkGray;
-			TextInputbar.EditorLeftButton.TintColor = UIColor.FromRGB(0, 122, 255);
-			TextInputbar.EditorRightButton.TintColor = UIColor.FromRGB(0, 122, 255);
-
-			TypingIndicatorView.CanResignByTouch = true;
-
-			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
-			TableView.RegisterClassForCellReuse(typeof(MessageTableViewCell), MessengerCellIdentifier);
-
-			AutoCompletionView.RegisterClassForCellReuse(typeof(MessageTableViewCell), AutoCompletionCellIdentifier);
-
-			RegisterPrefixesForAutoCompletion(new[] { "@", "#", ":", "+:" });
-		}
-
-		//partial void OnSimulateTyping(UIBarButtonItem sender)
-		void OnSimulateTyping(UIBarButtonItem sender)
-		{
-			if (CanShowTypingIndicator)
-			{
-				TypingIndicatorView.InsertUsername(RandomUser());
-			}
-		}
-
-		public override bool ForceTextInputbarAdjustmentForResponder(UIResponder responder)
-		{
-			// On iOS 9, returning YES helps keeping the input view visible when the keyboard if 
-			// presented from another app when using multi-tasking on iPad.
-			return UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
-		}
-
-		public override void DidPressRightButton(NSObject sender)
-		{
-			// Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
-
-			// This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
-			TextView.RefreshFirstResponder();
-
-			var message = new Message
-			{
-				Username = CurrentUsername,
-				Text = TextView.Text,
-				ProfileColor = CurrentProfileColor
-			};
-
-			var indexPath = NSIndexPath.FromRowSection(0, 0);
-			var rowAnimation = Inverted ? UITableViewRowAnimation.Bottom : UITableViewRowAnimation.Top;
-			var scrollPosition = Inverted ? UITableViewScrollPosition.Bottom : UITableViewScrollPosition.Top;
-
-			TableView.BeginUpdates();
-			messages.Insert(0, message);
-			TableView.InsertRows(new[] { indexPath }, rowAnimation);
-			TableView.EndUpdates();
-
-			TableView.ScrollToRow(indexPath, scrollPosition, true);
-
-			// Fixes the cell from blinking (because of the transform, when using translucent cells)
-			// See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
-			TableView.ReloadRows(new[] { indexPath }, UITableViewRowAnimation.Automatic);
-
-			base.DidPressRightButton(sender);
-		}
-
-		public override void DidPressArrowKey(UIKeyCommand sender)
-		{
-			base.DidPressArrowKey(sender);
-
-			var keyCommand = sender;
-			if (keyCommand.Input == UIKeyCommand.UpArrow && TextView.Text.Length == 0)
-			{
-				var lastMessage = messages[0];
-				EditText(lastMessage.Text);
-
-				var indexPath = NSIndexPath.FromRowSection(0, 0);
-				TableView.ScrollToRow(indexPath, UITableViewScrollPosition.Bottom, true);
-			}
-		}
-
-		public override string KeyForTextCaching
-		{
-			get
-			{
-				return NSBundle.MainBundle.BundleIdentifier;
-			}
-		}
-
-		public override void DidPasteMediaContent(NSDictionary userInfo)
-		{
-			// Notifies the view controller when the user has pasted a media (image, video, etc) inside of the text view.
-			base.DidPasteMediaContent(userInfo);
-
-			var mediaType = userInfo[SlackTextView.PastedItemMediaType];
-			var contentType = userInfo[SlackTextView.PastedItemContentType];
-			var data = userInfo[SlackTextView.PastedItemData];
-
-			System.Console.WriteLine("{0} (type = {1}) | data : {2}", contentType, mediaType, data);
-		}
-
-		public override void DidCommitTextEditing(NSObject sender)
-		{
-			// Notifies the view controller when tapped on the right "Accept" button for commiting the edited text
-
-			var message = new Message
-			{
-				Username = CurrentUsername,
-				Text = TextView.Text,
-				ProfileColor = CurrentProfileColor
-			};
-
-			messages.RemoveAt(0);
-			messages.Insert(0, message);
-			TableView.ReloadData();
-
-			base.DidCommitTextEditing(sender);
-		}
-
-		public override void DidChangeAutoCompletionPrefix(string prefix, string word)
-		{
-			searchResult = new string[0];
-			if (prefix == "@")
-			{
-				if (word.Length > 0)
-				{
-					searchResult = users.Where(u => u.StartsWith(word, StringComparison.CurrentCultureIgnoreCase)).ToArray();
-				}
-				else
-				{
-					searchResult = users.ToArray();
-				}
-			}
-			else if (prefix == "#" && word.Length > 0)
-			{
-				searchResult = channels.Where(c => c.StartsWith(word, StringComparison.CurrentCultureIgnoreCase)).ToArray();
-			}
-			else if ((prefix == ":" || prefix == "+:") && word.Length > 1)
-			{
-				searchResult = emojis.Where(e => e.StartsWith(word, StringComparison.CurrentCultureIgnoreCase)).ToArray();
-			}
-			Array.Sort(searchResult, StringComparer.CurrentCultureIgnoreCase);
-
-			var show = (searchResult.Length > 0);
-			ShowAutoCompletionView(show);
-		}
-
-		public override nfloat HeightForAutoCompletionView
-		{
-			get
-			{
-				var cellHeight = AutoCompletionView.Delegate.GetHeightForRow(AutoCompletionView, NSIndexPath.FromRowSection(0, 0));
-				return cellHeight * searchResult.Length;
-			}
-		}
-
-		public override nint RowsInSection(UITableView tableView, nint section)
-		{
-			if (TableView == tableView)
-			{
-				return messages.Count;
-			}
-			return searchResult.Length;
-		}
-
-		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
-		{
-			if (TableView == tableView)
-			{
-				var cell = (MessageTableViewCell)TableView.DequeueReusableCell(MessengerCellIdentifier);
-
-				if (cell.TextLabel.Text == null)
-				{
-					cell.AddGestureRecognizer(new UILongPressGestureRecognizer(gesture =>
-					{
-						if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-						{
-							var alertController = UIAlertController.Create(null, null, UIAlertControllerStyle.ActionSheet);
-							alertController.ModalPresentationStyle = UIModalPresentationStyle.Popover;
-							if (alertController.PopoverPresentationController != null)
-							{
-								alertController.PopoverPresentationController.SourceView = gesture.View.Superview;
-								alertController.PopoverPresentationController.SourceRect = gesture.View.Frame;
-							}
-							alertController.AddAction(UIAlertAction.Create("Edit Message", UIAlertActionStyle.Default, (action) =>
-							{
-								EditCellMessage(gesture);
-							}));
-							alertController.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-							NavigationController.PresentViewController(alertController, true, null);
-						}
-						else
-						{
-							EditCellMessage(gesture);
-						}
-					}));
-				}
-
-				var message = messages[indexPath.Row];
-
-				cell.TitleLabel.Text = message.Username;
-				cell.BodyLabel.Text = message.Text;
-				cell.ThumbnailView.BackgroundColor = message.ProfileColor;
-
-				cell.IndexPath = indexPath;
-				cell.UsedForMessage = true;
-
-				// Cells must inherit the table view's transform
-				// This is very important, since the main table view may be inverted
-				cell.Transform = TableView.Transform;
-
-				return cell;
-			}
-			else
-			{
-				var cell = (MessageTableViewCell)AutoCompletionView.DequeueReusableCell(AutoCompletionCellIdentifier);
-				cell.IndexPath = indexPath;
-
-				var item = searchResult[indexPath.Row];
-				if (FoundPrefix == "#")
-				{
-					item = "# " + item;
-				}
-				else if (FoundPrefix == ":" || FoundPrefix == "+:")
-				{
-					item = ":" + item;
-				}
-
-				cell.TitleLabel.Text = item;
-				cell.TitleLabel.Font = UIFont.SystemFontOfSize(14.0f);
-				cell.SelectionStyle = UITableViewCellSelectionStyle.Default;
-
-				return cell;
-			}
-		}
-
-		void EditCellMessage(UIGestureRecognizer gesture)
-		{
-			var cell = (MessageTableViewCell)gesture.View;
-			var message = messages[cell.IndexPath.Row];
-
-			EditText(message.Text);
-
-			TableView.ScrollToRow(cell.IndexPath, UITableViewScrollPosition.Bottom, true);
-		}
-
-		[Export("tableView:heightForRowAtIndexPath:")]
-		public nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
-		{
-			if (TableView == tableView)
-			{
-				var message = messages[indexPath.Row];
-
-				var paragraphStyle = new NSMutableParagraphStyle();
-				paragraphStyle.LineBreakMode = UILineBreakMode.WordWrap;
-				paragraphStyle.Alignment = UITextAlignment.Left;
-
-				var pointSize = MessageTableViewCell.DefaultFontSize;
-				var attributes = new UIStringAttributes
-				{
-					Font = UIFont.SystemFontOfSize(pointSize),
-					ParagraphStyle = paragraphStyle
-				};
-
-				var width = tableView.Frame.Width - MessageTableViewCell.AvatarHeight;
-				width -= 25.0f;
-
-				var titleBounds = ((NSString)message.Username).GetBoundingRect(new CGSize(width, nfloat.MaxValue), NSStringDrawingOptions.UsesLineFragmentOrigin, attributes, null);
-				var bodyBounds = ((NSString)message.Text).GetBoundingRect(new CGSize(width, nfloat.MaxValue), NSStringDrawingOptions.UsesLineFragmentOrigin, attributes, null);
-
-				if (message.Text.Length == 0)
-				{
-					return 0.0f;
-				}
-
-				var height = titleBounds.Height;
-				height += bodyBounds.Height;
-				height += 40.0f;
-
-				if (height < MessageTableViewCell.MinimumHeight)
-				{
-					height = MessageTableViewCell.MinimumHeight;
-				}
-
-				return height;
-			}
-			return MessageTableViewCell.MinimumHeight;
-		}
-
-		[Export("tableView:didSelectRowAtIndexPath:")]
-		public void RowSelected(UITableView tableView, NSIndexPath indexPath)
-		{
-			if (AutoCompletionView == tableView)
-			{
-				var item = searchResult[indexPath.Row];
-				if (FoundPrefix == "@" && FoundPrefixRange.Location == 0)
-				{
-					item += ":";
-				}
-				else if (FoundPrefix == ":" || FoundPrefix == "+:")
-				{
-					item += ":";
-				}
-				item += " ";
-				AcceptAutoCompletion(item, true);
-			}
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			contentSizeObserver.Dispose();
-		}
-
-		static UIColor RandomColor(string username)
-		{
-			var index = Array.IndexOf(users, username);
-
-			if (index != -1 && colors[index] != null)
-			{
-				return colors[index];
-			}
-
-			var color = UIColor.FromRGB(
-				random.Next(127) + 127,
-				random.Next(127) + 127,
-				random.Next(127) + 127);
-
-			if (index != -1)
-			{
-				colors[index] = color;
-			}
-
-			return color;
-		}
-
-		static string RandomUser()
-		{
-			var idx = random.Next(users.Length);
-			var username = users[idx];
-			return username;
-		}
-
-		static string LoremIpsum()
-		{
-			var numSentences = random.Next(4) + 3;
-			var numWords = random.Next(8) + 4;
-			var result = new StringBuilder();
-			for (int s = 0; s < numSentences; s++)
-			{
-				for (int w = 0; w < numWords; w++)
-				{
-					if (w > 0)
-					{
-						result.Append(" ");
-					}
-					result.Append(words[random.Next(words.Length)]);
-				}
-				result.Append(". ");
-			}
-			return result.ToString();
-		}
-	}
 
 
 

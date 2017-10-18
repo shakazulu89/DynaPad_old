@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using AVFoundation;
 using Plugin.TextToSpeech.Abstractions;
 using UIKit;
@@ -22,7 +24,9 @@ namespace DynaPad
 
 		public bool IsSpeaking { get { return _isSpeaking; } }
 
-		public void Speak(string text)
+        public int MaxSpeechInputLength => throw new NotImplementedException();
+
+        public void Speak(string text)
 		{
 			_isSpeaking = true;
 			//var speechRate = UIDevice.CurrentDevice.CheckSystemVersion(8, 0) ? 8 : 4;
@@ -85,5 +89,15 @@ namespace DynaPad
 		{
 			return null;
 		}
-	}
+
+        public Task Speak(string text, CrossLocale? crossLocale = default(CrossLocale?), float? pitch = default(float?), float? speakRate = default(float?), float? volume = default(float?), CancellationToken? cancelToken = default(CancellationToken?))
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<CrossLocale>> ITextToSpeech.GetInstalledLanguages()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

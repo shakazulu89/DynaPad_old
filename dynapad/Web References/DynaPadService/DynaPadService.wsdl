@@ -90,7 +90,8 @@
             <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="fileType" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="folderName" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="filePath" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="filePathPhysical" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="filePathVirtual" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="arrFile" type="s:base64Binary" />
             <s:element minOccurs="1" maxOccurs="1" name="isDoctorForm" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="isSignature" type="s:boolean" />
@@ -262,6 +263,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GenerateIME4">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
+            <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateIME4Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateIME4Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GenerateSummary">
         <s:complexType>
           <s:sequence>
@@ -318,6 +334,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="patientId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="patientName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="caseId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="apptId" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
           </s:sequence>
@@ -412,6 +429,33 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="PdfToPng">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="inputFile" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="outputFileName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PdfToPngResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConvertPDFtoPNG">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="arrPdf" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConvertPDFtoPNGResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConvertPNGtoPDF">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConvertPNGtoPDFResponse">
+        <s:complexType />
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="HelloWorldSoapIn">
@@ -486,6 +530,12 @@
   <wsdl:message name="GetFormDictationsSoapOut">
     <wsdl:part name="parameters" element="tns:GetFormDictationsResponse" />
   </wsdl:message>
+  <wsdl:message name="GenerateIME4SoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateIME4" />
+  </wsdl:message>
+  <wsdl:message name="GenerateIME4SoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateIME4Response" />
+  </wsdl:message>
   <wsdl:message name="GenerateSummarySoapIn">
     <wsdl:part name="parameters" element="tns:GenerateSummary" />
   </wsdl:message>
@@ -540,6 +590,24 @@
   <wsdl:message name="LoginSoapOut">
     <wsdl:part name="parameters" element="tns:LoginResponse" />
   </wsdl:message>
+  <wsdl:message name="PdfToPngSoapIn">
+    <wsdl:part name="parameters" element="tns:PdfToPng" />
+  </wsdl:message>
+  <wsdl:message name="PdfToPngSoapOut">
+    <wsdl:part name="parameters" element="tns:PdfToPngResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConvertPDFtoPNGSoapIn">
+    <wsdl:part name="parameters" element="tns:ConvertPDFtoPNG" />
+  </wsdl:message>
+  <wsdl:message name="ConvertPDFtoPNGSoapOut">
+    <wsdl:part name="parameters" element="tns:ConvertPDFtoPNGResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConvertPNGtoPDFSoapIn">
+    <wsdl:part name="parameters" element="tns:ConvertPNGtoPDF" />
+  </wsdl:message>
+  <wsdl:message name="ConvertPNGtoPDFSoapOut">
+    <wsdl:part name="parameters" element="tns:ConvertPNGtoPDFResponse" />
+  </wsdl:message>
   <wsdl:portType name="DynaPadServiceSoap">
     <wsdl:operation name="HelloWorld">
       <wsdl:input message="tns:HelloWorldSoapIn" />
@@ -589,6 +657,10 @@
       <wsdl:input message="tns:GetFormDictationsSoapIn" />
       <wsdl:output message="tns:GetFormDictationsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GenerateIME4">
+      <wsdl:input message="tns:GenerateIME4SoapIn" />
+      <wsdl:output message="tns:GenerateIME4SoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateSummary">
       <wsdl:input message="tns:GenerateSummarySoapIn" />
       <wsdl:output message="tns:GenerateSummarySoapOut" />
@@ -624,6 +696,18 @@
     <wsdl:operation name="Login">
       <wsdl:input message="tns:LoginSoapIn" />
       <wsdl:output message="tns:LoginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="PdfToPng">
+      <wsdl:input message="tns:PdfToPngSoapIn" />
+      <wsdl:output message="tns:PdfToPngSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPDFtoPNG">
+      <wsdl:input message="tns:ConvertPDFtoPNGSoapIn" />
+      <wsdl:output message="tns:ConvertPDFtoPNGSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPNGtoPDF">
+      <wsdl:input message="tns:ConvertPNGtoPDFSoapIn" />
+      <wsdl:output message="tns:ConvertPNGtoPDFSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="DynaPadServiceSoap" type="tns:DynaPadServiceSoap">
@@ -736,6 +820,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GenerateIME4">
+      <soap:operation soapAction="http://tempuri.org/GenerateIME4" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateSummary">
       <soap:operation soapAction="http://tempuri.org/GenerateSummary" style="document" />
       <wsdl:input>
@@ -810,6 +903,33 @@
     </wsdl:operation>
     <wsdl:operation name="Login">
       <soap:operation soapAction="http://tempuri.org/Login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PdfToPng">
+      <soap:operation soapAction="http://tempuri.org/PdfToPng" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPDFtoPNG">
+      <soap:operation soapAction="http://tempuri.org/ConvertPDFtoPNG" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPNGtoPDF">
+      <soap:operation soapAction="http://tempuri.org/ConvertPNGtoPDF" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -928,6 +1048,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GenerateIME4">
+      <soap12:operation soapAction="http://tempuri.org/GenerateIME4" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateSummary">
       <soap12:operation soapAction="http://tempuri.org/GenerateSummary" style="document" />
       <wsdl:input>
@@ -1009,13 +1138,40 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="PdfToPng">
+      <soap12:operation soapAction="http://tempuri.org/PdfToPng" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPDFtoPNG">
+      <soap12:operation soapAction="http://tempuri.org/ConvertPDFtoPNG" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPNGtoPDF">
+      <soap12:operation soapAction="http://tempuri.org/ConvertPNGtoPDF" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="DynaPadService">
     <wsdl:port name="DynaPadServiceSoap" binding="tns:DynaPadServiceSoap">
-      <soap:address location="http://test.dynadox.pro/dynawcfservice/dynapadservice.asmx" />
+      <soap:address location="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx" />
     </wsdl:port>
     <wsdl:port name="DynaPadServiceSoap12" binding="tns:DynaPadServiceSoap12">
-      <soap12:address location="http://test.dynadox.pro/dynawcfservice/dynapadservice.asmx" />
+      <soap12:address location="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

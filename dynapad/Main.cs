@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using Foundation;
-using Newtonsoft.Json;
 using UIKit;
 
 namespace DynaPad
@@ -61,13 +58,13 @@ namespace DynaClassLibrary
 
 		public class ConfigurationObjects
 		{
-			public string EmailSupport { get; set; }
+            public string EmailSupport { get; set; } = "dharel.cm@gmail.com";
 			public string EmailPostmaster { get; set; }
-			public string EmailRoy { get; set; }
-			public string EmailSmtp { get; set; }
-			public string EmailUser { get; set; }
-			public string EmailPass { get; set; }
-			public int EmailPort { get; set; }
+            public string EmailRoy { get; set; } = "rharel@hotmail.com";
+            public string EmailSmtp { get; set; } = "smtp.postmarkapp.com";
+            public string EmailUser { get; set; } = "5b07926f-24fe-4ed3-9a14-ce010c8e5e3a";
+            public string EmailPass { get; set; } = "5b07926f-24fe-4ed3-9a14-ce010c8e5e3a";
+            public int EmailPort { get; set; } = 2525;
 			public string ConnectionString { get; set; }
 			public string ConnectionName { get; set; }
 			public string DatabaseName { get; set; }
@@ -115,6 +112,7 @@ public class MenuItem
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
 	public string ApptId { get; set; }
+	public string CaseId { get; set; }
 	public List<Menu> Menus { get; set; }
 }
 
@@ -142,10 +140,12 @@ public static class SelectedAppointment
 	public static string ApptFormId { get; set; }
 	public static string ApptFormName { get; set; }
 	public static string ApptId { get; set; }
+	public static string CaseId { get; set; }
 	public static string ApptPatientId { get; set; }
 	public static string ApptPatientName { get; set; }
 	public static string ApptDoctorId { get; set; }
 	public static string ApptLocationId { get; set; }
+	public static string ApptCompanyId { get; set; }
 	public static List<Report> ApptReports { get; set; }
 	public static List<MRFolder> ApptMRFolders { get; set; }
 	public static QForm SelectedQForm { get; set; }
@@ -180,12 +180,15 @@ public class MR
 	public string MRLocation { get; set; }
 	public string MRPatientId { get; set; }
 	public string MRPath { get; set; }
+	public string MRFileType { get; set; }
+	public bool IsShortcut { get; set; }
 }
 
 
 public class Report
 {
 	public string ReportId { get; set; }
+	public string ReportCompanyId { get; set; }
 	public string ReportName { get; set; }
 	public string ReportDescription { get; set; }
 	public string DoctorId { get; set; }
@@ -210,6 +213,22 @@ public class QuestionOption
 	public string InputType { get; set; }
 	public bool Chosen { get; set; }
 	public List<string> ConditionTriggerIds { get; set; }
+}
+
+
+public class QuestionRowItem
+{
+	public string MaxItems { get; set; }
+	public List<ItemColumn> ItemColumns { get; set; }
+}
+
+public class ItemColumn
+{
+	public string Header { get; set; }
+	public string Type { get; set; }
+	public string AnswerText { get; set; }
+	public bool Required { get; set; }
+	public List<string> Options { get; set; }
 }
 
 
@@ -241,6 +260,8 @@ public class SectionQuestion
 	public List<QuestionOption> QuestionOptions { get; set; }
 	//public nfloat ScrollY { get; set; }
 	//public NSIndexPath GetIndexPath { get; set; }
+	public QuestionRowItem QuestionRowItem { get; set; }
+	public List<QuestionRowItem> ItemRows { get; set; }
 }
 
 
@@ -274,8 +295,8 @@ public class QForm
 	public List<FormSection> FormSections { get; set; }
 	public QForm() { FormSelectedTemplateId = 0; }
 
-	public static explicit operator string(QForm v)
-	{
-		throw new NotImplementedException();
-	}
+	//public static explicit operator string(QForm v)
+	//{
+	//	throw new NotImplementedException();
+	//}
 }

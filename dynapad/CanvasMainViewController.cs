@@ -7,6 +7,8 @@ using CoreGraphics;
 using static UIKit.UIViewAutoresizing;
 using static UIKit.UIGestureRecognizerState;
 using static DynaPad.Helpers;
+using Plugin.Connectivity;
+using System.ComponentModel;
 
 namespace DynaPad
 {
@@ -15,7 +17,15 @@ namespace DynaPad
 		public bool MREditing;
 		public string MREditPath;
 		public string MREditId;
+		public string MREditName;
+		public string MREditType;
 		public CGRect fingsize { get; set; }
+		public string apptId;
+		public string patientId;
+		public string doctorId;
+		public string locationId;
+		public string filename;
+		public bool IsDoctorForm;
 
 		readonly List<UIButton> buttons = new List<UIButton> ();
 		readonly List<NSObject> observers = new List<NSObject> ();
@@ -84,8 +94,8 @@ namespace DynaPad
 		{
 			base.ViewDidLoad ();
 
-			//var bounds = View.Bounds;
-			var bounds = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
+			var bounds = View.Bounds;
+			//var bounds = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
 			//var bounds = fingsize;
 			var screenBounds = UIScreen.MainScreen.Bounds;
 			//var maxScreenDimension = NMath.Max (screenBounds.Width, screenBounds.Height);
@@ -93,8 +103,10 @@ namespace DynaPad
 
 			UIViewAutoresizing flexibleDimensions = FlexibleWidth | FlexibleHeight;
 
-			scrollView = new UIScrollView (bounds) {
-				AutoresizingMask = flexibleDimensions
+			scrollView = new UIScrollView(bounds)
+			{
+				AutoresizingMask = flexibleDimensions,
+				//BackgroundColor = UIColor.Red
 			};
 
 			View.AddSubview (scrollView);
@@ -121,6 +133,7 @@ namespace DynaPad
 			//scrollView.ContentOffset = new CGPoint(0, 0);
 			scrollView.AddSubview (canvasContainerView);
 			scrollView.BackgroundColor = canvasContainerView.BackgroundColor;
+
 			//scrollView.BackgroundColor = UIColor.Clear;
 			//scrollView.BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
 			//scrollView.Alpha = 1.0f;
@@ -140,10 +153,35 @@ namespace DynaPad
 
 			if (MREditing)
 			{
-				var img = UIImage.FromFile("dynapadscreenshot.png");
-				UIImageView imgView = new UIImageView(bounds);
+				filename = MREditName + "_" + "edit" + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
+				//var img = UIImage.FromFile("dynapadscreenshot.png");
+
+				UIImage img = new UIImage();
+				switch (MREditType)
+				{
+					case "jpg":
+					case "gif":
+					case "png":
+						img = FromUrl(MREditPath);
+						break;
+					case "pdf":
+					case "doc":
+					case "docx":
+						var dps = new DynaPadService.DynaPadService();
+						//img = dps.ConvertToJPG(CommonFunctions.GetUserConfig(), MREditPath);
+						break;
+					default:
+						img = FromUrl(MREditPath);
+						break;
+				}
+
+				var imgView = new UIImageView(bounds);
 				imgView.Image = img;
 				imgView.ContentMode = UIViewContentMode.ScaleAspectFit; // or ScaleAspectFill
+				//imgView.BackgroundColor = UIColor.Green;
+				//imgView.Opaque = false;
+				//canvasContainerView.BackgroundColor = UIColor.Clear;
+				//canvasContainerView.Opaque = false;
 				canvasContainerView.AddSubview(imgView);
 				canvasContainerView.SendSubviewToBack(imgView);
 				//imgView.Alpha = 0.5f;
@@ -207,6 +245,14 @@ namespace DynaPad
 			clearButton = AddButton("clear", ClearButtonAction);
 			saveButton = AddButton("save", SaveButtonAction);
 			SetupPencilUI ();
+
+			//cgView.SetNeedsDisplay();
+			//scrollView.SetNeedsDisplay();
+			//canvasContainerView.SetNeedsDisplay();
+			//cgView.
+
+			//new UIAlertView("Touched", "ass", null, "OK", null).Show ();
+			//PresentViewController(CommonFunctions.AlertPrompt("File Edit", "Saving this edit will not overwrite the original file", true, null, false, null), true, null);
 		}
 
 		UIButton AddButton (string title, EventHandler handler)
@@ -275,6 +321,60 @@ namespace DynaPad
 			var ass2 = cgView.StrokeCollection;
 			var hole = strokeCollection;
 			cgView.StrokeCollection = strokeCollection;
+			UIImage im = AsImage(canvasContainerView);
+			if (CrossConnectivity.Current.IsConnected)
+			{
+
+				//var bw = new BackgroundWorker();
+
+				//// this allows our worker to report progress during work
+				//bw.WorkerReportsProgress = true;
+
+				//// what to do in the background thread
+				//bw.DoWork += delegate (object o, DoWorkEventArgs argss)
+				//{
+				//	var b = o as BackgroundWorker;
+
+				//	var dps = new DynaPadService.DynaPadService();
+				//	var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, "DynaPad Photo", "DynaPad", "", im.AsJPEG(0.5f).ToArray(), IsDoctorForm, false);
+				//};
+
+				//// what to do when worker completes its task (notify the user)
+				//bw.RunWorkerCompleted += delegate (object o, RunWorkerCompletedEventArgs argsss)
+				//{
+				//	PresentViewController(CommonFunctions.AlertPrompt("Edited File Saved", "A new edit has been saved to medical records", true, null, false, null), true, null);
+				//};
+
+				//bw.RunWorkerAsync();
+
+				byte[] editArr = im.AsJPEG(0.5f).ToArray();
+
+				var dps = new DynaPadService.DynaPadService();
+				//byte[] saveArr = MREditType == "jpg" ? editArr : dps.ConvertToType(CommonFunctions.GetUserConfig(), editArr, MREditType);
+				byte[] saveArr = editArr;
+				var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, "DynaPad Edit", "DynaPad", "", "", saveArr, IsDoctorForm, false);
+			}
+			else
+			{
+				PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+			}
+		}
+
+		public UIImage AsImage(UIView view)
+		{
+			UIGraphics.BeginImageContextWithOptions(view.Bounds.Size, view.Opaque, 1);
+			view.DrawViewHierarchy(view.Frame, true); //this was key line
+			UIImage img = UIGraphics.GetImageFromCurrentImageContext();
+			UIGraphics.EndImageContext();
+
+			return img;
+		}
+
+		static UIImage FromUrl(string uri)
+		{
+			using (var url = new NSUrl(uri))
+			using (var data = NSData.FromUrl(url))
+				return UIImage.LoadFromData(data);
 		}
 
 		void CloseButtonAction(object sender, EventArgs e)

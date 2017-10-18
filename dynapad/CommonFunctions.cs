@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using CoreGraphics;
+//using System.Net.Mail;
+using MonoTouch.Dialog;
 //using DynaClassLibrary;
 using UIKit;
+using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
 
 namespace DynaPad
 {
@@ -65,7 +67,9 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+                CommonFunctions.sendErrorEmail(ex);
+                return null;
+				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
 
@@ -89,6 +93,149 @@ namespace DynaPad
 			var prompt = UIAlertController.Create("No Internet Connection", "An active internet connection is required", UIAlertControllerStyle.Alert);
 			prompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
 			return prompt;
+		}
+
+		public static UIAlertController ExceptionAlertPrompt(bool ReloginPrompt = false)
+		{
+            var relogin = "try again.";
+            if (ReloginPrompt)
+            {
+                relogin = "re-login to ensure form loads properly.";
+            }
+            var message = "An error has occurred, " + relogin;
+            var prompt = UIAlertController.Create("Error", message, UIAlertControllerStyle.Alert);
+			prompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+			return prompt;
+		}
+
+        public static RootElement ErrorRootElement()
+        {
+            var ErrorRoot = new RootElement("Error");
+            return ErrorRoot;
+        }
+
+        public static Section ErrorDetailSection()
+        {
+            var ErrorSection = new Section("Error. Please retry. If issue persists, contact support.");
+            return ErrorSection;
+        }
+
+        public static void sendNSErrorEmail(Foundation.NSError exception)
+        {
+			try
+			{
+				string subject = "DynaPad Error - on " + DateTime.Now.ToShortDateString();
+                string errorMessage = "CODE:<br/><br/>" + exception.Code + "<br/><br/><br/>DOMAIN:<br/><br/>" + exception.Domain + "<br/><br/><br/>USER INFO:<br/><br/>" + exception.UserInfo + "<br/><br/><br/>LOCAL DESC:<br/><br/>" + exception.LocalizedDescription + "<br/><br/><br/>LOCAL FAIL REASON:<br/><br/>" + exception.LocalizedFailureReason + "<br/><br/><br/>LOCAL RECOVER SUGGESTION:<br/><br/>" + exception.LocalizedRecoverySuggestion;
+
+				string emailFrom = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailFrom");
+				string emailTo = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailRoy");
+				string emailSMTP = "smtp.gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSmtp;//ConfigurationManager.AppSettings.Get("emailSMTP");
+				string emailUser = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser;//ConfigurationManager.AppSettings.Get("emailUser");
+				string emailPass = "madona007";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass;//ConfigurationManager.AppSettings.Get("emailPass");
+				int emailPort = 587;//Convert.ToInt32(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort);//ConfigurationManager.AppSettings.Get("emailPort"));
+
+				var message = new MimeMessage();
+				message.From.Add(new MailboxAddress("DynaPad App", emailFrom));
+				message.To.Add(new MailboxAddress("DynaDox Support", emailTo));
+				message.Subject = subject;
+
+				message.Body = new TextPart("html")
+				{
+					Text = errorMessage
+				};
+
+				using (var client = new SmtpClient())
+				{
+					// For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
+					//client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                    client.Connect(emailSMTP, emailPort);
+
+					// Note: since we don't have an OAuth2 token, disable
+					// the XOAUTH2 authentication mechanism.
+					client.AuthenticationMechanisms.Remove("XOAUTH2");
+
+					// Note: only needed if the SMTP server requires authentication
+                    client.Authenticate(emailUser, emailPass);
+
+					client.Send(message);
+					client.Disconnect(true);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+            }
+        }
+
+        public static void sendErrorEmail(Exception exception, string additionalInfo = null)
+		{
+			try
+			{
+                string subject = "DynaPad Error - on " + DateTime.Now.ToShortDateString();
+                string errorMessage = "MESSAGE:<br/><br/>" + exception.Message + "<br/><br/><br/>TRACE:<br/><br/>" + exception.StackTrace;
+                if (!string.IsNullOrEmpty(additionalInfo))
+                {
+                    errorMessage = errorMessage + additionalInfo;
+                }
+
+				string emailFrom = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailFrom");
+				string emailTo = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailRoy");
+				string emailSMTP = "smtp.gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSmtp;//ConfigurationManager.AppSettings.Get("emailSMTP");
+				string emailUser = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser;//ConfigurationManager.AppSettings.Get("emailUser");
+				string emailPass = "madona007";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass;//ConfigurationManager.AppSettings.Get("emailPass");
+				int emailPort = 587;//Convert.ToInt32(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort);//ConfigurationManager.AppSettings.Get("emailPort"));
+
+				var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("DynaPad App", emailFrom));
+                message.To.Add(new MailboxAddress("DynaDox Support", emailTo));
+				message.Subject = subject;
+
+				message.Body = new TextPart("html")
+				{
+                    Text = errorMessage
+				};
+
+				using (var client = new SmtpClient())
+				{
+					// For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
+					//client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                    client.Connect(emailSMTP, emailPort);
+
+					// Note: since we don't have an OAuth2 token, disable
+					// the XOAUTH2 authentication mechanism.
+					client.AuthenticationMechanisms.Remove("XOAUTH2");
+
+					// Note: only needed if the SMTP server requires authentication
+                    client.Authenticate(emailUser, emailPass);
+
+					client.Send(message);
+					client.Disconnect(true);
+				}
+
+				//MailMessage ErrorEmail = new MailMessage
+				//{
+				//	Subject = subject,
+				//	From = new MailAddress(emailFrom, "DynaPad Error"),
+				//	Body = errorMessage
+				//};
+				//ErrorEmail.To.Add(new MailAddress(emailTo, "DynaDox"));
+
+				//SmtpClient smtp = new SmtpClient(emailSMTP, emailPort)
+				//{
+				//	EnableSsl = false,
+				//	DeliveryMethod = SmtpDeliveryMethod.Network,
+				//	Credentials = new System.Net.NetworkCredential(emailUser, emailPass)
+				//};
+
+				//smtp.Send(ErrorEmail);
+			}
+			catch (Exception ex)
+			{
+                Console.WriteLine(ex.Message);
+            }
+
 		}
 	}
 }
