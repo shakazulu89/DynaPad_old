@@ -15,6 +15,8 @@ using CoreGraphics;
 //using DynaClassLibrary;
 using System.Threading.Tasks;
 //using MultiThreading.Controls;
+//using Syncfusion.SfBusyIndicator.iOS;
+
 
 namespace DynaPad
 {
@@ -23,36 +25,13 @@ namespace DynaPad
 		public DetailViewController DetailViewController { get; set; }
 		public DialogViewController mvc { get; set; }
 		UILabel messageLabel;
-		LoadingOverlay loadingOverlay;
+		//LoadingOverlay loadingOverlay;
 		Menu myDynaMenu;
-
-
-		//ResultsTableController resultsTableController;
-		//UISearchController searchController;
-		//bool searchControllerWasActive;
-		//bool searchControllerSearchFieldWasFirstResponder;
-		//readonly Appointment[] products;
-
-
 
 		protected MasterViewController(IntPtr handle) : base(handle)
 		{
 			// Note: this .ctor should not contain any initialization logic.
 			//Title = "";
-
-
-
-			//products = new Appointment[] {
-			//	new Appointment(Appointment.DeviceTypeTitle, "iPhone", 2007, 599),
-			//	new Appointment(Appointment.DeviceTypeTitle, "iPod", 2001, 399),
-			//	new Appointment(Appointment.DeviceTypeTitle, "iPod touch", 2007, 210),
-			//	new Appointment(Appointment.DeviceTypeTitle, "iPad", 2010, 499),
-			//	new Appointment(Appointment.DeviceTypeTitle, "iPad mini", 2012, 659),
-			//	new Appointment(Appointment.DesktopTypeTitle, "iMac", 1997, 1299),
-			//	new Appointment(Appointment.DesktopTypeTitle, "Mac Pro", 2006, 2499),
-			//	new Appointment(Appointment.PortableTypeTitle, "MacBook Air", 2008, 1799),
-			//	new Appointment(Appointment.PortableTypeTitle, "MacBook Pro", 2006, 1499),
-			//};
 		}
 
 		bool needLogin = true;
@@ -136,42 +115,6 @@ namespace DynaPad
 						//DetailViewController.Root.Add(new Section("Logged in"));
 
 
-
-						//resultsTableController = new ResultsTableController
-						//{
-						//	FilteredProducts = new List<Appointment>()
-						//};
-
-						//searchController = new UISearchController(resultsTableController)
-						//{
-						//	WeakDelegate = this,
-						//	DimsBackgroundDuringPresentation = false,
-						//	WeakSearchResultsUpdater = this
-						//};
-
-						//searchController.SearchBar.SizeToFit();
-						//TableView.TableHeaderView = searchController.SearchBar;
-
-						//resultsTableController.TableView.WeakDelegate = this;
-						//searchController.SearchBar.WeakDelegate = this;
-
-						//DefinesPresentationContext = true;
-
-						//if (searchControllerWasActive)
-						//{
-						//	searchController.Active = searchControllerWasActive;
-						//	searchControllerWasActive = false;
-
-						//	if (searchControllerSearchFieldWasFirstResponder)
-						//	{
-						//		searchController.SearchBar.BecomeFirstResponder();
-						//		searchControllerSearchFieldWasFirstResponder = false;
-						//	}
-						//}
-
-
-
-
 						DynaLocations();
 						//DynaStart();
 					}
@@ -227,95 +170,55 @@ namespace DynaPad
 		{
 			base.ViewDidLoad();
 
-            //DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-            //DetailViewController.Style = UITableViewStyle.Plain;
-
-            ////var refresh = new UIRefreshControl();
-            ////this.RefreshControl = refresh;
-            ////RefreshRequested += delegate { ReloadComplete(); };
-
-
-            //var dds = new DynaPadService.DynaPadService();
-
-            ////var menu = dds.BuildDynaMenu("123");
-            ////var menuObj = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("123"));
-
-            //myDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.BuildDynaMenu("1"));
-            //DetailViewController.DynaMenu = myDynaMenu;
-
-            //var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
-            //rootMainMenu.UnevenRows = true;
-            //rootMainMenu.Enabled = true;
-
-            //var sectionMainMenu = new Section();
-            //sectionMainMenu.HeaderView = null;
-            //BuildMenu(myDynaMenu, sectionMainMenu);
-            //rootMainMenu.Add(sectionMainMenu);
-
-            //Root = rootMainMenu;
-            //Style = UITableViewStyle.Plain;
-			//DynaStart();
 			DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 			DetailViewController.Style = UITableViewStyle.Plain;
 		}
 
-		public void DynaLocations()
-		{
-			var rootMainMenu = new DynaFormRootElement("Locations");
-			var sectionMainMenu = new Section();
-			//sectionMainMenu.HeaderView = null;
 
-   //         sectionMainMenu.HeaderView = new UIView(new CGRect(0, 0, 0, 0));
-			//sectionMainMenu.HeaderView.Hidden = true;
-			//sectionMainMenu.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-			//sectionMainMenu.FooterView.Hidden = true;
+        public void DynaLocations()
+        {
+            var rootMainMenu = new DynaFormRootElement("Locations");
+            var sectionMainMenu = new Section();
 
-			try
-			{
-				rootMainMenu.UnevenRows = true;
-				rootMainMenu.Enabled = true;
+            try
+            {
+                rootMainMenu.UnevenRows = true;
+                rootMainMenu.Enabled = true;
 
-				foreach (DynaClassLibrary.DynaClasses.Location loc in DynaClassLibrary.DynaClasses.LoginContainer.User.Locations)
-				{
-					//sectionMainMenu.Add(new SectionStringElement(loc.LocationName, delegate
-					//{
-					//	DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation = loc;
-					//	DynaStart();
-					//}));
+                foreach (DynaClassLibrary.DynaClasses.Location loc in DynaClassLibrary.DynaClasses.LoginContainer.User.Locations)
+                {
+                    var rootMenu = new DynaFormRootElement(loc.LocationName);
+                    rootMenu.UnevenRows = true;
+                    rootMenu.Enabled = true;
+                    rootMenu.createOnSelected = GetDynaStart;
+                    rootMenu.ShowLoading = true;
+                    rootMenu.MenuValue = loc.LocationId;
+                    sectionMainMenu.Add(rootMenu);
+                }
 
-					var rootMenu = new DynaFormRootElement(loc.LocationName);
-					rootMenu.UnevenRows = true;
-					rootMenu.Enabled = true;
-					rootMenu.createOnSelected = GetDynaStart;
-					rootMenu.MenuValue = loc.LocationId;
-					sectionMainMenu.Add(rootMenu);
-				}
+                var settingsStringElement = new StyledStringElement("Settings", ShowSettings);
 
-				var settingsStringElement = new StyledStringElement("Settings", ShowSettings);
+                var feedbackStringElement = new StyledStringElement("Feedback (v" + NSBundle.MainBundle.InfoDictionary["CFBundleVersion"] + ")", ShowFeedbackList);
 
-				var feedbackStringElement = new StyledStringElement("Feedback (v" + NSBundle.MainBundle.InfoDictionary["CFBundleVersion"] + ")", ShowFeedbackList);
-
-				sectionMainMenu.Add(settingsStringElement);
-				sectionMainMenu.Add(feedbackStringElement);
+                sectionMainMenu.Add(settingsStringElement);
+                sectionMainMenu.Add(feedbackStringElement);
                 sectionMainMenu.Add(GetLogoutElement());
 
-				rootMainMenu.Add(sectionMainMenu);
+                rootMainMenu.Add(sectionMainMenu);
 
-				Root = rootMainMenu;
-			}
-			catch (Exception ex)
-			{
-				CommonFunctions.sendErrorEmail(ex);
+                Root = rootMainMenu;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
-                //DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
                 DetailViewController.Root.Clear();
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
-				sectionMainMenu.Add(GetLogoutElement());
-				rootMainMenu.Add(sectionMainMenu);
-				Root = rootMainMenu;
-				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			}
-		}
+                sectionMainMenu.Add(GetLogoutElement());
+                rootMainMenu.Add(sectionMainMenu);
+                Root = rootMainMenu;
+            }
+        }
 
 
 
@@ -335,39 +238,6 @@ namespace DynaPad
             return logoutStringElement;
         }
 
-
-
-
-		//public DynaPadService.ConfigurationObjects CommonFunctions.GetUserConfig()
-		//{
-		//	try
-		//	{
-		//		var UserConfig = new DynaPadService.ConfigurationObjects()
-		//		{
-		//			EmailSupport = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport,
-		//			EmailPostmaster = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPostmaster,
-		//			EmailRoy = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailRoy,
-		//			EmailSmtp = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSmtp,
-		//			EmailUser = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser,
-		//			EmailPass = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass,
-		//			EmailPort = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort,
-		//			ConnectionString = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.ConnectionString,
-		//			ConnectionName = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.ConnectionName,
-		//			DatabaseName = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DatabaseName,
-		//			DomainRootPathVirtual = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual,
-		//			DomainRootPathPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathPhysical,
-		//			DomainClaimantsPathVirtual = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathVirtual,
-		//			DomainClaimantsPathPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathPhysical,
-		//			DomainPaths = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainPaths
-		//		};
-
-		//		return UserConfig;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-		//	}
-		//}
 
 
 		public UIViewController GetDynaStart(RootElement rElement)
@@ -421,61 +291,6 @@ namespace DynaPad
 			}
 		}
 
-		public void DynaStart()
-		{
-			string menujson = "";
-
-			try
-			{
-				//DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-				//DetailViewController.Style = UITableViewStyle.Plain;
-
-				var dds = new DynaPadService.DynaPadService();
-				//var locid = string.IsNullOrEmpty(Constants.DocLocID) ? "1" : Constants.DocLocID;
-				var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? "1" : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
-				menujson = dds.BuildDynaMenu(CommonFunctions.GetUserConfig(), locid, DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName);
-				myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
-				DetailViewController.DynaMenu = myDynaMenu;
-
-				var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption);
-				rootMainMenu.UnevenRows = true;
-				rootMainMenu.Enabled = true;
-				rootMainMenu.RadioSelected = -1;
-				//Root.RadioSelected = -1;
-
-				var sectionMainMenu = new Section();
-				sectionMainMenu.HeaderView = null;
-				BuildMenu(myDynaMenu, sectionMainMenu);
-				rootMainMenu.Add(sectionMainMenu);
-
-				//foreach (Element d in sectionMainMenu.Elements)
-				//{
-				//	var t = d.GetType();
-				//	if (t == typeof(SectionStringElement))
-				//	{
-				//		var di = (SectionStringElement)d;
-				//		di.selected = false;
-				//	}
-				//}
-				//sectionMainMenu.GetContainerTableView().ReloadData();
-
-				Root = rootMainMenu;
-
-                NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
-                  {
-                      DynaLocations();
-                  });
-                //DetailViewController.SetDetailItem(new Section(), "URL", "", "", true, null, false, null, null);
-				//var ass = SelectedAppointment.SelectedQForm.PatientName;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			}
-		}
-
-
-
 
 
 		public void Logout()
@@ -520,6 +335,7 @@ namespace DynaPad
 					{
 						case "GetPatientForm":
 						case "GetDoctorForm":
+                            rootMenu.ShowLoading = true;
 							rootMenu.createOnSelected = GetFormService;
 							break;
 						case "GetAppt":
@@ -528,7 +344,8 @@ namespace DynaPad
 						case "GetApptForm":
 							rootMenu.createOnSelected = GetApptFormService;
 							break;
-						case "GetFiles":
+                        case "GetFiles":
+                            rootMenu.ShowLoading = true;
 							rootMenu.createOnSelected = GetMRFoldersService;
 							break;
 						case "GetReport":
@@ -876,10 +693,10 @@ namespace DynaPad
 		{
 			try
 			{
-				var bounds = base.TableView.Frame;
+				//var bounds = base.TableView.Frame;
 				// show the loading overlay on the UI thread using the correct orientation sizing
-				loadingOverlay = new LoadingOverlay(bounds);
-				SplitViewController.Add(loadingOverlay);
+				//loadingOverlay = new LoadingOverlay(bounds);
+				//SplitViewController.Add(loadingOverlay);
 
 				if (CrossConnectivity.Current.IsConnected)
 				{
@@ -969,10 +786,10 @@ namespace DynaPad
 				return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
-            finally
-            {
-                loadingOverlay.Hide();
-            }
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
 		}
 
 		void LoadMRView(string folderName, string folderID, string folderPath, MRFolder mrf, RootElement rt)
@@ -1026,11 +843,11 @@ namespace DynaPad
                 //if (CrossConnectivity.Current.IsConnected)
                 //{
                 //var bounds = UIScreen.MainScreen.Bounds;
-                var bounds = base.TableView.Frame;
+                //var bounds = base.TableView.Frame;
                 // show the loading overlay on the UI thread using the correct orientation sizing
-                loadingOverlay = new LoadingOverlay(bounds);
+                //loadingOverlay = new LoadingOverlay(bounds);
                 //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
-                SplitViewController.Add(loadingOverlay);
+                //SplitViewController.Add(loadingOverlay);
 
                 var dds = new DynaPadService.DynaPadService();
                 var dfElemet = (DynaFormRootElement)rElement;
@@ -1353,10 +1170,10 @@ namespace DynaPad
 				return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
-            finally
-            {
-                loadingOverlay.Hide();
-            }
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
 		}
 
 
@@ -2463,7 +2280,8 @@ namespace DynaPad
 		}
 
 
-		void LoadReportView(string valueId, string sectionName, RootElement rt, string reportName) 		{
+		//async void LoadReportView(string valueId, string sectionName, RootElement rt, string reportName)
+        void LoadReportView(string valueId, string sectionName, RootElement rt, string reportName) 		{
 			try
 			{
 				NavigationController.TopViewController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
@@ -2483,19 +2301,37 @@ namespace DynaPad
 					NavigationController.PopViewController(true);
 				});
 
-				DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false, null, false, null, reportName);
+                //loadingOverlay = new LoadingOverlay(View.Bounds);
+                //SplitViewController.Add(loadingOverlay);
+
+                //await Task.Run(() =>
+                //{
+                //    DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false, null, false, null, reportName);
+                //});//.ContinueWith(task =>
+                //{
+                //    loadingOverlay.Hide();
+                //});
+				
+                //loadingOverlay.Hide();
+
+                DetailViewController.SetDetailItem(new Section(sectionName), "Report", valueId, "", false, null, false, null, reportName);
 			}
 			catch (Exception ex)
-			{
+            {
+                //loadingOverlay.Hide();
 				DetailViewController.Root.Clear();
 				DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
 				DetailViewController.ReloadData();
 				CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			} 		}
+			}
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //} 		}
 
-		void LoadSummaryView(string fileName, string sectionName, RootElement rt)
+	    void LoadSummaryView(string fileName, string sectionName, RootElement rt)
 		{
 			try
 			{
@@ -2516,17 +2352,35 @@ namespace DynaPad
 					NavigationController.PopViewController(true);
 				});
 
-				DetailViewController.SetDetailItem(new Section(sectionName), "Summary", fileName, "", false, null, true, fileName);
+                DetailViewController.SetDetailItem(new Section(sectionName), "Summary", fileName, "", false, null, true, fileName);
+
+                //loadingOverlay = new LoadingOverlay(View.Bounds);
+                //SplitViewController.Add(loadingOverlay);
+
+                //await Task.Run(() =>
+                //{
+                //    DetailViewController.SetDetailItem(new Section(sectionName), "Summary", fileName, "", false, null, true, fileName);
+                //});//.ContinueWith(task =>
+                   //{
+                   //    loadingOverlay.Hide();
+                   //});
+
+                //loadingOverlay.Hide();
 			}
 			catch (Exception ex)
-			{
+            {
+                //loadingOverlay.Hide();
 				DetailViewController.Root.Clear();
 				DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
 				DetailViewController.ReloadData();
 				CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			}
+            }
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
 		}
 
 

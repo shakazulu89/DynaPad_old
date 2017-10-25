@@ -48,416 +48,421 @@ namespace DynaPad
 {
 
 
-	public class CanvasContainerView : UIView
-	{
-		UIView canvasView;
+    public class CanvasContainerView : UIView
+    {
+        UIView canvasView;
 
-		UIView documentView;
-		public UIView DocumentView
-		{
-			get
-			{
-				return documentView;
-			}
-			set
-			{
-				var previousView = documentView;
-				if (previousView != null)
-					previousView.RemoveFromSuperview();
+        UIView documentView;
+        public UIView DocumentView
+        {
+            get
+            {
+                return documentView;
+            }
+            set
+            {
+                var previousView = documentView;
+                if (previousView != null)
+                    previousView.RemoveFromSuperview();
 
-				documentView = value;
-				if (documentView != null)
-				{
-					documentView.Frame = canvasView.Bounds;
-					canvasView.AddSubview(documentView);
-				}
-			}
-		}
+                documentView = value;
+                if (documentView != null)
+                {
+                    documentView.Frame = canvasView.Bounds;
+                    canvasView.AddSubview(documentView);
+                }
+            }
+        }
 
-		CanvasContainerView(CGRect frame, UIView canvasView)
-			: base(frame)
-		{
-			this.canvasView = canvasView;
+        CanvasContainerView(CGRect frame, UIView canvasView)
+            : base(frame)
+        {
+            this.canvasView = canvasView;
 
-			BackgroundColor = UIColor.LightGray;
-			//BackgroundColor = UIColor.Clear;
-			//BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
-			//Alpha = 1.0f;
+            BackgroundColor = UIColor.LightGray;
+            //BackgroundColor = UIColor.Clear;
+            //BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
+            //Alpha = 1.0f;
 
-			AddSubview(canvasView);
-			SetNeedsDisplay();
-		}
+            AddSubview(canvasView);
+            SetNeedsDisplay();
+        }
 
-		public static CanvasContainerView FromCanvasSize(CGSize canvasSize)
-		{
-			var screenBounds = UIScreen.MainScreen.Bounds;
-			//var screenBounds = new CGRect(0, 0, 800, 800);
-			//var minDimension = NMath.Min(screenBounds.Width, screenBounds.Height);
-			var minDimension = NMath.Min(screenBounds.Width, screenBounds.Height);
-			//var baseInset = 44f;
-			//var size = canvasSize.Add(baseInset * 2);
-			var size = canvasSize;
-			size.Width = NMath.Max(minDimension, size.Width);
-			size.Height = NMath.Max(minDimension, size.Height);
+        public static CanvasContainerView FromCanvasSize(CGSize canvasSize)
+        {
+            var screenBounds = UIScreen.MainScreen.Bounds;
+            //var screenBounds = new CGRect(0, 0, 800, 800);
+            //var minDimension = NMath.Min(screenBounds.Width, screenBounds.Height);
+            var minDimension = NMath.Min(screenBounds.Width, screenBounds.Height);
+            //var baseInset = 44f;
+            //var size = canvasSize.Add(baseInset * 2);
+            var size = canvasSize;
+            size.Width = NMath.Max(minDimension, size.Width);
+            size.Height = NMath.Max(minDimension, size.Height);
 
-			var frame = new CGRect(CGPoint.Empty, size);
+            var frame = new CGRect(CGPoint.Empty, size);
 
-			var canvasOrigin = new CGPoint((frame.Width - canvasSize.Width) / 2, (frame.Height - canvasSize.Height) / 2);
-			var canvasFrame = new CGRect(canvasOrigin, canvasSize);
-			var canvasView = new UIView(canvasFrame);
+            var canvasOrigin = new CGPoint((frame.Width - canvasSize.Width) / 2, (frame.Height - canvasSize.Height) / 2);
+            var canvasFrame = new CGRect(canvasOrigin, canvasSize);
+            var canvasView = new UIView(canvasFrame);
 
-			//canvasView.BackgroundColor = UIColor.White;
-			//canvasView.BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
-			//canvasView.Alpha = 1.0f;
+            //canvasView.BackgroundColor = UIColor.White;
+            //canvasView.BackgroundColor = UIColor.FromWhiteAlpha(1.0f, 0.4f);
+            //canvasView.Alpha = 1.0f;
 
-			//canvasView.BackgroundColor = UIColor.Clear;
-			//canvasView.BackgroundColor = UIColor.FromPatternImage(UIImage.FromFile("dynapadscreenshot.png"));
-
-
+            //canvasView.BackgroundColor = UIColor.Clear;
+            //canvasView.BackgroundColor = UIColor.FromPatternImage(UIImage.FromFile("dynapadscreenshot.png"));
 
 
-			canvasView.Layer.ShadowOffset = new CGSize(0, 3);
-			canvasView.Layer.ShadowRadius = 4;
-			canvasView.Layer.ShadowColor = UIColor.DarkGray.CGColor;
-			canvasView.Layer.ShadowOpacity = 1f;
-
-			return new CanvasContainerView(frame, canvasView);
-		}
-	}
 
 
-	public class CredentialsProvider : ICredentialsProvider
-	{
-		public string locid;
-		//int failCount = 0;
+            canvasView.Layer.ShadowOffset = new CGSize(0, 3);
+            canvasView.Layer.ShadowRadius = 4;
+            canvasView.Layer.ShadowColor = UIColor.DarkGray.CGColor;
+            canvasView.Layer.ShadowOpacity = 1f;
 
-		// Constructor without parameters is required
+            return new CanvasContainerView(frame, canvasView);
+        }
+    }
 
-		public bool NeedLoginAfterRegistration
-		{
-			get
-			{
-				// If you want your user to login after he/she has been registered
-				return true;
 
-				// Otherwise you can:
-				// return false;
-			}
-		}
+    public class CredentialsProvider : ICredentialsProvider
+    {
+        public string locid;
+        //int failCount = 0;
 
-		public void Login(string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
-		{
-			try
-			{
-				// Do some operations to login user
-				//bool isValid = (userName == Constants.Username && password == Constants.Password);
-				bool isValid = false;
-				bool userFault = false;
-				bool passFault = false;
-				bool generalFault = false;
+        // Constructor without parameters is required
 
-				//for (int i = 0; i < Constants.Logins.GetLength(0); i++)
-				//{
-				//	if (userName == Constants.Logins[i, 0])
-				//	{
-				//		userFault = false;
+        public bool NeedLoginAfterRegistration
+        {
+            get
+            {
+                // If you want your user to login after he/she has been registered
+                return true;
 
-				//		if (password == Constants.Logins[i, 1])
-				//		{
-				//			isValid = true;
-				//			locid = Constants.Logins[i, 2];
-				//			Constants.DocLocID = Constants.Logins[i, 2];
-				//			userFault = false;
-				//			passFault = false;
-				//			generalFault = false;
-				//		}
-				//		else
-				//		{
-				//			passFault = true;
-				//		}
-				//	}
-				//	else
-				//	{
-				//		userFault = true;
-				//	}
-				//}
+                // Otherwise you can:
+                // return false;
+            }
+        }
 
-				if (CrossConnectivity.Current.IsConnected)
-				{
-					var dds = new DynaPadService.DynaPadService();
-					//var ass = NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain");
-					//var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain"), userName, password);
-					var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), userName, password);
-					JsonHandler.OriginalFormJsonString = jsonUser;
-					DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
-					//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig = new DynaClassLibrary.DynaClasses.ConfigurationObjects();
-					//DynaClassLibrary.DynaClasses.LoginContainer.User.DisplayName = "ass";
-					DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser);
-					//var duser = JsonConvert.DeserializeObject<User>(jsonUser);
-					//DynaClassLibrary.DynaClasses.LoginContainer.User = duser;
+        public void Login(string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
+        {
+            try
+            {
+                // Do some operations to login user
+                //bool isValid = (userName == Constants.Username && password == Constants.Password);
+                bool isValid = false;
+                bool userFault = false;
+                bool passFault = false;
+                bool generalFault = false;
 
-					switch (DynaClassLibrary.DynaClasses.LoginContainer.User.LoginStatus)
-					{
-						case "Valid":
-							isValid = true;
-							//locid = Constants.Logins[i, 2];
-							//Constants.DocLocID = Constants.Logins[i, 2];
-							userFault = false;
-							passFault = false;
-							generalFault = false;
-							break;
-						case "userFault":
-							isValid = false;
-							userFault = true;
-							passFault = false;
-							generalFault = false;
-							break;
-						case "passFault":
-							isValid = false;
-							userFault = false;
-							passFault = true;
-							generalFault = false;
-							break;
-						case "generalFault":
-							isValid = false;
-							userFault = false;
-							passFault = false;
-							generalFault = true;
-							break;
-					}
+                //for (int i = 0; i < Constants.Logins.GetLength(0); i++)
+                //{
+                //	if (userName == Constants.Logins[i, 0])
+                //	{
+                //		userFault = false;
 
-					if (isValid)
-					{
-						//failCount = 0;
-						// If login was successfully completed
-						successCallback();
-					}
-					else
-					{
-						//failCount = failCount + 1;
-						generalFault |= (userFault == false && passFault == false);
-						var loginDetails = new LoginScreenFaultDetails();
-						//if (userName != Constants.Username)
-						//{
-						//	loginDetails.UserNameErrorMessage = "User name is wrong or does not exist";
-						//}
-						//else if (password != Constants.Password)
-						//{
-						//	loginDetails.PasswordErrorMessage = "Password is wrong or does not match user name";
-						//}
-						//else
-						//{
-						//	loginDetails.CommonErrorMessage = "Some error message relative to whole form";
-						//}
-						if (userFault)
-						{
-							loginDetails.UserNameErrorMessage = "User name does not exist";
-						}
-						else if (passFault)
-						{
-							loginDetails.PasswordErrorMessage = "Password does not match user name";
-						}
-						else if (generalFault)
-						{
-							loginDetails.CommonErrorMessage = "Login error";
-						}
-						// Otherwise
-						failCallback(loginDetails);
+                //		if (password == Constants.Logins[i, 1])
+                //		{
+                //			isValid = true;
+                //			locid = Constants.Logins[i, 2];
+                //			Constants.DocLocID = Constants.Logins[i, 2];
+                //			userFault = false;
+                //			passFault = false;
+                //			generalFault = false;
+                //		}
+                //		else
+                //		{
+                //			passFault = true;
+                //		}
+                //	}
+                //	else
+                //	{
+                //		userFault = true;
+                //	}
+                //}
 
-						//if (failCount > 3)
-						//{
-						//	var SetDomainPrompt = UIAlertController.Create("Set Domain Name", "Enter domain name: ", UIAlertControllerStyle.Alert);
-						//	SetDomainPrompt.AddTextField((field) =>
-						//	{
-						//		field.Placeholder = "Domain Name";
-						//	});
-						//	//Add Actions
-						//	SetDomainPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveDomain(SetDomainPrompt.TextFields[0].Text)));
-						//	SetDomainPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-						//	//Present Alert
-						//	var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-						//	var ;
+                if (CrossConnectivity.Current.IsConnected)
+                {
+                    var dds = new DynaPadService.DynaPadService();
+                    //var ass = NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain");
+                    //var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("DynaDomain"), userName, password);
+                    var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), userName, password);
+                    JsonHandler.OriginalFormJsonString = jsonUser;
+                    DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
+                    //DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig = new DynaClassLibrary.DynaClasses.ConfigurationObjects();
+                    //DynaClassLibrary.DynaClasses.LoginContainer.User.DisplayName = "ass";
+                    DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser);
+                    //var duser = JsonConvert.DeserializeObject<User>(jsonUser);
+                    //DynaClassLibrary.DynaClasses.LoginContainer.User = duser;
 
-						//	failCallback( new LoginScreenFaultDetails()
-						//	 PresentViewController(SetDomainPrompt, true, null);
-						//}
-					}
-				}
-				else
-				{
-					var loginDetails = new LoginScreenFaultDetails();
-					loginDetails.CommonErrorMessage = "Internet connection is required to login";
-					failCallback(loginDetails);
-				}
-			}
-			catch (Exception ex)
-			{
-				CommonFunctions.sendErrorEmail(ex);
+                    switch (DynaClassLibrary.DynaClasses.LoginContainer.User.LoginStatus)
+                    {
+                        case "Valid":
+                            isValid = true;
+                            //locid = Constants.Logins[i, 2];
+                            //Constants.DocLocID = Constants.Logins[i, 2];
+                            userFault = false;
+                            passFault = false;
+                            generalFault = false;
+                            break;
+                        case "userFault":
+                            isValid = false;
+                            userFault = true;
+                            passFault = false;
+                            generalFault = false;
+                            break;
+                        case "passFault":
+                            isValid = false;
+                            userFault = false;
+                            passFault = true;
+                            generalFault = false;
+                            break;
+                        case "generalFault":
+                            isValid = false;
+                            userFault = false;
+                            passFault = false;
+                            generalFault = true;
+                            break;
+                    }
+
+                    if (isValid)
+                    {
+                        //failCount = 0;
+                        // If login was successfully completed
+                        successCallback();
+                    }
+                    else
+                    {
+                        //failCount = failCount + 1;
+                        generalFault |= (userFault == false && passFault == false);
+                        var loginDetails = new LoginScreenFaultDetails();
+                        //if (userName != Constants.Username)
+                        //{
+                        //	loginDetails.UserNameErrorMessage = "User name is wrong or does not exist";
+                        //}
+                        //else if (password != Constants.Password)
+                        //{
+                        //	loginDetails.PasswordErrorMessage = "Password is wrong or does not match user name";
+                        //}
+                        //else
+                        //{
+                        //	loginDetails.CommonErrorMessage = "Some error message relative to whole form";
+                        //}
+                        if (userFault)
+                        {
+                            loginDetails.UserNameErrorMessage = "User name does not exist";
+                        }
+                        else if (passFault)
+                        {
+                            loginDetails.PasswordErrorMessage = "Password does not match user name";
+                        }
+                        else if (generalFault)
+                        {
+                            loginDetails.CommonErrorMessage = "Login error";
+                        }
+                        // Otherwise
+                        failCallback(loginDetails);
+
+                        //if (failCount > 3)
+                        //{
+                        //	var SetDomainPrompt = UIAlertController.Create("Set Domain Name", "Enter domain name: ", UIAlertControllerStyle.Alert);
+                        //	SetDomainPrompt.AddTextField((field) =>
+                        //	{
+                        //		field.Placeholder = "Domain Name";
+                        //	});
+                        //	//Add Actions
+                        //	SetDomainPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveDomain(SetDomainPrompt.TextFields[0].Text)));
+                        //	SetDomainPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                        //	//Present Alert
+                        //	var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+                        //	var ;
+
+                        //	failCallback( new LoginScreenFaultDetails()
+                        //	 PresentViewController(SetDomainPrompt, true, null);
+                        //}
+                    }
+                }
+                else
+                {
+                    var loginDetails = new LoginScreenFaultDetails();
+                    loginDetails.CommonErrorMessage = "Internet connection is required to login";
+                    failCallback(loginDetails);
+                }
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
                 var exceptionLoginDetails = new LoginScreenFaultDetails();
                 exceptionLoginDetails.CommonErrorMessage = "Error. An exception occured. If issue persists contact support.";
                 failCallback(exceptionLoginDetails);
-				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			}
-		}
+                //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
+        }
 
-		public void Register(string email, string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
-		{
-			// Do some operations to register user
+        public void Register(string email, string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
+        {
+            // Do some operations to register user
 
-			// If registration was successfully completed
-			successCallback();
+            // If registration was successfully completed
+            successCallback();
 
-			// Otherwise
-			// failCallback(new LoginScreenFaultDetails {
-			//  CommonErrorMessage = "Some error message relative to whole form",
-			//  EmailErrorMessage = "Some error message relative to e-mail form field",
-			//  UserNameErrorMessage = "Some error message relative to user name form field",
-			//  PasswordErrorMessage = "Some error message relative to password form field"
-			// });
-		}
+            // Otherwise
+            // failCallback(new LoginScreenFaultDetails {
+            //  CommonErrorMessage = "Some error message relative to whole form",
+            //  EmailErrorMessage = "Some error message relative to e-mail form field",
+            //  UserNameErrorMessage = "Some error message relative to user name form field",
+            //  PasswordErrorMessage = "Some error message relative to password form field"
+            // });
+        }
 
-		public void ResetPassword(string email, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
-		{
-			// Do some operations to reset user's password
+        public void ResetPassword(string email, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
+        {
+            // Do some operations to reset user's password
 
-			// If password was successfully reset
-			successCallback();
+            // If password was successfully reset
+            successCallback();
 
-			// Otherwise
-			// failCallback(new LoginScreenFaultDetails {
-			//  CommonErrorMessage = "Some error message relative to whole form",
-			//  EmailErrorMessage = "Some error message relative to e-mail form field"
-			// });
-		}
+            // Otherwise
+            // failCallback(new LoginScreenFaultDetails {
+            //  CommonErrorMessage = "Some error message relative to whole form",
+            //  EmailErrorMessage = "Some error message relative to e-mail form field"
+            // });
+        }
 
-		public bool ShowPasswordResetLink
-		{
-			get
-			{
-				// If you want your login screen to have a forgot password button
-				//return true;
+        public bool ShowPasswordResetLink
+        {
+            get
+            {
+                // If you want your login screen to have a forgot password button
+                //return true;
 
-				// Otherwise you can:
-				return false;
-			}
-		}
+                // Otherwise you can:
+                return false;
+            }
+        }
 
-		public bool ShowRegistration
-		{
-			get
-			{
-				// If you want your login screen to have a register new user button
-				//return true;
+        public bool ShowRegistration
+        {
+            get
+            {
+                // If you want your login screen to have a register new user button
+                //return true;
 
-				// Otherwise you can:
-				return false;
-			}
-		}
-	}
+                // Otherwise you can:
+                return false;
+            }
+        }
+    }
 
 
 
-	public class DynaDialogViewController : DialogViewController
-	{
-		public bool IsForm;
+    public class DynaDialogViewController : DialogViewController
+    {
+        public bool IsForm;
+        //public LoadingOverlay loadingOverlay = new LoadingOverlay(UIScreen.MainScreen.Bounds);
 
-		public DynaDialogViewController(IntPtr handle) : base(handle)
-		{
-			Style = UITableViewStyle.Plain;
+        public DynaDialogViewController(IntPtr handle) : base(handle)
+        {
+            Style = UITableViewStyle.Plain;
             //TableView.EstimatedSectionHeaderHeight = 0;
-		}
+        }
 
-		public DynaDialogViewController(RootElement root) : base(root)
-		{
-			Style = UITableViewStyle.Plain;
-			Title = root.Caption;
-			//TableView.EstimatedSectionHeaderHeight = 0;
+        public DynaDialogViewController(RootElement root) : base(root)
+        {
+            Style = UITableViewStyle.Plain;
+            Title = root.Caption;
+            //TableView.EstimatedSectionHeaderHeight = 0;
 
-			if (!IsForm)
-			{
-				RefreshRequested += delegate
-				{
-					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+            if (!IsForm)
+            {
+                RefreshRequested += delegate
+                {
+                    var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-					MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action => {
-						// Wait 3 seconds, to simulate some network activity
-						NSTimer.CreateScheduledTimer(1, delegate
-						{
-							//root[0].Add(new StringElement("Added " + (++i)));
-							//this.ViewDidLoad();
-							//this.ReloadData();
-							//this.TriggerRefresh();
-							//this.NavigationController.View.ReloadInputViews();
-							//this.NavigationController.View.SetNeedsDisplay();
-							//this.NavigationController.PopViewController(true);
-							//Root.TableView.ReloadData();
+                    MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action =>
+                    {
+                        // Wait 3 seconds, to simulate some network activity
+                        NSTimer.CreateScheduledTimer(1, delegate
+                        {
+                            //root[0].Add(new StringElement("Added " + (++i)));
+                            //this.ViewDidLoad();
+                            //this.ReloadData();
+                            //this.TriggerRefresh();
+                            //this.NavigationController.View.ReloadInputViews();
+                            //this.NavigationController.View.SetNeedsDisplay();
+                            //this.NavigationController.PopViewController(true);
+                            //Root.TableView.ReloadData();
 
-							//this.TableView.SetNeedsDisplay();
-							//NavigationController.PopToRootViewController(true);
-							//NavigationController.ViewControllers[0].ViewDidLoad();
-							//MasterViewController.DynaStart();
-							MasterViewController.DynaLocations();
-							//MasterViewController.TableView.SelectRow(null, true, UITableViewScrollPosition.Top);
-							//MasterViewController.TableView.SetNeedsDisplay();
-							NavigationController.PopToRootViewController(true);
-							MasterViewController.ReloadData();
-							//MasterViewController.NavigationController.PopToRootViewController(true);
+                            //this.TableView.SetNeedsDisplay();
+                            //NavigationController.PopToRootViewController(true);
+                            //NavigationController.ViewControllers[0].ViewDidLoad();
+                            //MasterViewController.DynaStart();
+                            MasterViewController.DynaLocations();
+                            //MasterViewController.TableView.SelectRow(null, true, UITableViewScrollPosition.Top);
+                            //MasterViewController.TableView.SetNeedsDisplay();
+                            NavigationController.PopToRootViewController(true);
+                            MasterViewController.ReloadData();
+                            //MasterViewController.NavigationController.PopToRootViewController(true);
 
-							// Notify the dialog view controller that we are done
-							// this will hide the progress info
-							ReloadComplete();
-						});
-                    }, true, action => {
+                            // Notify the dialog view controller that we are done
+                            // this will hide the progress info
+                            ReloadComplete();
+                        });
+                    }, true, action =>
+                    {
                         ReloadComplete();
                     }), true, null);
-				};
-			}
-		}
+                };
+            }
+        }
 
-		public DynaDialogViewController(RootElement root, bool pushing) : base(root, pushing)
-		{
-			Style = UITableViewStyle.Plain;
-			Title = root.Caption;
-			//TableView.EstimatedSectionHeaderHeight = 0;
+        public DynaDialogViewController(RootElement root, bool pushing) : base(root, pushing)
+        {
+            Style = UITableViewStyle.Plain;
+            Title = root.Caption;
+            //TableView.EstimatedSectionHeaderHeight = 0;
 
-			if (!IsForm)
-			{
-				RefreshRequested += delegate
-				{
-					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+            if (!IsForm)
+            {
+                RefreshRequested += delegate
+                {
+                    var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-                    MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action => {
-						// Wait 3 seconds, to simulate some network activity
-						NSTimer.CreateScheduledTimer(1, delegate
-						{
-							//MasterViewController.DynaStart();
-							MasterViewController.DynaLocations();
-							NavigationController.PopToRootViewController(true);
-							//MasterViewController.TableView.SetNeedsDisplay();
-							MasterViewController.ReloadData();
-							//MasterViewController.NavigationController.PopToRootViewController(true);
-							// Notify the dialog view controller that we are done
-							// this will hide the progress info
-							ReloadComplete();
-						});
-                    }, true, action => {
+                    MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action =>
+                    {
+                        // Wait 3 seconds, to simulate some network activity
+                        NSTimer.CreateScheduledTimer(1, delegate
+                        {
+                            //MasterViewController.DynaStart();
+                            MasterViewController.DynaLocations();
+                            NavigationController.PopToRootViewController(true);
+                            //MasterViewController.TableView.SetNeedsDisplay();
+                            MasterViewController.ReloadData();
+                            //MasterViewController.NavigationController.PopToRootViewController(true);
+                            // Notify the dialog view controller that we are done
+                            // this will hide the progress info
+                            ReloadComplete();
+                        });
+                    }, true, action =>
+                    {
                         ReloadComplete();
                     }), true, null);
-				};
-			}
-		}
+                };
+            }
+        }
 
-		public DynaDialogViewController(RootElement root, bool pushing, bool pull) : base(root, pushing)
-		{
-			Style = UITableViewStyle.Plain;
-			Title = root.Caption;
-			//TableView.EstimatedSectionHeaderHeight = 0;
+        public DynaDialogViewController(RootElement root, bool pushing, bool pull) : base(root, pushing)
+        {
+            Style = UITableViewStyle.Plain;
+            Title = root.Caption;
+            //TableView.EstimatedSectionHeaderHeight = 0;
 
-			if (pull)
-			{
-				RefreshRequested += delegate
-				{
-					var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+            if (pull)
+            {
+                RefreshRequested += delegate
+                {
+                    var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
                     MasterViewController.PresentViewController(CommonFunctions.AlertPrompt("Reload", "Reload location?", true, action =>
                     {
@@ -479,33 +484,65 @@ namespace DynaPad
                     {
                         ReloadComplete();
                     }), true, null);
-				};
-			}
-		}
+                };
+            }
+        }
 
-		public override void LoadView()
-		{
-			base.LoadView();
+        //public int dosleep(int Milliseconds)
+        //{
+        //    System.Threading.Thread.Sleep(Milliseconds);
+        //    //waittest = "changeddd";
+        //    Console.WriteLine("Task finished");
+        //    return Milliseconds;
+        //}
 
-			var myTitleLabel = new UILabel(new CGRect(0, 0, 1, 1)) { Text = Title };
-			myTitleLabel.LineBreakMode = UILineBreakMode.WordWrap;
-			myTitleLabel.Lines = 0;
-			myTitleLabel.TextAlignment = UITextAlignment.Center;
-			NavigationItem.TitleView = myTitleLabel;
-			NavigationItem.TitleView.SizeToFit();
+        public override  void LoadView()
+        {
+            base.LoadView();
 
-			NavigationItem.BackBarButtonItem = new UIBarButtonItem(@"", UIBarButtonItemStyle.Plain, null, null);
+            //var loadingOverlay = new LoadingOverlay(UIScreen.MainScreen.Bounds);
+            //SplitViewController.Add(loadingOverlay);
+            //var t2 = await Task.Factory.StartNew(() => dosleep(3000));
 
-			if (NavigationItem.LeftBarButtonItem == null && this != NavigationController.ViewControllers[0])
-			{
-				var btnBack = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, (sender, args) =>
-				{
-					NavigationController.PopViewController(true);
-				});
-				NavigationItem.SetLeftBarButtonItem(btnBack, true);
-			}
-		}
-	}
+
+            var myTitleLabel = new UILabel(new CGRect(0, 0, 1, 1)) { Text = Title };
+            myTitleLabel.LineBreakMode = UILineBreakMode.WordWrap;
+            myTitleLabel.Lines = 0;
+            myTitleLabel.TextAlignment = UITextAlignment.Center;
+            NavigationItem.TitleView = myTitleLabel;
+            NavigationItem.TitleView.SizeToFit();
+
+            NavigationItem.BackBarButtonItem = new UIBarButtonItem(@"", UIBarButtonItemStyle.Plain, null, null);
+
+            if (NavigationItem.LeftBarButtonItem == null && this != NavigationController.ViewControllers[0])
+            {
+                var btnBack = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, (sender, args) =>
+                {
+                    NavigationController.PopViewController(true);
+                });
+                NavigationItem.SetLeftBarButtonItem(btnBack, true);
+            }
+
+            //loadingOverlay.Hide();
+        }
+
+
+
+        //public override void ViewWillAppear(bool animated)
+        //{
+        //    base.ViewWillAppear(true);
+
+        //    //loadingOverlay.Hide();
+        //}
+
+    //public override async void ViewWillDisappear(bool animated)
+        //{
+        //    base.ViewWillDisappear(true);
+
+        //    SplitViewController.Add(loadingOverlay);
+        //    var t2 = await Task.Factory.StartNew(() => dosleep(3000));
+        //}
+    }
 
 
 
@@ -1073,13 +1110,37 @@ namespace DynaPad
 		public string ApptID { get; set; }
 		public string CaseID { get; set; }
 		public List<Report> ApptReports { get; set; }
-		public Group thisGroup { get; set; }
+        public Group thisGroup { get; set; }
+        public bool ShowLoading { get; set; }
+
+        public override async void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+        {
+            var loadingOverlay = new LoadingOverlay(tableView.Bounds);
+            if (ShowLoading)
+            {
+                dvc.Add(loadingOverlay);
+
+                await Task.Delay(1);
+            }
+
+            base.Selected(dvc, tableView, path);
+
+            loadingOverlay.Hide();
+
+            var selected = OnSelected;
+            if (selected != null)
+            {
+                selected(this, EventArgs.Empty);
+            }
+        }
+
+        static public event EventHandler<EventArgs> OnSelected;
 
 		public DynaFormRootElement(string caption) : base(caption)
 		{
 			createOnSelected = (RootElement arg) =>
 			{
-				return new DynaDialogViewController(arg);
+				return new DynaDialogViewController(arg); 
 			};
 		}
 
@@ -1161,7 +1222,7 @@ namespace DynaPad
 			//dvc.View.BackgroundColor = Settings.RootBackgroundColour;
 			base.PrepareDialogViewController(dvc);
 		}
-	}
+  	}
 
 
 
@@ -2080,7 +2141,7 @@ namespace DynaPad
 			return cell;
 		}
 
-		public int Selected(string group)
+		public int SelectedGroup(string group)
 		{
 			if (string.IsNullOrEmpty(group))
 			{
@@ -2106,6 +2167,31 @@ namespace DynaPad
 			var radioGroup = GetGroup(group);
 			radioGroup.Selected = selected;
 		}
+
+
+
+
+        //public override async void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+        //{
+        //    var loadingOverlay = new LoadingOverlay(tableView.Bounds);
+        //    dvc.Add(loadingOverlay);
+
+        //    await Task.Delay(1);
+
+        //    base.Selected(dvc, tableView, path);
+        //    loadingOverlay.Hide();
+
+        //    var selected = OnSelected;
+        //    if (selected != null)
+        //    {
+        //        selected(this, EventArgs.Empty);
+        //    }
+        //}
+
+        //static public event EventHandler<EventArgs> OnSelected;
+
+
+
 
 		internal RadioGroup GetGroup(string group)
 		{
@@ -2278,7 +2364,7 @@ namespace DynaPad
 
 			if (slRoot != null)
 			{
-				selected = Index == slRoot.Selected(Group);
+				selected = Index == slRoot.SelectedGroup(Group);
 
 			}
 			else
@@ -2325,6 +2411,11 @@ namespace DynaPad
 
 		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
+            //var loadingOverlay = new LoadingOverlay(tableView.Bounds);
+            //dvc.Add(loadingOverlay);
+
+            //await Task.Delay(1);
+
 			var slRoot = Parent.Parent as DynaMultiRootElement;
 
 			if (slRoot != null)
@@ -2387,6 +2478,8 @@ namespace DynaPad
 			{
 				base.Selected(dvc, tableView, indexPath);
 			}
+
+            //loadingOverlay.Hide();
 		}
 
 		public override void Deselected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
@@ -2704,22 +2797,23 @@ namespace DynaPad
 					_close_cancel_button = UIButton.FromType(UIButtonType.RoundedRect);
 					_close_cancel_button.SetTitle("Close", UIControlState.Normal);
 				}
-				_close_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 + 20f), _cell_size.Height - 40f, 40f, 40f);
+                //_close_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 + 20f), _cell_size.Height - 40f, 40f, 40f);
+                _close_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 - 20f), _cell_size.Height - 40f, 40f, 40f);
 
-				if (_clear_cancel_button == null)
-				{
-					_clear_cancel_button = UIButton.FromType(UIButtonType.RoundedRect);
-					_clear_cancel_button.SetTitle("Clear", UIControlState.Normal);
-				}
-				//_clear_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 - 20f), _cell_size.Height - 40f, 40f, 40f);
-				_clear_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 - 40f), _cell_size.Height - 40f, 40f, 40f);
+				//if (_clear_cancel_button == null)
+				//{
+				//	_clear_cancel_button = UIButton.FromType(UIButtonType.RoundedRect);
+				//	_clear_cancel_button.SetTitle("Clear", UIControlState.Normal);
+				//}
+				////_clear_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 - 20f), _cell_size.Height - 40f, 40f, 40f);
+				//_clear_cancel_button.Frame = new RectangleF((float)(tv.Frame.Width / 2 - 40f), _cell_size.Height - 40f, 40f, 40f);
 				_date_picker.Frame = new RectangleF((float)(tv.Frame.Width / 2 - _picker_size.Width / 2), _cell_size.Height / 2 - _picker_size.Height / 2, _picker_size.Width, _picker_size.Height);
-				_clear_cancel_button.TouchUpInside += (object sender, EventArgs e) =>
-				{
-					// Clear button pressed. 
-					if (ClearPressed != null)
-						ClearPressed();
-				};
+				//_clear_cancel_button.TouchUpInside += (object sender, EventArgs e) =>
+				//{
+				//	// Clear button pressed. 
+				//	if (ClearPressed != null)
+				//		ClearPressed();
+				//};
 				_close_cancel_button.TouchUpInside += (object sender, EventArgs e) =>
 				{
 					// Clear button pressed. 
@@ -2729,7 +2823,7 @@ namespace DynaPad
 
 				cell.AddSubview(_date_picker);
 
-				cell.AddSubview(_clear_cancel_button);
+				//cell.AddSubview(_clear_cancel_button);
 				cell.AddSubview(_close_cancel_button);
 
 				return cell;
@@ -2942,6 +3036,7 @@ namespace DynaPad
 		// control declarations
 		UIActivityIndicatorView activitySpinner;
 		UILabel loadingLabel;
+        //public string loadingLabelText { get; set; }// = "Loading Data...";
 
 		public LoadingOverlay(CGRect frame) : base(frame)
 		{
@@ -2977,7 +3072,8 @@ namespace DynaPad
 				));
 			loadingLabel.BackgroundColor = UIColor.Clear;
 			loadingLabel.TextColor = UIColor.White;
-			loadingLabel.Text = "Loading Data...";
+            loadingLabel.Text = "Loading...";
+            //loadingLabel.Text = string.IsNullOrEmpty(loadingLabelText) ? "Loading Data..." : loadingLabelText;
 			loadingLabel.TextAlignment = UITextAlignment.Center;
 			loadingLabel.AutoresizingMask = UIViewAutoresizing.All;
 			AddSubview(loadingLabel);
@@ -2995,6 +3091,11 @@ namespace DynaPad
 				() => { RemoveFromSuperview(); }
 			);
 		}
+
+        public void SetText(string lbltext)
+        {
+            loadingLabel.Text = lbltext;
+        }
 	}
 
 

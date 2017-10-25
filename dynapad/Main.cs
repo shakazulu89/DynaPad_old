@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UIKit;
+using System.Threading.Tasks;
 
 namespace DynaPad
 {
@@ -9,6 +10,19 @@ namespace DynaPad
 		// This is the main entry point of the application.
 		static void Main(string[] args)
 		{
+            //AppDomain.CurrentDomain.UnhandledException += (o, e) =>
+            //{
+            //    var dd = "tesf";
+            //};
+
+            //TaskScheduler.UnobservedTaskException += (o, e) =>
+            //{
+
+            //    var dd = "tesf";
+            //};
+
+
+
 			//AppDomain.CurrentDomain.UnhandledException += (sender, argss) =>
 			//{
 			//	var exc = argss.ExceptionObject as Exception;

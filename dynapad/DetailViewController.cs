@@ -26,6 +26,7 @@ using System.Collections.ObjectModel;
 using MessageUI;
 using SafariServices;
 using WebKit;
+using PdfKit;
 
 
 namespace DynaPad
@@ -174,14 +175,18 @@ namespace DynaPad
 		}
 
 
-		void SubmitForm(string password, bool isDoctorForm, SignaturePad.SignaturePadView sig)
+		async void SubmitForm(string password, bool isDoctorForm, SignaturePad.SignaturePadView sig)
 		{
 			try
 			{
-				var bounds = base.TableView.Frame;
-				loadingOverlay = new LoadingOverlay(bounds);
-				mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-				mvc.Add(loadingOverlay);
+                //var bounds = base.TableView.Frame;
+                loadingOverlay = new LoadingOverlay(SplitViewController.View.Bounds);// { loadingLabelText = "Submitting Form..."};
+                loadingOverlay.SetText("Submitting form may take a few minutes. Please wait patiently...");
+				//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+				//mvc.Add(loadingOverlay);
+                SplitViewController.Add(loadingOverlay);
+
+                await Task.Delay(10);
 
 				//bool isValid = password == Constants.Password;
 				bool isValid = false;
@@ -240,10 +245,6 @@ namespace DynaPad
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
-            finally
-            {
-                //loadingOverlay.Hide();
-            }
 		}
 
         void Print(string jobname, UIViewPrintFormatter printFormatter)//, UIWebView webView)
@@ -368,20 +369,522 @@ namespace DynaPad
         //		}
 
         //SfPdfViewer pdfViewerControl;
-        MFMailComposeViewController mailController;
-        WKWebView MRWebView;
-        UIProgressView progressView;
-		void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
-		{
-			try
-			{
+        //MFMailComposeViewController mailController;
+        //WKWebView MRWebView;
+        //UIProgressView progressView;
+		//void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+		//{
+		//	try
+		//	{
+  //              if (e.RowData.GetType() == typeof(MR))
+  //              {
+  //                  //var bounds = base.TableView.Frame;
+  //                  //loadingOverlay = new LoadingOverlay(bounds);
+  //                  //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+  //                  //mvc.Add(loadingOverlay);
+
+  //                  var rowIndex = e.RowColumnindex.RowIndex;
+  //                  var rowData = (MR)e.RowData;
+  //                  var columnIndex = e.RowColumnindex.ColumnIndex;
+  //                  var filepath = rowData.MRPath;
+  //                  var filetype = rowData.MRFileType;
+
+  //                  if (filepath.StartsWith("Error:", StringComparison.CurrentCulture))
+  //                  {
+  //                      PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
+  //                      return;
+  //                  }
+
+  //                  var nlab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50))
+  //                  {
+  //                      Text = rowData.MRName
+  //                  };
+
+		//			var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null)
+  //                  {
+  //                      Frame = new CGRect(0, 0, View.Bounds.Width, 50)
+  //                  };
+
+		//			var nheadeditbtn = new UIButton(new CGRect(View.Bounds.Width - 200, 10, 50, 50));
+		//			nheadeditbtn.SetImage(UIImage.FromBundle("Writing"), UIControlState.Normal);
+		//			var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
+		//			nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+		//			var nheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+		//			nheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+		//			var nheadsharebtn = new UIButton(new CGRect(View.Bounds.Width - 150, 10, 50, 50));
+		//			nheadsharebtn.SetImage(UIImage.FromBundle("Email"), UIControlState.Normal);
+
+		//			//ncellHeader.ContentView.Add(nlab);
+		//			//ncellHeader.ContentView.Add(nheadeditbtn);
+		//			ncellHeader.ContentView.Add(nheadclosebtn);
+		//			ncellHeader.ContentView.Add(nheadprintbtn);
+  //                  ncellHeader.ContentView.Add(nheadsharebtn);
+  //                  if (filetype == "jpg" || filetype == "jpeg" || filetype == "png" || filetype == "gif")
+  //                  {
+  //                      ncellHeader.ContentView.Add(nheadeditbtn);
+  //                  }
+
+  //                  var nsec = new Section(ncellHeader);
+		//			nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+		//			nsec.FooterView.Hidden = true;
+  //                  //nsec.HeaderView = new UIView(new CGRect(0, 0, 0, 0));
+  //                  //nsec.HeaderView.Hidden = true;
+
+  //                  //UIBarButtonItem printNavBtn;
+
+  //                  //               switch (filetype)
+  //                  //               {
+  //                  //  //                 case "pdf":
+  //                  //  //                     nheadeditbtn.Enabled = false;
+  //                  //		//			var pdfViewerControl = new SfPdfViewer();
+  //                  //		//			using (MemoryStream mem = new MemoryStream())
+  //                  //		//			{
+  //                  //		//				ConvertToStream(filepath, mem);
+  //                  //		//				mem.Seek(0, SeekOrigin.Begin);
+  //                  //		//				pdfViewerControl.LoadDocument(mem);
+  //                  //		//			}
+
+  //                  //  //                     //pdfViewerControl.LoadDocument(DownloadPdfStream(filepath, rowData.MRName));
+
+  //                  //  //                     pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
+  //                  //		//nsec.Add(pdfViewerControl);
+
+  //                  //                       //break;
+  //                  //                   case "jpg":
+  //                  //                   case "jpeg":
+  //                  //                   case "png":
+  //                  //                   case "gif":
+  //                  //                       ncellHeader.ContentView.Add(nheadeditbtn);
+
+  //                  //		bool didStart = false;
+  //                  //		bool didFinish = false;
+  //                  //		var webViews = new UIWebView(View.Bounds);
+  //                  //		webViews.LoadStarted += (object lssender, EventArgs lse) => {
+  //                  //			if (didStart == false)
+  //                  //			{
+  //                  //				loadingOverlay = new LoadingOverlay(webViews.Bounds);
+  //                  //				webViews.Add(loadingOverlay);
+  //                  //				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+  //                  //				didStart = true;
+  //                  //				didFinish = false;
+  //                  //			}
+  //                  //		};
+
+  //                  //		//When the web view is finished loading
+  //                  //		webViews.LoadFinished += (object lfsender, EventArgs lfe) => {
+  //                  //			if (didFinish == false)
+  //                  //			{
+  //                  //				loadingOverlay.Hide();
+  //                  //				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+  //                  //				didStart = false;
+  //                  //				didFinish = true;
+  //                  //			}
+  //                  //		};
+
+  //                  //		//If there is a load error
+  //                  //		webViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
+  //                  //			if (didFinish == false)
+  //                  //			{
+  //                  //				loadingOverlay.Hide();
+  //                  //				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+  //                  //				didStart = false;
+  //                  //				didFinish = true;
+  //                  //			}
+  //                  //		};
+  //                  //		webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+  //                  //		webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+  //                  //		webViews.ScalesPageToFit = true;
+
+  //                  //		var nheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 150, 10, 50, 50));
+  //                  //		nheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+  //                  //		nheadprintbtn.TouchUpInside += delegate {
+  //                  //                           Print(rowData.MRName, webViews.ViewPrintFormatter);
+  //                  //		};
+  //                  //                       ncellHeader.ContentView.Add(nheadprintbtn);
+
+  //                  //		printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
+  //                  //		{ Print(rowData.MRName, webViews.ViewPrintFormatter); });
+
+  //                  //		nsec.Add(webViews);
+  //                  //		break;
+  //                  //                   default:
+  //                  //		bool defaultDidStart = false;
+  //                  //		bool defaultDidFinish = false;
+  //                  //		var defaultWebViews = new UIWebView(View.Bounds);
+  //                  //		defaultWebViews.LoadStarted += (object lssender, EventArgs lse) => {
+  //                  //			if (defaultDidStart == false)
+  //                  //			{
+  //                  //				loadingOverlay = new LoadingOverlay(defaultWebViews.Bounds);
+  //                  //				defaultWebViews.Add(loadingOverlay);
+  //                  //				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+  //                  //				defaultDidStart = true;
+  //                  //				defaultDidFinish = false;
+  //                  //			}
+  //                  //		};
+
+  //                  //		//When the web view is finished loading
+  //                  //		defaultWebViews.LoadFinished += (object lfsender, EventArgs lfe) => {
+  //                  //			if (defaultDidFinish == false)
+  //                  //			{
+  //                  //				loadingOverlay.Hide();
+  //                  //				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+  //                  //				defaultDidStart = false;
+  //                  //				defaultDidFinish = true;
+  //                  //			}
+  //                  //		};
+
+  //                  //		//If there is a load error
+  //                  //		defaultWebViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
+  //                  //			if (defaultDidFinish == false)
+  //                  //			{
+  //                  //				loadingOverlay.Hide();
+  //                  //				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+  //                  //				defaultDidStart = false;
+  //                  //				defaultDidFinish = true;
+  //                  //			}
+  //                  //		};
+  //                  //                       defaultWebViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+  //                  //		//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
+  //                  //		//var filepath = rowData.MRPath.Replace(@"\", "/");
+  //                  //		//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
+  //                  //		defaultWebViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+  //                  //		defaultWebViews.ScalesPageToFit = true;
+
+  //                  //		var dheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+  //                  //		dheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+  //                  //		dheadprintbtn.TouchUpInside += delegate {
+  //                  //			Print(rowData.MRName, defaultWebViews.ViewPrintFormatter);
+  //                  //		};
+  //                  //		ncellHeader.ContentView.Add(dheadprintbtn);
+
+
+  //                  //                       printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
+  //                  //                               { Print(rowData.MRName, defaultWebViews.ViewPrintFormatter); });
+
+  //                  //		nsec.Add(defaultWebViews);
+  //                  //                       break;
+  //                  //}
+
+  //                  //var dcanvas = new CanvasMainViewController();
+
+
+
+  //                  //bool didStart = false;
+  //                  //bool didFinish = false;
+  //                  //var webViews = new UIWebView(View.Bounds);
+  //                  //webViews.LoadStarted += (object lssender, EventArgs lse) => {
+  //                  //	if (didStart == false)
+  //                  //	{
+  //                  //		loadingOverlay = new LoadingOverlay(webViews.Bounds);
+  //                  //		webViews.Add(loadingOverlay);
+  //                  //		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+  //                  //		didStart = true;
+  //                  //		didFinish = false;
+  //                  //	}
+  //                  //};
+
+  //                  ////When the web view is finished loading
+  //                  //webViews.LoadFinished += (object lfsender, EventArgs lfe) => {
+  //                  //	if (didFinish == false)
+  //                  //	{
+  //                  //		loadingOverlay.Hide();
+  //                  //		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+  //                  //		didStart = false;
+  //                  //		didFinish = true;
+  //                  //	}
+  //                  //};
+
+  //                  ////If there is a load error
+  //                  //webViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
+  //                  //	if (didFinish == false)
+  //                  //	{
+  //                  //		loadingOverlay.Hide();
+  //                  //		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+  //                  //		didStart = false;
+  //                  //		didFinish = true;
+  //                  //	}
+  //                  //};
+  //                  //webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+  //                  //webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
+  //                  //webViews.ScalesPageToFit = true;
+
+  //                  //"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/37/361.pdf"
+  //                  //var wkurl = new NSUrl("https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf");
+  //                  //var wkurl = new NSUrl(rowData.MRPath.Replace("https", "http"));//"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf"
+  //                  var wkurl = new NSUrl(rowData.MRPath);
+		//			if (rowData.MRFileType == "External")
+  //                  {
+		//				var sfVC = new SFSafariViewController(wkurl);
+		//				PresentViewController(sfVC, true, null);
+  //                      return;
+		//			}
+
+  //                  var wkrequest = new NSUrlRequest(wkurl);
+  //                  MRWebView = new WKWebView(View.Bounds, new WKWebViewConfiguration() { SuppressesIncrementalRendering = false });
+  //                  MRWebView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+  //                  progressView = new UIProgressView(UIProgressViewStyle.Default);
+  //                  progressView.Frame = new CGRect(0, 0, MRWebView.Frame.Width, 50);
+
+  //                  //MRWebView.NavigationDelegate = self;
+  //                  MRWebView.AddObserver("estimatedProgress", NSKeyValueObservingOptions.New, ProgressObserver);
+  //                  MRWebView.AddSubview(progressView);
+  //                  MRWebView.LoadRequest(wkrequest);
+
+
+
+  //                  //var sfViewController = new SFSafariViewController(wkurl);
+  //                  //PresentViewController(sfViewController, true, null);
+
+
+
+  //                  nsec.Add(MRWebView);
+
+  //                  var nroo = new DynaMultiRootElement(rowData.MRName);
+  //                  nroo.Add(nsec);
+
+  //                  var ndia = new DialogViewController(nroo);
+
+		//			nheadclosebtn.TouchUpInside += delegate
+		//			{
+  //                      NavigationController.PopViewController(true);
+		//			};
+
+		//			nheadprintbtn.TouchUpInside += delegate {
+  //                      Print(rowData.MRName, MRWebView.ViewPrintFormatter);
+		//			};
+
+  //                  string mimetype;
+  //                  switch (filetype)
+  //                  {
+  //                      case "jpg":
+  //                      case "jpeg":
+  //                          mimetype = "image/jpeg";
+  //                          break;
+  //                      case "png":
+  //                          mimetype = "image/png";
+		//					break;
+		//				case "gif":
+		//					mimetype = "image/gif";
+		//					break;
+		//				case "doc":
+		//					mimetype = "application/msword";
+		//					break;
+		//				case "docm":
+		//					mimetype = "application/vnd.ms-word.document.macroEnabled.12";
+		//					break;
+		//				case "docx":
+		//					mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+		//					break;
+		//				case "pdf":
+		//					mimetype = "application/pdf";
+		//					break;
+  //                      default:
+  //                          mimetype = "application/unknown";
+  //                          break;
+  //                  }
+
+  //                  nheadsharebtn.TouchUpInside += delegate {
+		//				if (MFMailComposeViewController.CanSendMail)
+		//				{
+
+		//					//var to = new string[] { "john@doe.com" };
+
+		//					if (MFMailComposeViewController.CanSendMail)
+		//					{
+		//						mailController = new MFMailComposeViewController();
+  //                              //mailController.SetToRecipients(to);
+		//						mailController.SetSubject("Dynapad MR Attachment - " + rowData.MRName);
+		//						//mailController.SetMessageBody("this is a test", false);
+  //                              var attachmentfilename = rowData.MRName + "." + rowData.MRFileType;
+		//						var attachmentDownloadPath = Path.Combine(Path.GetTempPath(), attachmentfilename);
+		//						var attachmenturl = rowData.MRPath;
+		//						var attachmentWebClient = new WebClient();
+		//						attachmentWebClient.DownloadFile(attachmenturl, attachmentDownloadPath);
+  //                              //NSData adata = new NSData();
+  //                              mailController.AddAttachmentData(NSData.FromFile(attachmentDownloadPath), mimetype, attachmentfilename);
+		//						mailController.Finished += (object s, MFComposeResultEventArgs args) => {
+
+		//							//Console.WriteLine("result: " + args.Result.ToString()); // sent or cancelled
+
+		//							BeginInvokeOnMainThread(() => {
+		//								args.Controller.DismissViewController(true, null);
+		//							});
+		//						};
+		//					}
+
+		//					PresentViewController(mailController, true, null);
+		//				}
+		//				else
+		//				{
+		//					//new UIAlertView("Mail not supported", "Can't send mail from this device", null, "OK");
+		//					PresentViewController(CommonFunctions.AlertPrompt("Mail not supported", "Can't send mail from this device", true, null, false, null), true, null);
+		//				}
+		//			};
+
+		//			nheadeditbtn.TouchUpInside += delegate
+		//			{
+		//				//DismissViewController(true, null);
+
+		//				//var dcanvas = new CanvasMainViewController { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, MREditName = rowData.MRName, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
+		//				//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, MREditName = rowData.MRName, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
+
+
+
+		//				SfImageEditor imageEditor = new SfImageEditor();
+  //                      imageEditor.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height - 50);
+  //                      var editfilename = rowData.MRName + "_" + "edit" + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
+		//				var downloadPath = Path.Combine(Path.GetTempPath(), editfilename);
+		//				var url = rowData.MRPath;
+		//				var webClient = new WebClient();
+		//				webClient.DownloadFile(url, downloadPath);
+		//				UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
+		//				imageEditor.Image = img;
+  //                      imageEditor.ImageSaved += delegate {
+		//					var file = imageEditor.Image.AsPNG().ToArray();
+		//					var dds = new DynaPadService.DynaPadService();
+		//					dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, editfilename, "Edit", "DynaPad", "", "", file, true, true);
+		//				    DismissViewController(true, null);
+  //                      };
+
+		//				var ielab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50))
+		//				{
+		//					Text = rowData.MRName
+		//				};
+		//				var iecellHeader = new UITableViewCell(UITableViewCellStyle.Default, null)
+		//				{
+		//					Frame = new CGRect(0, 0, View.Bounds.Width, 50)
+		//				};
+
+		//				//var ieheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
+		//				//ieheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
+		//				//ieheadprintbtn.TouchUpInside += delegate {
+  //    //                      Print(rowData.MRName, imageEditor.ViewPrintFormatter);
+		//				//};
+		//				//iecellHeader.ContentView.Add(ieheadprintbtn);
+
+		//				var ieheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
+		//				ieheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+		//				ieheadclosebtn.TouchUpInside += delegate
+		//				{
+		//					DismissViewController(true, null);
+		//				};
+		//				iecellHeader.ContentView.Add(ielab);
+		//			    iecellHeader.ContentView.Add(ieheadclosebtn);
+		//				var iesec = new Section(iecellHeader);
+		//				iesec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+		//				iesec.FooterView.Hidden = true;
+  //                      iesec.Add(imageEditor);
+		//				var ieroo = new RootElement("File Edit");
+		//				ieroo.Add(iesec);
+		//				var iedia = new DialogViewController(ieroo);
+  //                      iedia.TableView.ScrollEnabled = false;
+  //                      iedia.ModalInPopover = true;
+		//				iedia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+		//				iedia.PreferredContentSize = new CGSize(View.Bounds.Size);
+  //                      PresentViewController(iedia, true, null);
+
+
+		//				//var asss = new Section();
+		//				//asss.Add(dcanvas.View); 		//				//var rr = new RootElement("nass");
+		//				//rr.Add(asss); 		//				//var nndia = new DialogViewController(rr);
+		//				//nndia.ModalInPopover = true; 		//				//nndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen; 		//				//nndia.PreferredContentSize = new CGSize(View.Bounds.Size);
+
+
+
+		//				//PreferredContentSize = new CGSize(View.Bounds.Size);
+		//				//NavigationController.View.BackgroundColor = UIColor.Clear;
+		//				//dcanvas.AutomaticallyAdjustsScrollViewInsets = true;
+		//				//dcanvas.LoadView();
+		//				//PresentViewController(dcanvas, true, null);
+		//				//NavigationController.View.SizeToFit();
+
+
+
+
+		//				//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
+		//				//{
+		//				//  PreferredContentSize = new CGSize(View.Bounds.Size);
+		//				//  SfImageEditor imageEditor = new SfImageEditor();
+		//				//             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
+		//				//             imageEditor.Frame = View.Frame;
+		//				//  var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
+		//				//  var url = "https://amato.dynadox.pro/data/testjpg.jpg";
+		//				//  var webClient = new WebClient();
+		//				//  webClient.DownloadFile(url, downloadPath);
+		//				//             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
+		//				//             imageEditor.Image = img;
+		//				//             var sec = new Section();
+		//				//             sec.Add(imageEditor);
+		//				//             var rr = new RootElement("edit");
+		//				//             rr.Add(sec);
+		//				//             var dvc = new DialogViewController(rr);
+		//				//             var vvv = new UIViewController();
+		//				//             vvv.View = imageEditor;
+		//				//             //dvc.ModalPresentationStyle = UIModalPresentationStyle.Popover;
+		//				//             //dvc.PreferredContentSize = new CGSize(View.Bounds.Size);
+		//				//             //View.AddSubview(imageEditor);
+		//				//             PresentViewController(vvv, true, null);
+		//				//});
+		//				//NavigationItem.SetRightBarButtonItem(ass, true);
+		//			};
+
+		//			if (rowData.IsShortcut)
+		//			{
+		//				DismissViewController(true, null);
+		//			}
+
+		//			//PreferredContentSize = new CGSize(View.Bounds.Size);
+		//			//PresentViewController(ndia, true, null);
+		//			NavigationController.PushViewController(ndia, true);
+
+		//			//var closeNavBtn = new UIBarButtonItem(UIImage.FromBundle("Close"), UIBarButtonItemStyle.Plain, delegate
+		//			//{ NavigationController.PopViewController(true); });
+		//			//printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
+		//			//{ Print(rowData.MRName, webViews.ViewPrintFormatter); });
+  //                  //ndia.NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { closeNavBtn, printNavBtn }, true);
+  //                  //NavigationController.NavigationBar.Hidden = true;
+  //                  //ndia.NavigationController.NavigationBarHidden = true;
+		//			//NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { closeNavBtn, printNavBtn }, true);
+		//		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+  //              var errordata = (MR)e.RowData;
+  //              var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
+  //              CommonFunctions.sendErrorEmail(ex, errorfile);
+  //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+		//		//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+		//	}
+  //          //finally
+  //          //{
+  //          //    loadingOverlay.Hide();
+  //          //}
+		//}
+            
+  //      public void ProgressObserver(NSObservedChange nsObservedChange)
+		//{
+        //    Console.WriteLine("Progress {0}", MRWebView.EstimatedProgress);
+        //    progressView.Progress = (float)MRWebView.EstimatedProgress;
+        //    if (progressView.Progress >= 1.0)
+        //    {
+        //        progressView.Progress = 0;
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+        void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        {
+            try
+            {
                 if (e.RowData.GetType() == typeof(MR))
                 {
-                    //var bounds = base.TableView.Frame;
-                    //loadingOverlay = new LoadingOverlay(bounds);
-                    //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-                    //mvc.Add(loadingOverlay);
-
                     var rowIndex = e.RowColumnindex.RowIndex;
                     var rowData = (MR)e.RowData;
                     var columnIndex = e.RowColumnindex.ColumnIndex;
@@ -394,480 +897,34 @@ namespace DynaPad
                         return;
                     }
 
-                    var nlab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50))
-                    {
-                        Text = rowData.MRName
-                    };
+                    //"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/37/361.pdf"
+                    //var wkurl = new NSUrl("https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf");
+                    //var wkurl = new NSUrl(rowData.MRPath.Replace("https", "http"));//"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf"
+                    var wkurl = new NSUrl(rowData.MRPath);
 
-					var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null)
-                    {
-                        Frame = new CGRect(0, 0, View.Bounds.Width, 50)
-                    };
+                    var sfViewController = new SFSafariViewController(wkurl);
+                    PresentViewController(sfViewController, true, null);
 
-					var nheadeditbtn = new UIButton(new CGRect(View.Bounds.Width - 200, 10, 50, 50));
-					nheadeditbtn.SetImage(UIImage.FromBundle("Writing"), UIControlState.Normal);
-					var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
-					nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
-					var nheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
-					nheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
-					var nheadsharebtn = new UIButton(new CGRect(View.Bounds.Width - 150, 10, 50, 50));
-					nheadsharebtn.SetImage(UIImage.FromBundle("Email"), UIControlState.Normal);
-
-					//ncellHeader.ContentView.Add(nlab);
-					//ncellHeader.ContentView.Add(nheadeditbtn);
-					ncellHeader.ContentView.Add(nheadclosebtn);
-					ncellHeader.ContentView.Add(nheadprintbtn);
-                    ncellHeader.ContentView.Add(nheadsharebtn);
-                    if (filetype == "jpg" || filetype == "jpeg" || filetype == "png" || filetype == "gif")
+                    if (rowData.IsShortcut)
                     {
-                        ncellHeader.ContentView.Add(nheadeditbtn);
+                        DismissViewController(true, null);
                     }
-
-                    var nsec = new Section(ncellHeader);
-					nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-					nsec.FooterView.Hidden = true;
-					//nsec.HeaderView = new UIView(new CGRect(0, 0, 0, 0));
-					//nsec.HeaderView.Hidden = true;
-
-					//UIBarButtonItem printNavBtn;
-
-					//               switch (filetype)
-					//               {
-					//  //                 case "pdf":
-					//  //                     nheadeditbtn.Enabled = false;
-					//		//			var pdfViewerControl = new SfPdfViewer();
-					//		//			using (MemoryStream mem = new MemoryStream())
-					//		//			{
-					//		//				ConvertToStream(filepath, mem);
-					//		//				mem.Seek(0, SeekOrigin.Begin);
-					//		//				pdfViewerControl.LoadDocument(mem);
-					//		//			}
-
-					//  //                     //pdfViewerControl.LoadDocument(DownloadPdfStream(filepath, rowData.MRName));
-
-					//  //                     pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
-					//		//nsec.Add(pdfViewerControl);
-
-					//                       //break;
-					//                   case "jpg":
-					//                   case "jpeg":
-					//                   case "png":
-					//                   case "gif":
-					//                       ncellHeader.ContentView.Add(nheadeditbtn);
-
-					//		bool didStart = false;
-					//		bool didFinish = false;
-					//		var webViews = new UIWebView(View.Bounds);
-					//		webViews.LoadStarted += (object lssender, EventArgs lse) => {
-					//			if (didStart == false)
-					//			{
-					//				loadingOverlay = new LoadingOverlay(webViews.Bounds);
-					//				webViews.Add(loadingOverlay);
-					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
-					//				didStart = true;
-					//				didFinish = false;
-					//			}
-					//		};
-
-					//		//When the web view is finished loading
-					//		webViews.LoadFinished += (object lfsender, EventArgs lfe) => {
-					//			if (didFinish == false)
-					//			{
-					//				loadingOverlay.Hide();
-					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-					//				didStart = false;
-					//				didFinish = true;
-					//			}
-					//		};
-
-					//		//If there is a load error
-					//		webViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
-					//			if (didFinish == false)
-					//			{
-					//				loadingOverlay.Hide();
-					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-					//				didStart = false;
-					//				didFinish = true;
-					//			}
-					//		};
-					//		webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-					//		webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
-					//		webViews.ScalesPageToFit = true;
-
-					//		var nheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 150, 10, 50, 50));
-					//		nheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
-					//		nheadprintbtn.TouchUpInside += delegate {
-					//                           Print(rowData.MRName, webViews.ViewPrintFormatter);
-					//		};
-					//                       ncellHeader.ContentView.Add(nheadprintbtn);
-
-					//		printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
-					//		{ Print(rowData.MRName, webViews.ViewPrintFormatter); });
-
-					//		nsec.Add(webViews);
-					//		break;
-					//                   default:
-					//		bool defaultDidStart = false;
-					//		bool defaultDidFinish = false;
-					//		var defaultWebViews = new UIWebView(View.Bounds);
-					//		defaultWebViews.LoadStarted += (object lssender, EventArgs lse) => {
-					//			if (defaultDidStart == false)
-					//			{
-					//				loadingOverlay = new LoadingOverlay(defaultWebViews.Bounds);
-					//				defaultWebViews.Add(loadingOverlay);
-					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
-					//				defaultDidStart = true;
-					//				defaultDidFinish = false;
-					//			}
-					//		};
-
-					//		//When the web view is finished loading
-					//		defaultWebViews.LoadFinished += (object lfsender, EventArgs lfe) => {
-					//			if (defaultDidFinish == false)
-					//			{
-					//				loadingOverlay.Hide();
-					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-					//				defaultDidStart = false;
-					//				defaultDidFinish = true;
-					//			}
-					//		};
-
-					//		//If there is a load error
-					//		defaultWebViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
-					//			if (defaultDidFinish == false)
-					//			{
-					//				loadingOverlay.Hide();
-					//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-					//				defaultDidStart = false;
-					//				defaultDidFinish = true;
-					//			}
-					//		};
-					//                       defaultWebViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-					//		//webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/Summaries/3_10_29_patient.pdf")));
-					//		//var filepath = rowData.MRPath.Replace(@"\", "/");
-					//		//filepath = filepath.Replace("C:/inetpub/wwwroot/dynadox/", "https://test.dynadox.pro/");
-					//		defaultWebViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
-					//		defaultWebViews.ScalesPageToFit = true;
-
-					//		var dheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
-					//		dheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
-					//		dheadprintbtn.TouchUpInside += delegate {
-					//			Print(rowData.MRName, defaultWebViews.ViewPrintFormatter);
-					//		};
-					//		ncellHeader.ContentView.Add(dheadprintbtn);
-
-
-					//                       printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
-					//                               { Print(rowData.MRName, defaultWebViews.ViewPrintFormatter); });
-
-					//		nsec.Add(defaultWebViews);
-					//                       break;
-					//}
-
-					//var dcanvas = new CanvasMainViewController();
-
-
-
-					//bool didStart = false;
-					//bool didFinish = false;
-					//var webViews = new UIWebView(View.Bounds);
-					//webViews.LoadStarted += (object lssender, EventArgs lse) => {
-					//	if (didStart == false)
-					//	{
-					//		loadingOverlay = new LoadingOverlay(webViews.Bounds);
-					//		webViews.Add(loadingOverlay);
-					//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
-					//		didStart = true;
-					//		didFinish = false;
-					//	}
-					//};
-
-					////When the web view is finished loading
-					//webViews.LoadFinished += (object lfsender, EventArgs lfe) => {
-					//	if (didFinish == false)
-					//	{
-					//		loadingOverlay.Hide();
-					//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-					//		didStart = false;
-					//		didFinish = true;
-					//	}
-					//};
-
-					////If there is a load error
-					//webViews.LoadError += (object lesender, UIWebErrorArgs lee) => {
-					//	if (didFinish == false)
-					//	{
-					//		loadingOverlay.Hide();
-					//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-					//		didStart = false;
-					//		didFinish = true;
-					//	}
-					//};
-					//webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-					//webViews.LoadRequest(new NSUrlRequest(new NSUrl(filepath)));
-					//webViews.ScalesPageToFit = true;
-
-
-                    var wkurl = new NSUrl(rowData.MRPath);//"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf"
-					if (rowData.MRFileType == "External")
-                    {
-						var sfVC = new SFSafariViewController(wkurl);
-						PresentViewController(sfVC, true, null);
-                        return;
-					}
-
-                    var wkrequest = new NSUrlRequest(wkurl);
-                    MRWebView = new WKWebView(View.Bounds, new WKWebViewConfiguration() { SuppressesIncrementalRendering = true });
-                    MRWebView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-                    progressView = new UIProgressView(UIProgressViewStyle.Bar);
-                    progressView.Frame = new CGRect(0, 0, MRWebView.Frame.Width, 5);
-
-
-                    MRWebView.AddObserver("estimatedProgress", NSKeyValueObservingOptions.New, ProgressObserver);
-                    MRWebView.AddSubview(progressView);
-                    MRWebView.LoadRequest(wkrequest);
-
-                    nsec.Add(MRWebView);
-
-                    var nroo = new DynaMultiRootElement(rowData.MRName);
-                    nroo.Add(nsec);
-
-
-                    var ndia = new DialogViewController(nroo);
-                    //ndia.ModalInPopover = true;
-                    //ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
-                    //ndia.PreferredContentSize = new CGSize(View.Bounds.Size);
-
-					nheadclosebtn.TouchUpInside += delegate
-					{
-						//DismissViewController(true, null);
-                        NavigationController.PopViewController(true);
-					};
-
-					nheadprintbtn.TouchUpInside += delegate {
-                        Print(rowData.MRName, MRWebView.ViewPrintFormatter);
-                        //UIApplication.SharedApplication.OpenUrl(new NSUrl(rowData.MRPath));
-                        //var sfVC = new SFSafariViewController(new NSUrl(rowData.MRPath));
-                        //PresentViewController(sfVC, true, null);
-					};
-
-                    string mimetype;
-                    switch (filetype)
-                    {
-                        case "jpg":
-                        case "jpeg":
-                            mimetype = "image/jpeg";
-                            break;
-                        case "png":
-                            mimetype = "image/png";
-							break;
-						case "gif":
-							mimetype = "image/gif";
-							break;
-						case "doc":
-							mimetype = "application/msword";
-							break;
-						case "docm":
-							mimetype = "application/vnd.ms-word.document.macroEnabled.12";
-							break;
-						case "docx":
-							mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-							break;
-						case "pdf":
-							mimetype = "application/pdf";
-							break;
-                        default:
-                            mimetype = "application/unknown";
-                            break;
-                    }
-
-                    nheadsharebtn.TouchUpInside += delegate {
-						if (MFMailComposeViewController.CanSendMail)
-						{
-
-							//var to = new string[] { "john@doe.com" };
-
-							if (MFMailComposeViewController.CanSendMail)
-							{
-								mailController = new MFMailComposeViewController();
-                                //mailController.SetToRecipients(to);
-								mailController.SetSubject("Dynapad MR Attachment - " + rowData.MRName);
-								//mailController.SetMessageBody("this is a test", false);
-                                var attachmentfilename = rowData.MRName + "." + rowData.MRFileType;
-								var attachmentDownloadPath = Path.Combine(Path.GetTempPath(), attachmentfilename);
-								var attachmenturl = rowData.MRPath;
-								var attachmentWebClient = new WebClient();
-								attachmentWebClient.DownloadFile(attachmenturl, attachmentDownloadPath);
-                                //NSData adata = new NSData();
-                                mailController.AddAttachmentData(NSData.FromFile(attachmentDownloadPath), mimetype, attachmentfilename);
-								mailController.Finished += (object s, MFComposeResultEventArgs args) => {
-
-									//Console.WriteLine("result: " + args.Result.ToString()); // sent or cancelled
-
-									BeginInvokeOnMainThread(() => {
-										args.Controller.DismissViewController(true, null);
-									});
-								};
-							}
-
-							PresentViewController(mailController, true, null);
-						}
-						else
-						{
-							//new UIAlertView("Mail not supported", "Can't send mail from this device", null, "OK");
-							PresentViewController(CommonFunctions.AlertPrompt("Mail not supported", "Can't send mail from this device", true, null, false, null), true, null);
-						}
-					};
-
-					nheadeditbtn.TouchUpInside += delegate
-					{
-						//DismissViewController(true, null);
-
-						//var dcanvas = new CanvasMainViewController { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, MREditName = rowData.MRName, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
-						//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = rowData.MRPath, MREditId = rowData.MRId, MREditName = rowData.MRName, apptId = SelectedAppointment.ApptId, patientId = SelectedAppointment.ApptPatientId, doctorId = SelectedAppointment.ApptDoctorId, locationId = SelectedAppointment.ApptLocationId, IsDoctorForm = true };
-
-
-
-						SfImageEditor imageEditor = new SfImageEditor();
-                        imageEditor.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height - 50);
-                        var editfilename = rowData.MRName + "_" + "edit" + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
-						var downloadPath = Path.Combine(Path.GetTempPath(), editfilename);
-						var url = rowData.MRPath;
-						var webClient = new WebClient();
-						webClient.DownloadFile(url, downloadPath);
-						UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
-						imageEditor.Image = img;
-                        imageEditor.ImageSaved += delegate {
-							var file = imageEditor.Image.AsPNG().ToArray();
-							var dds = new DynaPadService.DynaPadService();
-							dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, editfilename, "Edit", "DynaPad", "", "", file, true, true);
-						    DismissViewController(true, null);
-                        };
-
-						var ielab = new UILabel(new CGRect(10, 10, View.Bounds.Width - 110, 50))
-						{
-							Text = rowData.MRName
-						};
-						var iecellHeader = new UITableViewCell(UITableViewCellStyle.Default, null)
-						{
-							Frame = new CGRect(0, 0, View.Bounds.Width, 50)
-						};
-
-						//var ieheadprintbtn = new UIButton(new CGRect(View.Bounds.Width - 100, 10, 50, 50));
-						//ieheadprintbtn.SetImage(UIImage.FromBundle("Print"), UIControlState.Normal);
-						//ieheadprintbtn.TouchUpInside += delegate {
-      //                      Print(rowData.MRName, imageEditor.ViewPrintFormatter);
-						//};
-						//iecellHeader.ContentView.Add(ieheadprintbtn);
-
-						var ieheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 10, 50, 50));
-						ieheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
-						ieheadclosebtn.TouchUpInside += delegate
-						{
-							DismissViewController(true, null);
-						};
-						iecellHeader.ContentView.Add(ielab);
-					    iecellHeader.ContentView.Add(ieheadclosebtn);
-						var iesec = new Section(iecellHeader);
-						iesec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
-						iesec.FooterView.Hidden = true;
-                        iesec.Add(imageEditor);
-						var ieroo = new RootElement("File Edit");
-						ieroo.Add(iesec);
-						var iedia = new DialogViewController(ieroo);
-                        iedia.TableView.ScrollEnabled = false;
-                        iedia.ModalInPopover = true;
-						iedia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
-						iedia.PreferredContentSize = new CGSize(View.Bounds.Size);
-                        PresentViewController(iedia, true, null);
-
-
-						//var asss = new Section();
-						//asss.Add(dcanvas.View); 						//var rr = new RootElement("nass");
-						//rr.Add(asss); 						//var nndia = new DialogViewController(rr);
-						//nndia.ModalInPopover = true; 						//nndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen; 						//nndia.PreferredContentSize = new CGSize(View.Bounds.Size);
-
-
-
-						//PreferredContentSize = new CGSize(View.Bounds.Size);
-						//NavigationController.View.BackgroundColor = UIColor.Clear;
-						//dcanvas.AutomaticallyAdjustsScrollViewInsets = true;
-						//dcanvas.LoadView();
-						//PresentViewController(dcanvas, true, null);
-						//NavigationController.View.SizeToFit();
-
-
-
-
-						//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
-						//{
-						//  PreferredContentSize = new CGSize(View.Bounds.Size);
-						//  SfImageEditor imageEditor = new SfImageEditor();
-						//             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
-						//             imageEditor.Frame = View.Frame;
-						//  var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
-						//  var url = "https://amato.dynadox.pro/data/testjpg.jpg";
-						//  var webClient = new WebClient();
-						//  webClient.DownloadFile(url, downloadPath);
-						//             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
-						//             imageEditor.Image = img;
-						//             var sec = new Section();
-						//             sec.Add(imageEditor);
-						//             var rr = new RootElement("edit");
-						//             rr.Add(sec);
-						//             var dvc = new DialogViewController(rr);
-						//             var vvv = new UIViewController();
-						//             vvv.View = imageEditor;
-						//             //dvc.ModalPresentationStyle = UIModalPresentationStyle.Popover;
-						//             //dvc.PreferredContentSize = new CGSize(View.Bounds.Size);
-						//             //View.AddSubview(imageEditor);
-						//             PresentViewController(vvv, true, null);
-						//});
-						//NavigationItem.SetRightBarButtonItem(ass, true);
-					};
-
-					if (rowData.IsShortcut)
-					{
-						DismissViewController(true, null);
-					}
-
-					//PreferredContentSize = new CGSize(View.Bounds.Size);
-					//PresentViewController(ndia, true, null);
-					NavigationController.PushViewController(ndia, true);
-
-					//var closeNavBtn = new UIBarButtonItem(UIImage.FromBundle("Close"), UIBarButtonItemStyle.Plain, delegate
-					//{ NavigationController.PopViewController(true); });
-					//printNavBtn = new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, delegate
-					//{ Print(rowData.MRName, webViews.ViewPrintFormatter); });
-                    //ndia.NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { closeNavBtn, printNavBtn }, true);
-                    //NavigationController.NavigationBar.Hidden = true;
-                    //ndia.NavigationController.NavigationBarHidden = true;
-					//NavigationItem.SetRightBarButtonItems(new UIBarButtonItem[] { closeNavBtn, printNavBtn }, true);
-				}
-			}
-			catch (Exception ex)
-			{
+                }
+            }
+            catch (Exception ex)
+            {
                 var errordata = (MR)e.RowData;
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
                 CommonFunctions.sendErrorEmail(ex, errorfile);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
-				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-			}
-            //finally
-            //{
-            //    loadingOverlay.Hide();
-            //}
-		}
-
-        public void ProgressObserver(NSObservedChange nsObservedChange)
-		{
-            //Console.WriteLine("Progress {0}", webViews.EstimatedProgress);
-            progressView.Progress = (float)MRWebView.EstimatedProgress;
-            if (progressView.Progress >= 1.0)
-            {
-                progressView.Progress = 0;
             }
         }
+
+
+
+
+
+
 
 
 
@@ -1095,15 +1152,40 @@ namespace DynaPad
 		}
 
 
-		public void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm, GlassButton nextbtn = null, bool IsViewSummary = false, string SummaryFileName = null, string ReportName = null)
+
+        //public void ProgressObservers(NSObservedChange nsObservedChange)
+        //{
+        //    try
+        //    {
+        //        //Console.WriteLine("Progress {0}", webViews.EstimatedProgress);
+        //        progressViews.Progress = (float)MRWebViews.EstimatedProgress;
+        //        if (progressViews.Progress >= 1.0)
+        //        {
+        //            progressViews.Progress = 0;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        CommonFunctions.sendErrorEmail(ex);
+        //        PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+        //    }
+        //}
+
+        //WKWebView MRWebViews;
+        //UIProgressView progressViews;
+
+		public async void SetDetailItem(Section newDetailItem, string context, string valueId, string origSectionJson, bool IsDoctorForm, GlassButton nextbtn = null, bool IsViewSummary = false, string SummaryFileName = null, string ReportName = null)
 		{
             try
             {
-                //var bounds = UIScreen.MainScreen.Bounds;
-                var bounds = base.TableView.Frame;
-                loadingOverlay = new LoadingOverlay(bounds);
+                //var boundsf = UIScreen.MainScreen.Bounds;
+                //var boundsf = SplitViewController.View.Bounds;
+                var boundsh = base.TableView.Frame;
+                //loadingOverlay = new LoadingOverlay(boundsh);
                 mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-                mvc.Add(loadingOverlay);
+                //mvc.Add(loadingOverlay);
+                //SplitViewController.Add(loadingOverlay);
+                //await Task.Delay(10);
 
                 if (DetailItem != newDetailItem)
                 {
@@ -1137,12 +1219,25 @@ namespace DynaPad
                         //Root.TableView.ScrollEnabled = false;
                         //break;
                         case "MR":
+                            loadingOverlay = new LoadingOverlay(boundsh);// { loadingLabelText = "Loading MR..." };
+                            loadingOverlay.SetText("Loading MR...");
+                            mvc.Add(loadingOverlay);
+                            await Task.Delay(10);
+
                             var mrElement = GetMRElement(valueId);
                             Root = mrElement;
                             //Root.TableView.ScrollEnabled = false;
 
                             break;
                         case "Summary":
+                            loadingOverlay = new LoadingOverlay(boundsh);// { loadingLabelText = "Loading Summary..." };
+                            if (IsViewSummary)
+                            {
+                                loadingOverlay.SetText("Loading Summary...");
+                                mvc.Add(loadingOverlay);
+                            }
+                            await Task.Delay(10);
+
                             var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
 
                             var summaryPaddedView = new PaddedUIView<UILabel>();
@@ -1168,8 +1263,15 @@ namespace DynaPad
                                 {
                                     var dds = new DynaPadService.DynaPadService();
                                     var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-                                    //summaryFileName = dds.ExportToPdf(finalJson);
                                     summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
+                                    //SplitViewController.NavigationController.PopViewController(true);
+                                    //mvc.NavigationController.PopViewController(true);
+                                    //NavigationController.PopViewController(true);
+                                    SFSafariViewController sfViewController = new SFSafariViewController(new NSUrl(summaryFileName));
+                                    PresentViewController(sfViewController, true, null);
+
+                                    var mas = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
+                                    mas.NavigationController.PopViewController(true);
                                 }
                                 else
                                 {
@@ -1183,34 +1285,37 @@ namespace DynaPad
 
                             if (!summaryFileName.StartsWith("Error:", StringComparison.CurrentCulture))
                             {
-								//var webViews = new UIWebView(View.Bounds);
-                                var webViews = new WKWebView(View.Bounds, new WKWebViewConfiguration());
-                                webViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
-                                //string localHtmlUrl = Path.Combine(NSBundle.MainBundle.BundlePath, summarypdf);
-                                var localHtmlUrl = Path.Combine("https://test.dynadox.pro/dynawcfservice/summaries/", summaryFileName);
-                                //webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/summary.pdf")));
-                                //webViews.LoadRequest(new NSUrlRequest(new NSUrl("https://test.dynadox.pro/dynawcfservice/summaries/" + summaryFileName)));
-                                webViews.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
-                                //webViews.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl)));
-                                //webViews.ScalesPageToFit = true;
-
-                                summarySection.Add(webViews);
-
-                                NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(UIImage.FromBundle("Print"), UIBarButtonItemStyle.Plain, (sender, args) =>
-                                { Print(summaryFileName, webViews.ViewPrintFormatter); }), true);
+                                if (IsViewSummary)
+                                {
+                                    var webView = new WKWebView(View.Bounds, new WKWebViewConfiguration());
+                                    webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+                                    webView.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
+                                    summarySection.Add(webView);
+                                    summaryElement.Add(summarySection);
+                                }
+                                else
+                                {
+                                    var sucmes = IsDoctorForm ? "Doctor form submitted successfully. A report has been generated." : "Patient form submitted successfully.";
+                                    summarySection.Add(new StringElement(sucmes));
+                                    summaryElement.Add(summarySection);
+                                }
+                                Root = summaryElement;
                             }
                             else
                             {
                                 summarySection.Add(new StringElement("File unavailable, contact administration"));
+                                summaryElement.Add(summarySection);
+                                Root = summaryElement;
+                                Root.TableView.ScrollEnabled = false;
                             }
-
-                            summaryElement.Add(summarySection);
-
-                            Root = summaryElement;
-                            Root.TableView.ScrollEnabled = false;
 
                             break;
                         case "Finalize":
+                            loadingOverlay = new LoadingOverlay(boundsh);// { loadingLabelText = "Finalizing..." };
+                            loadingOverlay.SetText("Finalizing...");
+                            mvc.Add(loadingOverlay);
+                            await Task.Delay(10);
+
                             var rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
 
                             var rootPaddedView = new PaddedUIView<UILabel>();
@@ -1264,6 +1369,11 @@ namespace DynaPad
 
                             break;
                         case "Report":
+                            loadingOverlay = new LoadingOverlay(boundsh);// { loadingLabelText = "Loading Report..." };
+                            loadingOverlay.SetText("Loading Report...");
+                            mvc.Add(loadingOverlay);
+                            await Task.Delay(10);
+
                             //var Report = SelectedAppointment.ApptReports.Find((Report obj) => obj.FormId == sectionId);
 
                             var reportElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
@@ -1294,15 +1404,33 @@ namespace DynaPad
 
                             if (!reportUrl.StartsWith("Error:", StringComparison.CurrentCulture))
                             {
-                                var bb = View.Frame;
+                                //var wkurl = new NSUrl(reportUrl);
+                                //var wkrequest = new NSUrlRequest(wkurl);
+                                //MRWebViews = new WKWebView(View.Bounds, new WKWebViewConfiguration());// { SuppressesIncrementalRendering = true });
+                                //MRWebViews.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+                                //progressViews = new UIProgressView(UIProgressViewStyle.Bar);
+                                //progressViews.Frame = new CGRect(0, 0, MRWebViews.Frame.Width, 5);
+
+
+                                //MRWebViews.AddObserver("estimatedProgress", NSKeyValueObservingOptions.New, ProgressObservers);
+                                //MRWebViews.AddSubview(progressViews);
+                                //MRWebViews.LoadRequest(wkrequest);
+
+
+
+
+
+                                //var bb = View.Frame;
                                 //var webView = new UIWebView(View.Bounds);
-                                var webView = new WKWebView(View.Bounds, new WKWebViewConfiguration());
-                                webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
+                                //webView.ScalesPageToFit = true;
                                 //var myurl = "https://test.dynadox.pro/dynawcfservice/" + report; // NOTE: https secure request
                                 //var myurl = "https://test.dynadox.pro/dynawcfservice/test.pdf";// + report; // NOTE: https secure request
                                 //var url = "https://www.princexml.com/samples/invoice/invoicesample.pdf"; // NOTE: https secure request
+
+
+                                var webView = new WKWebView(View.Bounds, new WKWebViewConfiguration());
+                                webView.Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height);
                                 webView.LoadRequest(new NSUrlRequest(new NSUrl(reportUrl)));
-                                //webView.ScalesPageToFit = true;
 
                                 reportSection.Add(webView);
 
@@ -1321,6 +1449,11 @@ namespace DynaPad
 
                             break;
                         default:
+                            loadingOverlay = new LoadingOverlay(boundsh);// { loadingLabelText = "Loading Section..." };
+                            loadingOverlay.SetText("Loading Section...");
+                            mvc.Add(loadingOverlay);
+                            await Task.Delay(10);
+
                             ConfigureView(context, valueId, origSectionJson, IsDoctorForm, nextbtn);
                             break;
                     }

@@ -135,18 +135,6 @@
     <Reference Include="Xamarin.Mobile">
       <HintPath>Components\xamarin.mobile-0.7.7\lib\ios-unified\Xamarin.Mobile.dll</HintPath>
     </Reference>
-    <Reference Include="Syncfusion.Linq.iOS">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.2.0.40\Xamarin\lib\ios-unified\Syncfusion.Linq.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.SfAutoComplete.iOS">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.2.0.40\Xamarin\lib\ios-unified\Syncfusion.SfAutoComplete.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.SfDataGrid.iOS">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.2.0.40\Xamarin\lib\ios-unified\Syncfusion.SfDataGrid.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.GridCommon.Portable">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.2.0.40\Xamarin\lib\pcl\Syncfusion.GridCommon.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="HockeySDK">
       <HintPath>..\packages\HockeySDK.Xamarin.4.1.5\lib\Xamarin.iOS10\HockeySDK.dll</HintPath>
     </Reference>
@@ -182,18 +170,6 @@
     <Reference Include="Plugin.Connectivity">
       <HintPath>..\packages\Xam.Plugin.Connectivity.3.0.2\lib\Xamarin.iOS10\Plugin.Connectivity.dll</HintPath>
     </Reference>
-    <Reference Include="Syncfusion.SfImageEditor.iOS">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.3.0.26\Xamarin\lib\ios-unified\Syncfusion.SfImageEditor.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.SfPdfViewer.iOS">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.3.0.26\Xamarin\lib\ios-unified\Syncfusion.SfPdfViewer.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Compression.Portable">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.3.0.26\Xamarin\lib\pcl\Syncfusion.Compression.Portable.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Pdf.Portable">
-      <HintPath>..\..\..\..\Documents\Syncfusion\15.3.0.26\Xamarin\lib\pcl\Syncfusion.Pdf.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="itextsharp">
       <HintPath>packages\iTextSharp.5.5.12\lib\itextsharp.dll</HintPath>
     </Reference>
@@ -205,6 +181,36 @@
     </Reference>
     <Reference Include="MailKit">
       <HintPath>packages\MailKit.1.16.0\lib\Xamarin.iOS10\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Compression.Portable">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.Compression.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.GridCommon.Portable">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.GridCommon.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Linq.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.Linq.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Pdf.Portable">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.Pdf.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfAutoComplete.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfAutoComplete.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfBusyIndicator.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfBusyIndicator.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfDataGrid.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfDataGrid.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfImageEditor.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfImageEditor.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfNumericTextBox.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfNumericTextBox.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfPdfViewer.iOS">
+      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfPdfViewer.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -610,6 +616,9 @@
       <RelPath>Web References\DynaPadService</RelPath>
       <UpdateFromURL>http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx?wsdl</UpdateFromURL>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EmptyTextFile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets')" />
