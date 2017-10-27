@@ -45,7 +45,7 @@
     <CodesignKey>iPhone Distribution</CodesignKey>
     <MtouchFloat32>true</MtouchFloat32>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchLink>None</MtouchLink>
     <MtouchArch>ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
@@ -54,6 +54,7 @@
     <BuildIpa>false</BuildIpa>
     <MtouchDebug>false</MtouchDebug>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <Optimize>true</Optimize>
@@ -69,6 +70,7 @@
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -135,20 +137,11 @@
     <Reference Include="Xamarin.Mobile">
       <HintPath>Components\xamarin.mobile-0.7.7\lib\ios-unified\Xamarin.Mobile.dll</HintPath>
     </Reference>
-    <Reference Include="HockeySDK">
-      <HintPath>..\packages\HockeySDK.Xamarin.4.1.5\lib\Xamarin.iOS10\HockeySDK.dll</HintPath>
-    </Reference>
-    <Reference Include="HockeySDK.iOSBindings">
-      <HintPath>..\packages\HockeySDK.Xamarin.4.1.5\lib\Xamarin.iOS10\HockeySDK.iOSBindings.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="HtmlAgilityPack">
-      <HintPath>packages\HtmlAgilityPack.1.5.1\lib\netstandard1.6\HtmlAgilityPack.dll</HintPath>
-    </Reference>
     <Reference Include="Plugin.Media.Abstractions">
       <HintPath>packages\Xam.Plugin.Media.3.0.1\lib\Xamarin.iOS10\Plugin.Media.Abstractions.dll</HintPath>
     </Reference>
@@ -164,53 +157,64 @@
     <Reference Include="Cirrious.FluentLayouts.Touch">
       <HintPath>..\packages\Cirrious.FluentLayout.2.6.0\lib\Xamarin.iOS10\Cirrious.FluentLayouts.Touch.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.Connectivity.Abstractions">
-      <HintPath>..\packages\Xam.Plugin.Connectivity.3.0.2\lib\Xamarin.iOS10\Plugin.Connectivity.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Plugin.Connectivity">
-      <HintPath>..\packages\Xam.Plugin.Connectivity.3.0.2\lib\Xamarin.iOS10\Plugin.Connectivity.dll</HintPath>
-    </Reference>
     <Reference Include="itextsharp">
       <HintPath>packages\iTextSharp.5.5.12\lib\itextsharp.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle">
-      <HintPath>packages\MimeKit.1.16.0\lib\Xamarin.iOS10\BouncyCastle.dll</HintPath>
-    </Reference>
-    <Reference Include="MimeKit">
-      <HintPath>packages\MimeKit.1.16.0\lib\Xamarin.iOS10\MimeKit.dll</HintPath>
-    </Reference>
-    <Reference Include="MailKit">
-      <HintPath>packages\MailKit.1.16.0\lib\Xamarin.iOS10\MailKit.dll</HintPath>
+    <Reference Include="Syncfusion.SfBusyIndicator.iOS">
+      <HintPath>..\..\..\..\Documents\Syncfusion\15.3.0.26\Xamarin\lib\ios-unified\Syncfusion.SfBusyIndicator.iOS.dll</HintPath>
     </Reference>
     <Reference Include="Syncfusion.Compression.Portable">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.Compression.Portable.dll</HintPath>
+      <HintPath>packages\Syncfusion.Xamarin.Compression.15.3.0.33\lib\portable-win+net45+wp80+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Syncfusion.Compression.Portable.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Syncfusion.GridCommon.Portable">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.GridCommon.Portable.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Linq.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.Linq.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Pdf.Portable">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.Pdf.Portable.dll</HintPath>
+      <HintPath>packages\Syncfusion.Xamarin.GridCommon.15.3.0.33\lib\portable-win+net45+wp80+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Syncfusion.GridCommon.Portable.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Syncfusion.SfAutoComplete.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfAutoComplete.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.SfBusyIndicator.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfBusyIndicator.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.SfDataGrid.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfDataGrid.iOS.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.SfImageEditor.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfImageEditor.iOS.dll</HintPath>
+      <HintPath>packages\Syncfusion.Xamarin.SfAutoComplete.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfAutoComplete.iOS.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Syncfusion.SfNumericTextBox.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfNumericTextBox.iOS.dll</HintPath>
+      <HintPath>packages\Syncfusion.Xamarin.SfNumericTextBox.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfNumericTextBox.iOS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.Linq.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfDataGrid.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.Linq.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfImageEditor.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfImageEditor.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfImageEditor.iOS.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Syncfusion.SfPdfViewer.iOS">
-      <HintPath>..\..\..\syncfusiondlls\Syncfusion.SfPdfViewer.iOS.dll</HintPath>
+      <HintPath>..\..\..\..\Documents\Syncfusion\15.3.0.26\Xamarin\lib\ios-unified\Syncfusion.SfPdfViewer.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfDataGrid.iOS">
+      <HintPath>..\..\..\..\Downloads\Skype\Syncfusion.SfDataGrid.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="HockeySDK">
+      <HintPath>packages\HockeySDK.Xamarin.5.0.0\lib\Xamarin.iOS10\HockeySDK.dll</HintPath>
+    </Reference>
+    <Reference Include="HockeySDK.iOSBindings">
+      <HintPath>packages\HockeySDK.Xamarin.5.0.0\lib\Xamarin.iOS10\HockeySDK.iOSBindings.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle">
+      <HintPath>packages\MimeKit.1.18.1\lib\Xamarin.iOS10\BouncyCastle.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit">
+      <HintPath>packages\MimeKit.1.18.1\lib\Xamarin.iOS10\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="MailKit">
+      <HintPath>packages\MailKit.1.18.1.1\lib\Xamarin.iOS10\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>packages\HtmlAgilityPack.1.6.2\lib\netstandard2.0\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Connectivity.Abstractions">
+      <HintPath>packages\Xam.Plugin.Connectivity.3.0.3\lib\Xamarin.iOS10\Plugin.Connectivity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Connectivity">
+      <HintPath>packages\Xam.Plugin.Connectivity.3.0.3\lib\Xamarin.iOS10\Plugin.Connectivity.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -622,4 +626,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets')" />
+  <Import Project="packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
 </Project>

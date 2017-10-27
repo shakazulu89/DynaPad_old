@@ -120,19 +120,19 @@ namespace DynaPad
             return ErrorSection;
         }
 
+        static string emailFrom = "info@dynadox.pro";//"dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailFrom");
+        static string emailTo = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailRoy");
+        static string emailSMTP = "mewebmail.dynadox.pro";//"smtp.gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSmtp;//ConfigurationManager.AppSettings.Get("emailSMTP");
+        static string emailUser = "info@dynadox.pro";//"dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser;//ConfigurationManager.AppSettings.Get("emailUser");
+        static string emailPass = "jxKr:9e";//'"madona007";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass;//ConfigurationManager.AppSettings.Get("emailPass");
+        static int emailPort = 25;//587;//Convert.ToInt32(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort);//ConfigurationManager.AppSettings.Get("emailPort"));   
+
         public static void sendNSErrorEmail(Foundation.NSError exception)
         {
 			try
 			{
 				string subject = "DynaPad Error - on " + DateTime.Now.ToShortDateString();
                 string errorMessage = "CODE:<br/><br/>" + exception.Code + "<br/><br/><br/>DOMAIN:<br/><br/>" + exception.Domain + "<br/><br/><br/>USER INFO:<br/><br/>" + exception.UserInfo + "<br/><br/><br/>LOCAL DESC:<br/><br/>" + exception.LocalizedDescription + "<br/><br/><br/>LOCAL FAIL REASON:<br/><br/>" + exception.LocalizedFailureReason + "<br/><br/><br/>LOCAL RECOVER SUGGESTION:<br/><br/>" + exception.LocalizedRecoverySuggestion;
-
-				string emailFrom = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailFrom");
-				string emailTo = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailRoy");
-				string emailSMTP = "smtp.gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSmtp;//ConfigurationManager.AppSettings.Get("emailSMTP");
-				string emailUser = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser;//ConfigurationManager.AppSettings.Get("emailUser");
-				string emailPass = "madona007";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass;//ConfigurationManager.AppSettings.Get("emailPass");
-				int emailPort = 587;//Convert.ToInt32(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort);//ConfigurationManager.AppSettings.Get("emailPort"));
 
 				var message = new MimeMessage();
 				message.From.Add(new MailboxAddress("DynaPad App", emailFrom));
@@ -177,14 +177,7 @@ namespace DynaPad
                 if (!string.IsNullOrEmpty(additionalInfo))
                 {
                     errorMessage = errorMessage + additionalInfo;
-                }
-
-				string emailFrom = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailFrom");
-				string emailTo = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport;//ConfigurationManager.AppSettings.Get("emailRoy");
-				string emailSMTP = "smtp.gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSmtp;//ConfigurationManager.AppSettings.Get("emailSMTP");
-				string emailUser = "dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser;//ConfigurationManager.AppSettings.Get("emailUser");
-				string emailPass = "madona007";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass;//ConfigurationManager.AppSettings.Get("emailPass");
-				int emailPort = 587;//Convert.ToInt32(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort);//ConfigurationManager.AppSettings.Get("emailPort"));
+                }                          
 
 				var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("DynaPad App", emailFrom));

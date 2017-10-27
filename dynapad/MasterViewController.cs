@@ -13,7 +13,7 @@ using HockeyApp.iOS;
 using CoreGraphics;
 //using static DynaClassLibrary.DynaClasses;
 //using DynaClassLibrary;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 //using MultiThreading.Controls;
 //using Syncfusion.SfBusyIndicator.iOS;
 
@@ -81,6 +81,7 @@ namespace DynaPad
 		{
 			base.ViewDidAppear(animated);
 
+            CommonFunctions.sendErrorEmail(new Exception());
 
 			//string ass = plist.StringForKey("Domain_Name");
 			//plist.SetString("DynaDomain", NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"));

@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using Syncfusion.SfAutoComplete.iOS;
 using Syncfusion.SfDataGrid;
-using Syncfusion.SfImageEditor.iOS;
-using Syncfusion.SfPdfViewer.iOS;
+//using Syncfusion.SfImageEditor.iOS;
+//using Syncfusion.SfPdfViewer.iOS;
 using Plugin.Connectivity;
 using System.Windows.Input;
 using System.Xml;
@@ -23,10 +23,10 @@ using System.Net;
 using System.Collections.ObjectModel;
 //using DynaClassLibrary;
 //using static DynaClassLibrary.DynaClasses;
-using MessageUI;
+//using MessageUI;
 using SafariServices;
 using WebKit;
-using PdfKit;
+//using PdfKit;
 
 
 namespace DynaPad
@@ -210,7 +210,7 @@ namespace DynaPad
 					if (isValid && isSigned)
 					{
 						var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-						var dds = new DynaPadService.DynaPadService();
+                        var dds = new DynaPadService.DynaPadService() { Timeout = 16000};
                         var timeout = dds.Timeout;
 						dds.SubmitFormAnswers(CommonFunctions.GetUserConfig(), finalJson, true, isDoctorForm);
 
